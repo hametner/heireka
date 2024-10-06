@@ -1,0 +1,19 @@
+{{< include setup.qmd >}}
+
+# Results
+ 
+{{< include Results_core.qmd >}}
+{{< include Results_Delir.qmd >}}
+{{< include Results_Delir_Aph_Neg.qmd >}}
+{{< include Results_Delir_LOC.qmd >}}
+{{< include Results_Delir_Handedness.qmd >}}
+{{< include Results_eyedeviation.qmd >}}
+{{< include Results_microangio.qmd >}}
+{{< include Results_C2.qmd >}}
+{{< include Results_prev_dem.qmd >}}
+{{< include Results_thyr.qmd >}}
+{{< include Results_Copd.qmd >}}
+{{< include Results_smoking.qmd >}}
+{{< include Result_meds.qmd >}}
+{{< include Results_Delir2.qmd >}}
+{{< include Results_Outcome.qmd >}}

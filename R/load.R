@@ -26,7 +26,7 @@ readTxtFiles <-
                         # Extract Dokumententyp
                         dfDoc[i, "doc_type"] <- substr(filenames[i], 23, 32)
                         # Extract Dokumentenversion
-                        if (substr(filenames[i], 34, 36) != "AA") {
+                        if (substr(filenames[i], 34, 35) != "AA") {
                                 dfDoc[i, "doc_version"] <- substr(filenames[i], 64, 65)
                                 dfDoc[i, "doc_number"] <- substr(filenames[i], 52, 62)
                         } else {
@@ -47,8 +47,10 @@ readTxtFiles <-
                 if (keepAll == FALSE) {
                         dfDoc <- dfDoc %>% as_tibble %>%
                                 # only keep latest version of document
-                                group_by(fallnummer) %>%
-                                filter(doc_version == max(doc_version)) %>% 
+                                group_by(fallnummer, doc_type) %>%
+                                # group_by(doc_type) %>% 
+                                arrange(doc_version) %>% slice(1L) %>% 
+                                # old/wrong # filter(doc_version == max(doc_version)) %>% 
                                 ungroup()
                 }
                 return(dfDoc)
@@ -109,7 +111,8 @@ readPhysicianList <- function(path) {
 #' @importFrom readr read_delim
 #' @param path - A excplicit path to file has to be provided
 #' @return A dataframe
-#' @source "https://www.dimdi.de/dynamic/.downloads/arzneimittel/stoffbezeichnungen/stoffbezeichnungen-dateien-20210115.zip"
+#' @source 2021 Version from "https://www.dimdi.de/dynamic/.downloads/arzneimittel/stoffbezeichnungen/stoffbezeichnungen-dateien-20210115.zip"
+#' @source 2023 Version from "https://www.wido.de/publikationen-produkte/arzneimittel-klassifikation/"
 #' @export
 readATCClass <- function(path) {
         atc <-
@@ -118,13 +121,62 @@ readATCClass <- function(path) {
                            escape_double = FALSE,
                            trim_ws = TRUE) %>%
                 as_tibble
-        atc <- atc %>%
-                mutate(cat = nchar(ATC)) %>%
-                mutate(grp = substr(ATC, 1, 5)) %>%
-                left_join(atc, atc %>% select(ATC, atc_txt), by = c("grp" = "ATC"))
-        atc <-
-                atc %>% rename(name = "atc_txt.x", grp_name = "atc_txt.y")
         
+        
+        names(atc) <- c("atc", "name")
+        # German version
+        atc <- atc %>%
+                mutate(cat = nchar(atc)) %>%
+                mutate(grp = substr(atc, 1, 5)) %>%
+                left_join(atc %>% select(atc, name), by = c("grp" = "atc")) %>% 
+                mutate(class = substr(atc, 1, 4)) %>%
+                left_join(atc %>% select(atc, name), by = c("class" = "atc")) %>%
+                rename(class_g = name, grp_g = name.y, name_g = name.x) %>% unique()
+        
+        # 2023 Version from https://www.wido.de/publikationen-produkte/arzneimittel-klassifikation/
+        # require(readxl)
+        # atc <- read_excel("input/atc_gkv-ai_2023/ATC GKV-AI_2023.xlsm", sheet = "WIdO-Index 2023 ATC-sortiert", na = "") %>% 
+        #         drop_na(`ATC-Code`) %>% select(ATC = `ATC-Code`, desc = `ATC-Bedeutung`, ddd = `DDD-Info`)
+        
+        # By Fabrício Kury - Webscrape from WHO
+        library(readr)
+        atc_e <- read_csv("input/Arzneimittelliste/WHO ATC-DDD 2021-12-03.csv")
+        names(atc_e) <- c("atc", "name_e", "ddd", "uom", "adm_r", "note")
+        # Englisch Version
+        atc_e <- atc_e %>%
+                mutate(cat = nchar(atc)) %>%
+                mutate(grp = substr(atc, 1, 5)) %>%
+                left_join(atc_e %>% select(atc, name_e), by = c("grp" = "atc")) %>% 
+                mutate(class = substr(atc, 1, 4)) %>%
+                left_join(atc_e %>% select(atc, name_e), by = c("class" = "atc")) %>%
+                rename(class_e = name_e, grp_e = name_e.y, name_e = name_e.x) %>% unique()
+        
+        # Join German and Englisch version
+        atc <- atc %>% left_join(atc_e %>% 
+                                         select(atc, name_e, grp_e, class_e, ddd, uom, adm_r, note),
+                                  by = c("atc")) %>% 
+                select(atc, name_g, name_e, grp, grp_g, grp_e, class, class_g, class_e, cat, ddd, uom, adm_r, note)
+        
+        # Fill English classes where NA
+        atc <- atc %>% 
+                group_by(class) %>% 
+                fill(class_e, .direction = c("down")) %>%
+                fill(class_e, .direction = c("up")) %>% 
+                ungroup() %>% 
+        # Fill englisch grps where NA 
+                group_by(grp) %>% 
+                fill(grp_e, .direction = c("down")) %>% 
+                fill(grp_e, .direction = c("up")) %>% 
+                ungroup()
+                
+        # TODO
+        # require(googleLanguageR)
+        # Set your API key
+        # gl_api_key <- "
+        # atc <- atc %>%
+        #         mutate(name_e = ifelse(is.na(name_e), gl_translate(name_g, source="de", target="en", key = gl_api_key)))
+
+        return(atc)        
 }
 
 
@@ -277,7 +329,7 @@ readISHFiles <- function(file, sep = ";") {
                 df <- map(df, ~repairDemog(.x))
         }
         
-        df <- df %>% reduce(bind_rows)
+        df <- df %>% reduce(bind_rows) %>%  unique()
         
         # # Date Correction
         # df$labDateTime <-
@@ -300,57 +352,214 @@ readISHFiles <- function(file, sep = ";") {
 
 
 
+
+#' @title readPMDFile
+#'
+#' @description Searches desired file e.g. "ZIQS80_1.xls" in project directory and subdirectories, imports all found files and combines them.
+#' @param file Provide "file" to be searched and imported for (may be several in different subdirectories)
+#' @param files Provide directory of all files (e.g. through list.files(recursive = TRUE))
+#'
+#' @return A tibble
+#' 
+#' @import tidyverse
+#' @import lubridate
+#' @import vroom
+#' @importFrom readr read_delim
+#' @import dtplyr
+#'
+#' @examples readPMDFile("ZIQS80_1.xls", files, dok_nr)
+readPMDFile <- function(file, f = files, dok_nr = dok_nr, sep = "\t", guess_encode = FALSE){
+        pmd_files <- f[f %>% str_detect({{file}})]
+        
+        if (guess_encode == TRUE) {
+        enc <- map(pmd_files, guess_encoding)
+        enc <- unlist(map(enc, function(x) x[[1]][1]))
+                df <-
+                        map2(pmd_files, enc,
+                          ~ vroom(
+                            .x,
+                            sep,
+                            col_names = TRUE,
+                            col_types = cols(.default = "c"),
+                            trim_ws = TRUE,
+                            locale = locale(encoding = .y)
+                          )) %>% 
+                        reduce(bind_rows)
+        } else {
+                df <-
+                        map(pmd_files,
+                             ~ vroom(
+                                     .x,
+                                     sep,
+                                     col_names = TRUE,
+                                     col_types = cols(.default = "c"),
+                                     trim_ws = TRUE,
+                                     locale = locale(encoding = "WINDOWS-1252")
+                             )) %>% 
+                        reduce(bind_rows) 
+        }
+        
+        
+        # Check if case_id  ("FALNR") is present, otherwise need to get by joining from dok_nr
+        if ("FALNR" %in% colnames(df) == FALSE) {
+                if ("DOKNR" %in% colnames(df) == TRUE){
+                df <- df %>% mutate(DOKNR = parse_number(DOKNR)) %>%
+                        left_join(., {{dok_nr}} %>%
+                                          select(DOKNR, FALNR) %>%
+                                          mutate(DOKNR = parse_number(DOKNR)),
+                                  by = c("DOKNR" = "DOKNR"))
+                } 
+                if ("PATNR" %in% colnames(df) == TRUE){
+                df <- df %>% mutate(PATNR = parse_number(PATNR)) %>%
+                                left_join(., {{dok_nr}} %>%
+                                                  select(PATNR, FALNR) %>%
+                                                  mutate(PATNR = parse_number(PATNR)),
+                                          by = c("PATNR" = "PATNR")) %>% 
+                        unique()
+                }
+        }
+
+        return(df)
+}
+
+
+
+
 #' @title getLatestDBFile
 #'
 #' @description search files in directory and subdirs for the desired string. Function automatically selects file created last 
 #' @param file 
 #' @import Hmisc
 #' @import tidyverse
+#' @import tools
+#' @import xfun
 #' @return filename as character string
 #' @export
 #'
 #' @examples getLatestFile("LysePat")
-getLatestDBFile <- function(file){
+getLatestDBFile <- function(files = files, file){
         files <- list.files(recursive = TRUE, full.names = TRUE, include.dirs = TRUE)
         heir_files <- files[files %>% str_detect({{file}})]
         file <- bind_cols(file = heir_files,
                           file.info(heir_files)) %>% 
-                as_tibble %>% 
+                as_tibble %>%
+                mutate(ext = file_ext(file)) %>% 
+                filter(ext == "mdb") %>% 
                 arrange(desc(mtime)) %>% 
                 slice(1L) %>% 
                 select(file)
         return(file[[1]])
 }
 
-#' @title readDB - Read in mdb-Typ Databases using mdb.get function from Hmisc package
+
+#' @title mdb.get_mod 
 #'
+#' @description Custom function from Frank Harrels Hmisc package | mdb.get function 
+#' @param file 
+#' @import Hmisc
+#' @import tidyverse
+#' @import tools
+#' @return filename as character string
+#' @export
+#'
+#' @examples getLatestFile("LysePat")
+mdb.get_mod <- function (file, tables = NULL, lowernames = FALSE, allow = NULL, 
+                         dateformat = "%m/%d/%y", mdbexportArgs = "-b strip", ...) 
+{
+        rettab <- length(tables) && is.logical(tables)
+        if (rettab) 
+                tables <- NULL
+        if (!length(tables)) 
+                tables <- system(paste("mdb-tables -1", file), intern = TRUE)
+        if (rettab) 
+                return(tables)
+        f <- tempfile()
+        D <- vector("list", length(tables))
+        names(D) <- tables
+        for (tab in tables) {
+                s <- system(paste("mdb-schema -T", shQuote(tab), file), 
+                            intern = TRUE)
+                start <- grep("^ \\($", s) + 1
+                end <- grep("^\\);$", s) - 1
+                s <- s[start:end]
+                s <- strsplit(s, "\t")
+                vnames <- sapply(s, function(x) {
+                        bracketed = x[2]
+                        if (substr(bracketed, 1, 1) == "[") 
+                                substr(bracketed, 2, nchar(bracketed) - 1)
+                        else bracketed
+                })
+                vnames <- makeNames(vnames, unique = TRUE, allow = allow)
+                if (lowernames) 
+                        vnames <- casefold(vnames)
+                types <- sapply(s, function(x) x[length(x)])
+                # datetime <- vnames[grep("DateTime", s)]
+                datetime <- "LastChange"
+                system2(command = "mdb-export", args = paste(mdbexportArgs, 
+                                                             file, shQuote(tab)), stdout = f)
+                d <- csv.get(f, datetimevars = datetime, lowernames = lowernames, 
+                             allow = allow, dateformat = dateformat, ...)
+                if (length(tables) == 1) 
+                        return(d)
+                else D[[tab]] <- d
+        }
+        D
+}
+
+
+#' @title readDB - Read in mdb-Typ Databases using mdb.get function from Hmisc package
+#' @description requires 1) mdb.get function of Hmisc Package AND 2.) mdbtools ( install mdbtools via MacPorts -> sudo port install mdbtools instead of Brew Terminal -> brew install mdbtools)
 #' @param file 
 #' @param latest 
 #' @import Hmisc
+#' @import rlang
 #' @import tidyverse
 
 #' @return A nested list (table items as list items, tables as tibbles/data.frames)
 #' @export
 #'
 #' @examples heireka <- readDB("LysePat", latest = TRUE) or <- readDB("LysePat2018_bis_01_2021.mdb", latest = FALSE)
-readDB <- function(file, latest = TRUE){
+readDB <- function(files = files, file, latest = TRUE){
+        library(tidyverse)
+        library(tools)
+        
+        if (file=="Kardiologie2002"){
+                return(readRDS("input/DB/necho_02_db.rds"))
+        }
+        
+        if (file=="Stammdaten"){
+                return(readRDS("input/DB/db_stamm.rds"))
+        }
+        
+        if (file=="Doppler2002"){
+                return(readRDS("input/DB/db_dop.rds"))
+        }
+        
+        if (file=="LysePat"){
+                return(readRDS("input/DB/db_heireka.rds"))
+        }
+        
+        
         Sys.setlocale(category = "LC_ALL", "de_DE.UTF-8") # on MAC
         if (latest == TRUE) {
-                f <- getLatestDBFile({{file}})
+                f <- getLatestDBFile(files, {{file}})
         }
         
         tables <- mdb.get(f, tables = TRUE)
+        # EchoTab EinsenderTab Konvertierungsfehler LzEKGTab TextVorschlagTab UntersucherTab Switchboard Items
         
         if (str_detect({{file}}, "Doppler")) {
                 tables <- tables[!str_detect(tables, "Ä")]
         }
-                
         
-        
-        db <- map(tables,
-                  ~ mdb.get(f, tables = .x) %>%
-                          cleanup.import() %>%
+        ##### CAVE Custom modified mdb.get function #####     
+        ##### Custom mdb.get function !!! #######
+
+                db <- map(tables,
+                  ~ mdb.get_mod(f, tables = .x) %>%        ### CAVE CUSTOM modified mdb.get function
+                          # cleanup.import() %>%
                           as_tibble())
+        
         names(db) <- tables
         return(db)
 }
@@ -473,7 +682,7 @@ readDokNr <- function(file, f = files) {
 #' @export
 #'
 #' @examples mdx <- readMedxDischarge("Y0000035", files)
-readMedxDischarge <- function(file, files) {
+readMedxDischarge <- function(file, files, mmi, atc) {
         meds_dis_files <- 
                 files[files %>% str_detect({{file}})]
         meds_dis_data_file <-
@@ -483,7 +692,8 @@ readMedxDischarge <- function(file, files) {
                 row.names()
         meds_dis_stamm_file <- 
                 meds_dis_files[nchar(meds_dis_files) == min(nchar(meds_dis_files))]
-
+        
+        # IMPORT
         meds_dis_list <-
                 map(meds_dis_files,
                     ~ vroom(
@@ -494,11 +704,11 @@ readMedxDischarge <- function(file, files) {
                             col_types  = cols(.default = "c")
                     )) %>%
                 set_names(meds_dis_files)
-
+        
+        # MODIFY
         mdx_base <-
                 meds_dis_list[[meds_dis_stamm_file]] %>%
                 select(DOKNR, DOKVR, ISHMPATNAM, ISHMPATGEB, ISHMPATFAL)
-        
         mdx <-
                 meds_dis_list[[meds_dis_data_file]] %>%
                 select(DOKNR, DOKVR, ME_AI_DAT, ME_AI_PRID, ME_AI_PRNA,ME_AI_DSCH, ME_AI_WIR1, ME_AI_WIR2, ME_AI_WIR3) %>%
@@ -507,23 +717,86 @@ readMedxDischarge <- function(file, files) {
                         cols = c(ME_AI_WIR1, ME_AI_WIR2, ME_AI_WIR3),
                         names_to = "WIRX",
                         values_to = "WIRKSTOFF") %>% 
-                drop_na(WIRKSTOFF) %>%
-                mutate(WIRKSTOFF = word(str_replace(WIRKSTOFF, "[-,\\[]", " "))) %>% 
-                unique() %>%
-                pivot_wider(
-                        data = .,
-                        names_from = WIRKSTOFF,
-                        values_from = ME_AI_DSCH) %>%
-                group_by(DOKNR) %>%
-                fill(everything(), .direction = "down") %>%
-                fill(everything(), .direction = "up") %>%
-                slice(1) %>%
-                select(-ME_AI_PRID, -ME_AI_PRNA, -contains("DOKVR"), -WIRX)
-
-        cols <- mdx %>% keep(is.list) %>% names()
-        mdx <- mdx %>% unnest(all_of(cols))
+                drop_na(WIRKSTOFF) 
         
-        return(mdx)
+        # Classify each substance with corresponding ATC class / grp / and english version of substance
+        file_path <- "output/post_meds_classes.csv"
+        
+        # only need to process once ~ 3-4h
+        if (!file.exists(file_path)) { 
+                # TEST # mdx2 <- mdx[100:200, ]
+                # s <- Sys.time()
+                
+                mdx$sub <-
+                        sapply(
+                                mdx$WIRKSTOFF,
+                                simplify = TRUE,
+                                USE.NAMES = FALSE,
+                                FUN =  function(x) {
+                                        print(x)
+                                        ask_mmi(mmi, x)
+                                }
+                        )
+                # Sys.time() - s
+                mdx2 <-
+                        mdx %>% select(ISHMPATFAL, WIRKSTOFF, sub) %>% unnest(sub) %>% unique() %>%
+                        rename(case_id = ISHMPATFAL, substance = WIRKSTOFF)
+                # check Levothyroxin-Na
+                
+                mdx_class <- mdx2 %>%
+                        group_by(case_id, class_e) %>%
+                        summarise(drug_class_usage = ifelse(any(!is.na(class_e)), 1, 0), .groups = 'drop') %>%
+                        pivot_wider(names_from = class_e,
+                                    values_from = drug_class_usage,
+                                    values_fill = 0)
+                saveRDS(mdx_class, 'output/post_meds_classes.rds', compress = 'xz')
+                write.csv2(mdx_class, 'output/post_meds_classes.csv')
+                
+                mdx_grp <- mdx2 %>%
+                        group_by(case_id, grp_e) %>%
+                        summarise(drug_class_usage = ifelse(any(!is.na(grp_e)), 1, 0), .groups = 'drop') %>%
+                        pivot_wider(names_from = grp_e,
+                                    values_from = drug_class_usage,
+                                    values_fill = 0)
+                saveRDS(mdx_grp, 'output/post_meds_groups.rds', compress = 'xz')
+                write.csv2(mdx_grp, 'output/post_meds_groups.csv')
+                
+                mdx_sub <- mdx2 %>%
+                        group_by(case_id, name_e) %>%
+                        summarise(drug_class_usage = ifelse(any(!is.na(name_e)), 1, 0), .groups = 'drop') %>%
+                        pivot_wider(names_from = name_e,
+                                    values_from = drug_class_usage,
+                                    values_fill = 0)
+                saveRDS(mdx_sub, 'output/post_meds_substances.rds', compress = 'xz')
+                write.csv2(mdx_sub, 'output/post_meds_substances.csv')
+        
+        } else {
+                mdx_class <- readRDS('output/post_meds_classes.rds')
+                mdx_grp <- readRDS('output/post_meds_groups.rds')
+                mdx_sub <- readRDS('output/post_meds_substances.rds')
+        }
+        
+        l <- list(CLASS = mdx_class, GROUP = mdx_grp, SUBSTANCE = mdx_sub)
+        l <- map(l, ~mutate(.x, case_id = parse_number(as.character(case_id))))
+        
+        # Specific dose possible - not yet implemented ----
+        #         mutate(WIRKSTOFF = word(str_replace(WIRKSTOFF, "[-,\\[]", " "))) %>% 
+        #         unique() %>%
+        #         pivot_wider(
+        #                 data = .,
+        #                 names_from = WIRKSTOFF,
+        #                 values_from = ME_AI_DSCH) %>%
+        #         group_by(DOKNR) %>%
+        #         fill(everything(), .direction = "down") %>%
+        #         fill(everything(), .direction = "up") %>%
+        #         slice(1) %>%
+        #         select(-ME_AI_PRID, -ME_AI_PRNA, -contains("DOKVR"), -WIRX)
+        # 
+        # cols <- mdx %>% keep(is.list) %>% names()
+        # mdx <- mdx %>% unnest(all_of(cols))
+        
+        # Return ----
+        return(l)
 }
 
 #' @title - readMedxList - Builds a list of substance names and drugs from discharge medications
@@ -557,25 +830,54 @@ readMedxList <- function(file, files, export = FALSE) {
                     ))
         names(meds_dis_list) <- meds_dis_files
         
+        # keep only those with 33 columns as they have desired information
+        meds_dis_list_33cols <- meds_dis_list %>% keep(~ ncol(.x) == 33)
         
-        m <- meds_dis_list[[meds_dis_data_file]] %>%
-                pivot_longer(
-                        cols = c(ME_AI_WIR1, ME_AI_WIR2, ME_AI_WIR3, ME_AI_PRNA),
-                        names_to = "WIRX",
-                        values_to = "WIRKSTOFF"
-                ) %>%
-                mutate(WIRKSTOFF = word(str_replace(WIRKSTOFF, "[-,\\[\\(\\)]", " "))) %>%
-                mutate(WIRKSTOFF = str_to_lower(str_replace(WIRKSTOFF, "[®]", " "))) %>%
-                select(WIRKSTOFF) %>% 
-                drop_na(WIRKSTOFF) %>%
-                unique() %>% 
-                arrange(WIRKSTOFF)
+        m <- bind_rows(meds_dis_list_33cols) %>% 
+                select(ME_AI_Z2H, ME_AI_WIR1, ME_AI_WIR2, ME_AI_WIR3) %>% 
+                mutate(drug = str_extract(ME_AI_Z2H, "\\b\\w+®?\\s?"), .keep = "unused") %>% 
+                mutate(drug = tolower(gsub("®|\\s", "", drug)), .keep = "unused") %>% 
+                mutate(subst1 = tolower(ME_AI_WIR1), .keep = "unused") %>% 
+                mutate(subst2 = tolower(ME_AI_WIR2), .keep = "unused") %>% 
+                mutate(subst3 = tolower(ME_AI_WIR3), .keep = "unused") %>% 
+                arrange(drug) %>% 
+                unique()
+                               
         
-        meds <- m$WIRKSTOFF[str_count(m$WIRKSTOFF) > 2]
-        if (export == TRUE) write.csv2(meds, "output/HEIREKA/HEIREKA_medication_list_unique_2021_04_21.csv")                
-        return(meds)
+        # old - deprecated
+        # m <- meds_dis_list[[meds_dis_data_file]] %>%
+        #         pivot_longer(
+        #                 cols = c(ME_AI_WIR1, ME_AI_WIR2, ME_AI_WIR3, ME_AI_PRNA),
+        #                 names_to = "WIRX",
+        #                 values_to = "WIRKSTOFF"
+        #         ) %>%
+        #         mutate(WIRKSTOFF = word(str_replace(WIRKSTOFF, "[-,\\[\\(\\)]", " "))) %>%
+        #         mutate(WIRKSTOFF = str_to_lower(str_replace(WIRKSTOFF, "[®]", " "))) %>%
+        #         select(WIRKSTOFF) %>% 
+        #         drop_na(WIRKSTOFF) %>%
+        #         unique() %>% 
+        #         arrange(WIRKSTOFF)
+        # meds <- m$WIRKSTOFF[str_count(m$WIRKSTOFF) > 2]
+        
+        # if (export == TRUE) write.csv2(meds, "output/HEIREKA/HEIREKA_medication_list_unique_2021_04_21.csv")                
+        if (export == TRUE) write.csv2(m, "output/HEIREKA/HEIREKA_medication_list_unique_2023_04_18.csv")
+        return(m)
 }
 
+# function to read the csv files in the folder
+readMMIFiles <- function(path="input/Arzneimittelliste/mmi/MMI_RohdatenR3/mmiPharmindexR3_20210315MAIN/") {
+        
+        # list all the csv files in the folder
+        mmi_files <- list.files(path = path, full.names = TRUE, pattern = "\\.csv$", ignore.case = TRUE)
+        # read the csv files in the folder
+        csv_data <- lapply(mmi_files, function(csv_file) {
+                vroom::vroom(file.path(csv_file))
+        })
+        names(csv_data) <- tools::file_path_sans_ext(basename(mmi_files))
+        require(tidyverse)
+        csv_data$PRODUCT_SPLIT <- csv_data$PRODUCT %>% mutate(NAME_split = str_split(NAME, " ")) %>% unnest(NAME_split)
+        return(csv_data)
+}
 
 
 

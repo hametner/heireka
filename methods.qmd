@@ -1,0 +1,846 @@
+---
+editor: 
+  markdown: 
+    wrap: 72
+---
+
+{{< include setup.qmd >}}
+
+```{r LOAD-Admission-DF, include=FALSE}
+library(targets)
+library(rms)
+tar_load(df_adm_f)
+df <- df_adm_f
+
+        dd <- datadist(df)
+        options(datadist = 'dd')
+        options(contrasts=c("contr.treatment", "contr.treatment"))
+```
+
+# Methods
+
+## Methodological Excursus: A short introduction to Bayesian statistics
+
+### Definition of Bayesian statistics
+
+In 1763, Thomas Bayes wrote a paper called "An Essay towards solving a
+Problem in the Doctrine of Chances". At its core, it describes how
+*Bayesian theory* allows us to update prior knowledge as one gathers new
+data. Prior information is used in the form of distributions, so-called
+prior distributions, which may take different levels of information.
+[@vandeschoot2021]
+
+A probability distribution is defined as a mathematical function
+describing the likelihood of different outcomes or values.
+
+A prior distribution, or simply "Prior," represents the potential
+knowledge before observing the data and is included in the Bayesian
+models as a probability distribution (\@fig-priordemo).
+
+```{r fig-priordemo}
+#| label: fig-priordemo
+#| fig-cap: "Demonstration of different forms of priors"
+#| fig-width: 5
+#| fig-asp: 0.8
+#| out-width: "85%"
+#| fig-pos: H
+#| echo: false
+#| warning: false
+#| error: false
+        
+library(ggplot2)
+weak_params <- c(mean = 0, sd = 10)
+weakly_inform2 <- c(mean = 0, sd = 10)
+non_informative_params <- c(mean = 0, sd = 25)
+informative_params <- c(mean = 0, sd = 0.5)
+x_values <- seq(-10, 10, by = 0.1)
+
+# Create data frames for each prior
+non_informative_df <- data.frame(x = x_values, y = dnorm(x_values, non_informative_params["mean"], non_informative_params["sd"]), prior = "non-informative")
+weak_df <- data.frame(x = x_values, y = dnorm(x_values, weak_params["mean"], weak_params["sd"]), prior = "weakly informativ")
+informative_df <- data.frame(x = x_values, y = dnorm(x_values, informative_params["mean"], informative_params["sd"]), prior = "informative")
+all_df <- rbind(non_informative_df, weak_df, informative_df)
+
+# Plot
+ggplot(all_df, aes(x = x, y = y, color = prior)) +
+  geom_line() +
+  facet_wrap(~ prior) +
+  labs(title = "", x = "Parameter Value", y = "Density") + theme_minimal() +
+        theme(legend.position = "none") 
+  
+
+```
+
+The *likelihood function* is the probability of the observed data given
+a particular parameter value. It reflects which parameter values are the
+most consistent with the observed data.
+
+The *posterior distribution* -- or short *"posterior"* combines the
+prior distribution and the likelihood of the observed data. Using
+computational methods applying Bayes' Theorm (see below), a new
+probability distribution results. One can think of it as the updated
+knowledge after observing the data.
+
+*Bayes' Theorem* is the mathematical formula that describes the
+relationship between the prior, likelihood, and posterior: The bayesian
+theorem can be expressed as follows:
+
+$$
+P(A|B) = \frac{P(B|A) \cdot P(A)}{P(B)}
+$$
+
+Where: $P(A\|B)$ is the conditional probability of $A$ given $B$,\
+$P(B\|A)$ is the conditional probability of $B$ given $A$,\
+$P(A)$ is the probability of $A$ ("the prior"), and\
+$P(B)$ is the probability of $B$ ("the posterior").\
+
+$$
+P(\theta | \text{Data}) = \frac{P(\text{Data} | \theta) P(\theta)}{P(\text{Data})}
+$$
+
+where P(\theta \| \text{Data}) is the posterior, P(\text{Data} \|
+\theta) is the likelihood, P(\theta) is the prior, and P(\text{Data}) is
+the marginal likelihood (normalizing constant).
+
+The Markov Chain Monte Carlo (MCMC) methods are computational algorithms
+that simplify the calculations needed to draw samples from posterior
+distributions. In recent years, the most commonly used advanced MCMC
+algorithms were Hamiltonian Monte Carlo (HMC). HMC improves sampling
+efficiency by using information about the gradient of the probability
+distribution.
+
+A *simple example* shall add to the understanding of the given terms.
+Please consider a card game with a deck of 52 cards. Your game partner
+pulls one card and its your turn to guess which card. Each card (C) has
+equal probability $P(C_i) = \frac{1}{52} \approx 0.0192$ (prior
+distribution). Then you get a new information that the card is a heart.
+Non-hearts (Cnh) would have a likelihood of P(Hint\|Cnh) = 0, and all
+hearts would be P(Hint\|Ch) = 1.
+
+Using Bayes’ Theorem, the updated probability for each card:
+$P(C_i | \text{Clue}) = \frac{P(\text{Clue} | C_i) \cdot P(C_i)}{P(\text{Clue})}$
+
+For each card of hearts (Ch) the updated posterior probability would be:
+$P(C_h | \text{Clue}) = \frac{1 \times \frac{1}{52}}{\frac{13}{52}} = \frac{1}{13} \approx 0.0769.$
+
+Summarized shorty, the Bayes Theorem facilitates an integrative
+approach, combining a *prior distribution* with a *likelihood* that is
+derived from the new data; together they form the probability
+distribution (so-called *posterior distribution*). @mcelreath2020
+
+```{r fig-posteriordemo}
+#| label: fig-posteriordemo
+#| fig-cap: "Prior, Likelihood, and Posterior"
+#| fig-width: 5
+#| fig-asp: 0.8
+#| out-width: "85%"
+#| fig-pos: H
+#| echo: false
+#| warning: false
+#| error: false
+library(ggplot2)
+
+# Assuming a normal likelihood with known variance
+# Prior parameters
+prior_mean <- 0
+prior_sd <- 10
+
+# Likelihood parameters (assuming these are from observed data)
+likelihood_mean <- 5
+likelihood_sd <- 2
+
+# Posterior parameters (combining prior and likelihood)
+posterior_mean <- (prior_mean / prior_sd^2 + likelihood_mean / likelihood_sd^2) / (1 / prior_sd^2 + 1 / likelihood_sd^2)
+posterior_sd <- sqrt(1 / (1 / prior_sd^2 + 1 / likelihood_sd^2))
+
+# Generate data for plotting
+x <- seq(-20, 20, length.out = 1000)
+prior <- dnorm(x, prior_mean, prior_sd)
+likelihood <- dnorm(x, likelihood_mean, likelihood_sd)
+posterior <- dnorm(x, posterior_mean, posterior_sd)
+
+# Create a data frame for ggplot
+plot_data <- data.frame(x, prior, likelihood, posterior)
+
+# Create the plot
+ggplot(plot_data, aes(x)) +
+    geom_line(aes(y = prior, color = "Prior", linetype = "Prior")) +
+    geom_line(aes(y = likelihood, color = "Likelihood", linetype = "Likelihood")) +
+    geom_line(aes(y = posterior, color = "Posterior", linetype = "Posterior")) +
+    scale_color_manual(values = c("Prior" = "black", "Likelihood" = "darkblue", "Posterior" = "darkgreen")) +
+    scale_linetype_manual(values = c("Prior" = "dotdash", "Likelihood" = "dashed", "Posterior" = "solid")) +
+    labs(title = "",
+         x = "Parameter Value",
+         y = "Density") +
+    theme_minimal(base_size=10, ) +
+    theme(legend.position = "none", legend.title = element_blank()) +
+        annotate("text",
+                x = -10,
+                y = 0.05,
+                label = paste("Prior"),
+                color = "black",
+                size = 10 / .pt,
+                hjust = 1,
+                vjust = 1) +
+        geom_segment(
+                aes(
+                        x = -9.5,
+                        y = 0.046,
+                        xend = -6.1,
+                        yend = 0.037
+                ),
+                color = "lightgrey",
+                linetype = "solid",
+                linewidth = 0.1
+        ) +
+        annotate("text",
+                x = 10,
+                y = 0.15,
+                label = paste("Likelihood"),
+                color = "black",
+                size = 10 / .pt,
+                hjust = 0,
+                vjust = 1) +
+        annotate("text",
+                x = -8,
+                y = 0.15,
+                label = paste("Posterior"),
+                color = "black",
+                size = 10 / .pt,
+                hjust = 0,
+                vjust = 1)
+
+```
+
+This contrasts with more traditional forms of statistical inference,
+notably frequentist statistics, which do not directly incorporate prior
+beliefs. Another major advantage of bayesian statistics is the ability
+of directly interpreting the probability of an effect given the data. A
+quick overview of advantages and disadvantages of frequentist and
+bayesian statistics is presented (#tbl-freq-bayes, adapted from
+https://hbiostat.org/proj/covid19/statdesign#bftable \[DO CITATION\]).
+
+```{r tbl-freq-bayes}
+#| tbl-label: tbl-freq-bayes
+#| tbl-caption: "A limited overview on viewpoints of Frequentist and Bayesian statistical approaches."
+#| tbl-colwidths: "auto"
+#| echo: false
+library(knitr)
+library(kableExtra)
+
+# Create the data frame for the table
+data <- data.frame(
+  Viewpoints = c("Probabilities computed", "Formal aim", "Method of inference", 
+                 "Viewpoint of evidence", "Analogy of disease diagnosis", 
+                 "Calculations", "Adaptive flexibility"),
+  Frequentist = c("Probabilities about data", "Draw conclusions", 
+                  "Indirect: assuming no effect, attempting proof by contradiction", 
+                  "Evidence against an assertion", 
+                  "1 - specificity = P(test positive | disease absent)", 
+                  "Simplified by assuming H_0 when design is simple", 
+                  "Low; design adaptations affect α"),
+  Bayesian = c("Probabilities about the effects that generated the data", 
+               "Make decisions", 
+               "Direct: using prior data, computing probability of effect given the data", 
+               "Evidence in favor of an assertion", 
+               "P(disease present | test result)", 
+               "Computationally demanding/complex", 
+               "High")
+)
+
+# Generate the LaTeX table with kableExtra
+
+kable(data, format = "latex", booktabs = TRUE, escape=TRUE) %>%
+  kable_styling(font_size=8, full_width = FALSE, position = "center") %>%
+  row_spec(0, bold = TRUE) %>% 
+        column_spec(1, "1.5in") %>%
+        column_spec(2, "1.5in") %>%
+        column_spec(3, "1.5in")
+
+
+```
+
+### Definition of Bayesian Model Indices \[SHORTEN\]
+
+$N_{\text{eff}}$ $N$ represents the full amount of data available for
+analysis. However, in Bayesian models not all data points contribute
+equally to the inference process as the quality of the sample varies
+depending on factors like correlation among data points.
+$N_{\text{eff}}$ measures the number of independent and informative data
+points that contribute for making accurate estimates. For example, a
+high $N_{\text{eff}}$ relative to $N$ indicates that the data is used
+efficiently, with minimal redundancy or bias, resulting in more reliable
+and precise estimates.
+
+Indices in Bayesian statistics may be classified into three interrelated
+categories: i) Bayes factors, ii) *posterior* indices, and iii) *Region
+of Practical Equivalence (ROPE)*-based indices. Bayes factors have their
+strength in the comparison of models. Indices that analyse posterior
+distributions include the proportion of strictly positive values
+(*probability (P*) of direction or $P(\beta>O)$. They also enable the
+derivation of valid statements that express the likelihood of an effect
+falling within a specified range, akin to the deceptive inferences
+associated with frequentist confidence intervals. More recently,
+ROPE-based indices emerged as a means to redefine what would be the null
+hypothesis in frequentist analysis. Rather than adhering to the
+traditional point-null hypothesis, researchers now consider a range of
+values that are deemed inconsequential or lacking practical
+significance. Typically, the ROPE is symmetrically distributed around 0,
+with values such as \[-0.1; 0.1\] commonly employed. The underlying
+premise of this index postulates that an effect rarely attains an
+absolute zero. [@Makowski2019] However, since ROPE-based indices are
+rather new and not standardly implemented in bayesian statistical
+software, and, the intervals determining the region of practical
+equivalence are not yet universally agreed upon, this work will
+primarily consider the probability of direction and the Bayes factor.
+
+## Practical considerations of Bayesian Results Interpretation
+
+This paragraph is to inform the interested reader in pitfalls of
+interpretation of Bayesian results, especially having previously worked
+with frequentist statistics. Comparing most distributions or analysing
+association in regression models a probability value is calculated. Of
+note, the $P(\beta>0)$ is not the same as the probability of the null
+hypothesis being true. The former is the probability of the effect being
+positive, given the data and the prior, resulting in e.g. a probability
+of 0.985, which means that the effect is positive in 98.5% of the cases.
+If the probability was 0.015 it would mean that also a meaningful
+association is present and that the effect is positive in 1.5% of the
+cases, that is the effect is negative in 98.5% of the cases. For a more
+detailed information including examples the reader is advised to
+@mcelreath2020.
+
+## Patients and patient selection
+
+The study cohort was based on the consecutive *Heidelberg Rekanalisation
+(HeiReKa)* registry and --- for this work --- consits of n=`r nrow(df)`
+cases. It covers a time span of
+`r max(df$date_therapy_year)-min(df$date_therapy_year)` years, where the
+overall distribution between females (n=`r table(df$sex)["female"]`,
+`r round(table(df$sex)["female"]/nrow(df)*100, 1)`%) and males
+(n=`r table(df$sex)["male"]`,
+`r round(table(df$sex)["male"]/nrow(df)*100, 1)`%) is nearly fully
+balanced. Within the registry various locations of stroke occurrence are
+collected (`r paste0(levels(df$side_stroke), collapse=", ")`). It is
+important to note that the inclusion of the latter two locations in the
+following analysis would introduce potential bias. Therefore, they are
+discarded. The same applies for cases where intravenous thrombolysis was
+not administered in the standard regimen (as described in the methods
+section @sec-rtpa), but rather as individual rescue therapy for patients
+in whom free floating thrombus was detected during the hospital stay.
+For interest in those patients the reader is kindly advised to visit
+[@Hametner2014]. The dataset also includes patients
+(n=`r sum(df$therapy == "IVT0.6", na.rm = TRUE)`), who were treated with
+a reduced dose of 0.6 mg per kilogram body weight. For the analysis,
+those patients and patients who received 0.9 mg per kilogram body weight
+were condensed into one category.
+
+## Statistical software
+
+This work uses principles of literate programming [@knuth84]. It aims at
+reproduceability. All input data were being left unchanged. Instead they
+are imported and processed by R code to fit the need for desired
+modifications and analysis. The R software with a graphical user
+interface of RStudio (Posit Software, PBC, 2024) was used to write and
+execute code. Version details and attached packages are as follows:
+
+<!-- `r sessionInfo()` -->
+
+### Selected Custom Functions in R
+
+As the whole code would be too overwhelming to present, selected R-code
+shall demonstrates the relevant methodology applied. A *GitHub
+repository* shows the full code. Although many variable are already
+present in the HEIREKA database in highest quality, some were
+re-evaluated by leveraging different data sources and others newly
+created. The following functions are examples how data were extracted
+and processed:
+
+#### Function 'smoking'
+
+One example would be whether the patients has been smoking recently or
+not. The function getPrevSmoke executes a multi-stage process that
+involves extracting smoking-related data from diverse sources and
+subsequently integrating them:
+
+During the initial phase, the 'extractFromDia' function is employed to
+retrieve data on smoking, with a particular focus on the variable "F17".
+During the second stage, data is extracted from case records from
+admission ('*df_neur_aufnb*') including variables of actively smoking
+('*dx_rf_smoke_active*') and - if present - information on pack years
+('*dx_rf_smoke_py*'). The third stage utilises a set of predetermined
+regular expressions (py_str, prev_smoke_str, active_smoke_str) to
+extract targeted data across four distinct medical record data sources
+(*'df_neur_aufnb'*, *'df_neur_stwbr'*, *'df_neur_int',*
+*'df_neur_stabr'*). For example prev_smoke_str
+
+```{r echo=FALSE, comment=NA, eval=TRUE, tidy=FALSE}
+pattern <- paste0(
+  "(?:[E|e]hemal(iger)?|[V|v]ormals?.|[A|a]bstinen.?).{1,20}\n",
+  "([R|r]aucher|[N|n]ikotin)|(?:Z\\.?n\\.?)\\s([R|r]aucher|[N|n]ikotin)"
+)
+cat(pattern)
+```
+
+facilitates 'regular expression' extracting the desired information
+using several terms and combinations (including some degree of typing
+error). This way information on 'being an active smoker', 'pack years',
+and having 'previously smoked' are gathered. During the fourth stage,
+information extracted from 'df_hei' is carefully chosen, manipulated,
+and saved into df4, while preserving the '*case_id*' and
+'dx_rf_smoke_active' variables. The four dataframes are merged using
+'case_id' as the primary identifier and coalesce and maximum value
+extraction as data transformation techniques. This results in one
+validated variable 'dx_rf_smoke_active' and two new variables
+('dx_rf_smoke_prev', 'dx_rf_smoke_py').
+
+#### Function 'getHandedness'
+
+Using the 'getHandedness' function, new variables are derived,
+particularly for identifying left-handedness, right-handedness, and
+ambidextrousness. Handedness information is extracted from different
+sources of medical documents - "aufnb", "stwbr", "int", and "stabr" -
+using the function 'extractHandednessFromLetters'. A join operation and
+post-join transformation using 'case_id' as key brings together all
+extracted information. The final 'var_handed' variable is converted into
+a factor.
+
+#### Function 'extractLab'
+
+The extractLab function is intended to extract particular pieces of
+information from laboratory results (labs) associated with specific
+cases (case_id) and takes multiple parameters. It uses data filtering
+and processing techniques for a desired variable selection (e.g.
+'Natrium'), carefully considering the elimination of redundant entries
+and noting the exact date and time of laboratory examinations. Using the
+data frame of hospital admission information ('kenn'), labs are
+processed based on case_id selection noting the duration between the
+hospital admission and laboratory test ('timeDiff'). Data cleaning
+involves the removal of specific characters from laboratory results and
+parsing of numerical values. Observations with missing values in the
+variable ('Wert') are discarded. If desired - especially in case several
+lab values are available during the hospital stay - the function
+determines the quantity of laboratory values per case ('n'), median,
+minimum, maximum, 25th percentile (q25), and 75th percentile (q75). Some
+analysis of lab values (e.g. glucose at hospital admission) may demand
+time range filtering, which is realised by implementing 'timeCutStart'
+and 'timeCutEnd'. Also, the entry with the shortest time difference
+between hospital admission and lab test can be obtained for each case ID
+('slicing').
+
+#### Function 'getMedsPrior'
+
+The getMedsPrior function extracts medication data from several sources
+with a specific priority order: STWBR \> AUFNB \> NOT. It processes
+multiple data frames containing medication information, consolidates
+them, cleans the data, de-identifies it, and then categorizes the
+medications using an automated system. The latter uses the custom
+extractMedsWithGPT_v2 function, which utilizes the advanced programming
+interface from OpenAI for extracting the medication names. The model
+used most recently was GPT-4 - last accessed in February 2024. The
+prompt for the language model was "#CONTEXT# I want to extract
+information from medical records concerning medications taken by the
+patients. #OBJECTIVE# Extract all medications, classify each according
+to the ATC classification system in „SUBSTANCES (=ATC level 5)“,
+„SUBGROUPS (=ATC level 4)“, and „CLASSES (ATC level 2)“. Ensure
+precision by omitting any irrelevant text or unnecessary line breaks.
+The extracted data should strictly pertain to medications. In case of a
+medications that contain two or more SUBSTANCES, please make two or more
+TARGETS, respectively. #FORMAT of RESPONSE# Respond with identified
+TARGET, ATC code, SUBSTANCES, SUBGROUPS, CLASSES, PRESCRIBED. Use
+information such as '(Pause)' or 'pausiert' or similar to indicate
+PRESCRIBED=0. Follow the following format: E.g. 'Marcumar' would be a
+found TARGET. The RESPONSE would be: '''Marcumar; B01AA04;
+Phenprocoumon; Vitamin K antagonists; Antithrombotic agents; 0'''.
+Please skip commenting, and only return desired information. If there
+are hints for no prior medication' such as 'keine' or 'Vormedikation:
+keine' or similar, please indicate so - '''no prior medication; no prior
+medication; no prior medication; no prior medication; no prior
+medication; 0'''. Separate each response using ';;;' without introducing
+whitespace. In case of NA - leave 'NA'. Remember that each response
+contains six items. When a substance was found reliably, there can be no
+'no prior medication'. When you cannot identify a substance for a
+TARGET, use a web search to identify the SUBSTANCE (e.g. 'Substance of
+\[TARGET\]' - e.g. 'Substance of Godamed' and go from there. When you
+cannot find a TARGET stick to 'NA'. When the text apears to be
+recommendation from discharge rather admission medication stick to 'NA'.
+#INPUT# (desired text was appended here).
+
+Importantly, *only preprocessed anonymized text snippets were being
+processed*, text prompts were continuously improved and results manually
+checked in a forward loop fashion until the desired quality was reached.
+This ensured a highest accuracy for the language model available at the
+time by providing a particular task. The function ultimately returns a
+list of three data frames: CLASS, GROUP, and SUBSTANCE, each
+representing different levels of medication classification.
+
+#### Function 'getDelir'
+
+The 'getDelir' function generates a new variable, “Delir,” from various
+medical data sources, including diagnoses, medical notes, laboratory
+results, and other risk factors. This function processes data from these
+sources, merges them by case identifier (case_id), and creates a
+comprehensive data frame that summarizes delirium-related information
+for each case. The function categorizes delirium into specific subtypes
+based on the extracted information. These subtypes are as follows:
+
+1.  Multifactorial Delirium is identified using the keyword “gemischt”
+    (German for “mixed”) or when multiple specific subtypes of delirium
+    are present, marked by the variable outcome_delir_multi.
+2.  Alcohol-related Delirium is detected through patterns related to
+    alcohol, such as variations of “Alkohol” (alcohol), “C2”, “Entzugs”
+    (withdrawal), “Alkoholdelir” (alcohol delirium), “Entzugsdelir”
+    (withdrawal delirium), and “Entzugssyndrom” (withdrawal syndrome).
+    Cases identified with these patterns are marked by
+    outcome_delir_alc.
+3.  Dementia-related Delirium is recognized by searching for terms
+    indicating dementia in conjunction with delirium, using patterns
+    like “Delir” (delirium) within 30 characters of “Demenz” (dementia)
+    or where “Demenz” appears within 50 characters of “Delir”. These
+    cases are marked by outcome_delir_dem.
+4.  Postoperative Delirium is identified by terms related to
+    postoperative conditions, such as variations of “postop” or
+    “Postop”, and is marked by outcome_delir_postop.
+5.  Seizure-related Delirium is detected through terms related to
+    seizures or epilepsy, such as “Dämmer” (twilight state) and
+    “epilept” (epileptic). Cases with these patterns are marked by
+    outcome_delir_seiz.
+6.  Infection-related Delirium is recognized by terms related to
+    infections or inflammatory conditions, using patterns like “Delir”
+    within 30 characters of terms like “Infekt” (infection), “Fieber”
+    (fever), “Pneumonie” (pneumonia), and “Entzündung” (inflammation),
+    or where these terms appear within 50 characters of “Delir”. These
+    cases are marked by outcome_delir_inf.
+7.  Unspecified Delirium serves as a general classification when
+    delirium is identified but does not fit into the other specific
+    subtypes, marked by outcome_delir.
+8.  No Delirium is assigned when none of the indicators for delirium are
+    present, marking the case as having no delirium.
+
+## Data Sources, Variables and Selection
+
+### Description of data sources
+
+'LysePat.accdb' is a database, which was set up in 1998 by Prof. Dr.
+med. P.-A. Ringleb, who meticuously curates the data improving its data
+quality ever since. It served as one of the main sources of information
+for this work. Other databases that found integration included those for
+heart and carotid ultrasound. Labaratory values and hospital diagnosis
+and medical records were extracted from hospital information system. As
+a consequence variables were updated, some validated by synchronization
+with different sources, and newly created (@tbl-variables).
+
+```{r tbl-variables}
+#| label: tbl-variables
+#| tbl-cap: Selected variables and description of repsective data sources 
+#| tbl-colwidths: "auto"
+#| results: hold
+#| echo: false
+#| tbl-pos: H
+# Create a tibble in R
+library(tibble)
+library(knitr)
+library(kableExtra)
+
+
+# Create the tibble
+data_tibble <- tibble(
+  Category = c("Characteristics", "Characteristics", "Characteristics", "Characteristics", "Characteristics", 
+               "Characteristics", "Characteristics", "Characteristics", "Characteristics", "Characteristics", 
+               "Characteristics", "Characteristics", "Etiology", "Etiology", "Etiology", "Outcome", "Outcome", 
+               "Outcome", "Outcome", "Outcome", "Outcome", "Outcome", "Outcome", "Outcome", "Outcome", "Outcome", "Outcome"),
+  Variable_Name = c("pRS", "var_handedness", "var_aphasia", "var_neglect", "var_prev_stroke", 
+                    "var_prev_mi", "var_prev_thyr", "var_prev_alc", "dx_prev_dementia", "dx_prev_copd", 
+                    "var_stroke_care", "dx_rf_smoke", "etio_pfo", "etio_endocarditis", "etio_cs", 
+                    "outcome_delir", "outcome_mi", "outcome_nihss_discharge", "outcome_lengthHospStay", 
+                    "outcome_ventilationDays", "outcome_pneumonia", "outcome_uti", "outcome_sepsis", 
+                    "df_barthel_index", "outcome_palliativeCare", "outcome_tvt", "outcome_lae"),
+  Description = c("Premorbid Rankin Scale scores", "Handedness information", "Aphasia status", "Neglect status", 
+                  "Previous stroke history", "Previous myocardial infarction history", "Previous thyroid disease history", 
+                  "Previous alcohol abuse history", "Previous dementia diagnosis", "Previous COPD diagnosis", 
+                  "Stroke care received", "Smoking status", "Patent Foramen Ovale presence", "Endocarditis presence", 
+                  "Carotid stenosis presence", "Delirium occurrence", "Myocardial infarction occurrence", 
+                  "NIHSS score at discharge", "Length of hospital stay", "Number of days ventilated", 
+                  "Pneumonia occurrence", "Urinary tract infection occurrence", "Sepsis occurrence", 
+                  "Barthel Index score at hospital discharge", "Palliative care received", 
+                  "Thromboembolic events occurrence", "Pulmonary lung embolism occurrence"),
+  Number_of_Sources = c(2, 4, 5, 4, 5, 4, 5, 4, 4, 4, 4, 4, 1, 1, 1, 5, 1, 4, 1, 1, 4, 4, 4, 1, 1, 1, 1),
+  Sources = c("df_hei, qs", "df_neur_aufnb, df_neur_stwbr, df_neur_int, df_neur_stabr", 
+              "df_hei, qs, dia, df_neur_stwbr, df_neur_int, df_neur_stabr", "dia, df_neur_aufnb, df_neur_stwbr, df_neur_int, df_neur_stabr", 
+              "qs, df_neur_aufnb, df_neur_stwbr, df_neur_int, df_neur_stabr, df_hei", "dia, df_neur_aufnb, df_neur_stwbr, df_neur_int, df_neur_stabr", 
+              "dia, df_neur_aufnb, df_neur_stwbr, df_neur_int, df_neur_stabr, lab_thyr", 
+              "dia, df_neur_aufnb, df_neur_stwbr, df_neur_int, df_neur_stabr", "dia, df_neur_aufnb, df_neur_stwbr, df_neur_int, df_neur_stabr", 
+              "dia, df_neur_aufnb, df_neur_stwbr, df_neur_int, df_neur_stabr", "ops, fakar, df_neur_stwbr, df_neur_int, df_neur_stabr", 
+              "df_hei, dia, df_neur_aufnb, df_neur_stwbr, df_neur_int, df_neur_stabr", "dia", "dia", "dia", 
+              "dia, df_neur_stwbr, df_neur_int, df_neur_stabr", "dia", "df_neur_stwbr, df_neur_int, df_neur_stabr, df_hei", 
+              "", "", "qs, dia, df_neur_stwbr, df_neur_int, df_neur_stabr", "dia, df_neur_stwbr, df_neur_int, df_neur_stabr, lab_ustix", 
+              "dia, df_neur_stwbr, df_neur_int, df_neur_stabr", "qs", "qs", "dia", "dia")
+)
+
+# Print the tibble
+kable(data_tibble, format = "latex", booktabs = TRUE) %>%
+    kable_styling(full_width = FALSE, position = "center", latex_options = "hold_position") %>%
+    row_spec(0, bold = TRUE) %>% 
+        column_spec(1, "1in") %>% 
+        column_spec(2, "1in") %>%
+        column_spec(3, "1in") %>%
+        column_spec(4, "0.6in") %>%
+        column_spec(5, "1in")
+
+```
+
+### Clinimetric intstruments
+
+#### National Institutes of Health Stroke Scale (NIHSS)
+
+The NIHSS is a widely accepted tool for assessing stroke severity in
+acute ischemic stroke. Its aim is to provide a quantitative measure of
+the neurological impairment, which is easily comminicable. The scale
+consists of 11 items investigating aspects of Level of consciousness,
+gaze, visual fields, facial weakness, motor performance, sensory
+deficits, coordination, language, speech, and inattention (neglect). The
+score ranges from 0 to 42, with higher scores indicating more severe
+stroke symptoms. The individual items and their scoring criteria are
+presented in Table 1.
+
+Origin The NIHSS was developed by Brott and colleagues at the University
+of Cincinnati (Ohio) and first publicly described in 1989. It was a
+composition of items of the Toronto Stroke Scale, the Oxbury Initial
+Severity Scale and the Cincinnati Stroke Scale, the Edinburgh-2 Coma
+scale. Interstingly, item like pupillary response and plantar response
+were intially included, but removed later.
+
+Limitations of the score are as follows. The scale has varying
+inter-rater reliability: depending on individual items. For exampel,
+assessments of limb ataxia and facial weakness show lower agreement
+compared to other items, with only moderate or fair consistency, though
+it performs comparably to other scales overall. The NIHSS favors left
+hemispheric strokes, as it includes seven points related to language
+function but only two points for neglect. This results in larger lesion
+volumes for right hemisphere strokes receiving the same NIHSS score as
+left hemisphere strokes. The scale does not include the whole spectrum
+assessment of cranial nerves. Therefore, this may lead to an
+underestimation of stroke severity in vertebrobasilar strokes. The NIHSS
+provides ordinal-level data rather than interval-level data, which means
+that adding up individual rankings to get a total score might be
+misleading. The scale is more useful for tracking changes in a patient's
+neurological status over time rather than relying solely on the total
+score for clinical decision-making. [@brott1989]
+
+Table 1: The National Institutes of Health Stroke Scale
+
+```{r tbl-nihss}
+#| label: tbl-nihss
+#| tbl-cap: National Institutes Of Health Stroke Scale Score
+#| tbl-colwidths: "auto"
+#| results: hold
+#| echo: false
+#| tbl-pos: H
+
+library(kableExtra)
+stroke_scale <- data.frame(
+        Test = c(
+                "1a. Level of Consciousness (LOC)",
+                "1b. LOC Questions",
+                "1c. LOC Commands",
+                "2. Best Gaze",
+                "3. Visual",
+                "4. Facial Palsy",
+                "5a. Left Arm Motor",
+                "5b. Right Arm Motor",
+                "6a. Left Leg Motor",
+                "6b. Right Leg Motor",
+                "7. Limb Ataxia",
+                "8. Sensory",
+                "9. Best Language",
+                "10. Dysarthria",
+                "11. Extinction and Inattention"
+        ), Scale = c(
+                "0 = Alert; keenly responsive.\\n1 = Not alert; arousable by minor stimulation.\n2 = Not alert; requires strong or painful stimulation.\n3 = Totally unresponsive.",
+                "0 = Answers both questions correctly.\n1 = Answers one question correctly.\n2 = Answers neither question correctly.",
+                "0 = Performs both tasks correctly.\n1 = Performs one task correctly.\n2 = Performs neither task correctly.",
+                "0 = Normal.\n1 = Partial gaze palsy.\n2 = Forced deviation or total gaze paresis.",
+                "0 = No visual loss.\n1 = Partial hemianopia.\n2 = Complete hemianopia.\n3 = Bilateral hemianopia (cortical blindness).",
+                "0 = Normal symmetrical movements.\n1 = Minor paralysis.\n2 = Partial paralysis.\n3 = Complete paralysis.",
+                "0 = No drift.\n1 = Drift, limb holds position but drifts down.\n2 = Some effort against gravity.\n3 = No effort against gravity.\n4 = No movement.",
+                "0 = No drift.\n1 = Drift, limb holds position but drifts down.\n2 = Some effort against gravity.\n3 = No effort against gravity.\n4 = No movement.",
+                "0 = No drift.\n1 = Drift, leg falls by end of period.\n2 = Some effort against gravity.\n3 = No effort against gravity.\n4 = No movement.",
+                "0 = No drift.\n1 = Drift, leg falls by end of period.\n2 = Some effort against gravity.\n3 = No effort against gravity.\n4 = No movement.",
+                "0 = Absent.\n1 = Present in one limb.\n2 = Present in two limbs.",
+                "0 = Normal.\n1 = Mild to moderate sensory loss.\n2 = Severe to total sensory loss.",
+                "0 = No aphasia.\n1 = Mild to moderate aphasia.\n2 = Severe aphasia.\n3 = Mute/global aphasia.",
+                "0 = Normal.\n1 = Mild to moderate dysarthria.\n2 = Severe dysarthria.",
+                "0 = No abnormality.\n1 = Inattention or extinction in one modality.\n2 = Profound inattention or extinction in multiple modalities."
+        )
+)
+
+kable(stroke_scale, format = "latex", booktabs = TRUE, escape=TRUE) %>%
+  kable_styling(font_size=8, full_width = FALSE, position = "center") %>%
+  row_spec(0, bold = TRUE) %>% 
+        column_spec(1, "1in") %>% 
+        column_spec(2, "3.2in") 
+```
+
+#### Barthel Index
+
+The Barthel Index is a means for measuring a patient's ability to
+perform activities of daily living (ADL). Developed in 1965, it assesses
+ten items related to mobility and self-care, measuring the overall
+objective being independent. The score ranges from 0 to 100, with higher
+scores indicating more independence. Scoring of each task considers the
+amount of assistance required. [@mahoney1965]
+
+```{r tbl-Barthel}
+#| label: tbl-Barthel
+#| tbl-cap: The Barthel Index
+#| tbl-colwidths: "auto"
+#| results: hold
+#| echo: false
+#| tbl-pos: H
+
+barthel_index <- data.frame(
+  Item = c("Feeding", "Bathing", "Grooming", "Dressing", 
+           "Bowel Control", "Bladder Control", "Toileting", 
+           "Transfers (bed to chair)", "Mobility (on level surfaces)", 
+           "Stairs"),
+  Description = c("Ability to eat independently", 
+                  "Ability to bathe or shower independently", 
+                  "Ability to perform personal grooming", 
+                  "Ability to dress and undress", 
+                  "Ability to control bowels", 
+                  "Ability to control bladder function", 
+                  "Ability to use the toilet independently", 
+                  "Ability to transfer from bed to chair", 
+                  "Ability to walk or propel wheelchair on flat surfaces", 
+                  "Ability to ascend and descend a flight of stairs"),
+  Scores = c("0 = Unable; 5 = Needs help; 10 = Independent", 
+             "0 = Dependent; 5 = Independent", 
+             "0 = Dependent; 5 = Independent", 
+             "0 = Unable; 5 = Needs help; 10 = Independent", 
+             "0 = Incontinent; 5 = Occasional accidents; 10 = Continent", 
+             "0 = Incontinent; 5 = Occasional accidents; 10 = Continent", 
+             "0 = Dependent; 5 = Needs help; 10 = Independent", 
+             "0 = Unable, no sitting balance; 5 = Major help; 10 = Minor help; 15 = Independent", 
+             "0 = Immobile; 5 = Wheelchair independent; 10 = Walks with help; 15 = Independent", 
+             "0 = Unable; 5 = Needs help; 10 = Independent")
+)
+
+# Display the table using knitr
+
+kable(barthel_index, format = "latex", booktabs = TRUE, escape=TRUE) %>%
+  kable_styling(font_size=8, full_width = FALSE, position = "center") %>%
+  row_spec(0, bold = TRUE) %>% 
+        column_spec(1, "1in") %>% 
+        column_spec(2, "1.5in") %>% 
+        column_spec(3, "1.5in") 
+```
+
+#### Modified Rankin Scale (mRS)
+
+The Modified Rankin Scale (mRS) is a pivotal tool in neurology and
+stroke research, offering a standardized measure of the degree of
+disability or dependence on activities of daily living in stroke
+patients. Developed initially by Dr John Rankin in 1957 [@rankin1957]
+and later modified [@sulter1999] for enhanced reliability and
+applicability, the mRS is widely recognized for its simplicity and
+effectiveness in clinical settings and research. It is a 7-point score
+(ranging from 0 to 6), with each level corresponding to specific
+criteria outlined in @tbl-mRS.
+
+```{r tbl-mRS}
+#| label: tbl-mRS
+#| tbl-cap: Modified Rankin Scale (mRS) 
+#| tbl-colwidths: "auto"
+#| results: hold
+#| echo: false
+#| tbl-pos: H
+tbl_mrs <- data.frame(
+  Score = c(0, 1, 2, 3, 4, 5, 6),
+  Description = c("No symptoms", 
+                  "No significant disability", 
+                  "Slight disability", 
+                  "Moderate disability", 
+                  "Moderately severe disability", 
+                  "Severe disability", 
+                  "Death"),
+  Explanation = c("The individual has no symptoms and is fully functional.",
+                  "The individual is able to carry out all usual activities, despite some symptoms.",
+                  "The individual is able to look after their own affairs without assistance but is unable to carry out all previous activities.",
+                  "The individual requires some help but is able to walk unassisted.",
+                  "The individual is unable to attend to their own bodily needs without assistance and is unable to walk unassisted.",
+                  "The individual is bedridden, incontinent, and requires constant nursing care and attention.",
+                  "The individual has died.")
+)
+
+kable(tbl_mrs, format = "latex", booktabs = TRUE, escape=TRUE) %>%
+  kable_styling(font_size=8, full_width = FALSE, position = "center") %>%
+  row_spec(0, bold = TRUE) %>% 
+        column_spec(1, "0.5in") %>% 
+        column_spec(2, "1in") %>% 
+        column_spec(3, "1.5in") 
+```
+
+Inter-rater reliability and validity of mRS are robust, underscoring its
+critical role as outcome parameters in clinical trials and routine
+patient assessments. Further advantages include its simplicity and ease
+of use, which are widely accepted and do not require extensive training.
+Disadvantages comprise some degree of subjectivity in interpreting
+different levels, decreased sensitivity in rehabilitation trials
+[@mcgill2022], and it focuses on physical disability. The latter aspect
+is essential as neurophysiological and cognitive impairments might
+impact an individual's daily life even more.
+
+#### Stroke Etiology
+
+Stroke Etiology within this database is following the principles of the
+Trial of ORG 10172 in Acute Stroke Treatment, short: TOAST), which
+classifies five subtypes namely large artery atherosclerosis,
+cardioembolism, small artery occlusion, stroke of other determined
+cause, and stroke of undetermined cause. [@adams1993]
+
+To SORT
+
+## Methods (add to methods)
+
+Indices in Bayesian statistics may be classified into three interrelated
+categories: i) Bayes factors, ii) *posterior* indices, and iii) *Region
+of Practical Equivalence (ROPE)*-based indices. Bayes factors have their
+strength in the comparison of models. Indices that analyse posterior
+distributions include the proportion of strictly positive values
+(*probability (P*) of direction or $P(\beta>O)$. They also enable the
+derivation of valid statements that express the likelihood of an effect
+falling within a specified range, akin to the deceptive inferences
+associated with frequentist confidence intervals. More recently,
+ROPE-based indices emerged as a means to redefine what would be the null
+hypothesis in frequentist analysis. Rather than adhering to the
+traditional point-null hypothesis, researchers now consider a range of
+values that are deemed inconsequential or lacking practical
+significance. Typically, the ROPE is symmetrically distributed around 0,
+with values such as \[-0.1; 0.1\] commonly employed. The underlying
+premise of this index postulates that an effect rarely attains an
+absolute zero. [@Makowski2019]\
+
+## Patient Selection (put later in Methods)
+
+The study cohort was based on the consecutive *Heidelberg Rekanalisation
+(HeiReKa)* registry and --- for this work --- consits of n=`r nrow(df)`
+cases. It covers a time span of
+`r max(df$date_therapy_year)-min(df$date_therapy_year)` years, where the
+overall distribution between females (n=`r table(df$sex)["female"]`,
+`r round(table(df$sex)["female"]/nrow(df)*100, 1)`%) and males
+(n=`r table(df$sex)["male"]`,
+`r round(table(df$sex)["male"]/nrow(df)*100, 1)`%) is nearly fully
+balanced. Within the registry various locations of stroke occurrence are
+collected (`r paste0(levels(df$side_stroke), collapse=", ")`). It is
+important to note that the inclusion of the latter two locations in the
+following analysis would introduce potential bias. Therefore, they are
+discarded. The same applies for cases where intravenous thrombolysis was
+not administered in the standard regimen (as described in the methods
+section, but rather as individual rescue therapy for patients in whom
+free floating thrombus was detected during the hospital stay. For
+interest in those patients the reader is kindly advised to visit
+[@Hametner2014]. The dataset also includes patients
+(n=`r sum(df$therapy == "IVT0.6", na.rm = TRUE)`), who were treated with
+a reduced dose of 0.6 mg per kilogram body weight. For the analysis,
+those patients and patients who received 0.9 mg per kilogram body weight
+were condensed into one category.
