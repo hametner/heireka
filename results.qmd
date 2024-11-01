@@ -15,5 +15,6 @@
 {{< include Results_Copd.qmd >}}
 {{< include Results_smoking.qmd >}}
 {{< include Result_meds.qmd >}}
+{{< include Results_meds_subst.qmd >}}
 {{< include Results_Delir2.qmd >}}
 {{< include Results_Outcome.qmd >}}

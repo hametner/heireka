@@ -1,0 +1,278 @@
+```{r LOAD-Admission-DF, include=FALSE}
+tar_load(df_adm_f)
+df <- df_adm_f
+df$outcome_delir_cat <- relevel(as.factor(df$outcome_delir_cat), ref="no delirium")
+library(rms)
+        dd <- datadist(df)
+        options(datadist = 'dd')
+        options(contrasts=c("contr.treatment", "contr.treatment"))
+```
+
+## New Onset Delirium
+
+A delirium of any cause occurred in 6.3% (n=364) of patients with a preponderance of males (7.3% vs. 4.8% in females, probablility of difference \>0.999). Categorisation of the delirium cases showed that in most cases the cause of the delirium could not be determined for sure (4.6%, n=268). Aside from this unspecified delirium group, alcohol related delirium was the most common specific cause, showing a sex difference with higher numbers in males (0.8% versus 0.1% in females, @tbl-delirium-sex). The remaining specific causes of delirium were rare. [^results_delir-1]
+
+[^results_delir-1]: *Comment:* Because of these low numbers in several categories further analysis was done using a binary variable of having developed a delirium or not.
+
+```{r delirium-sex}
+#| label: tbl-delirium-sex
+#| tbl-cap: Descriptive analysis of occurrence of delirium analysed by biological sex 
+#| tbl-colwidths: "auto"
+#| tbl-pos: H
+#| results: hold
+#| echo: false
+library(tidyverse)
+# tar_load(df)
+sel <- c("outcome_delir_cat","sex")
+var <- setdiff(sel, "sex")
+# file storage
+file <- "output/models/tbl-delirium-sex.rds"
+# Run Bayesian Univariate calculations
+if (file.exists(file)) {
+        models <- readRDS(file)
+} else {
+        models <- run_models(df, var)
+        saveRDS(models,
+                file,
+                compress = "xz")
+}
+
+#extract bayesian stats 
+stat <- extract_bayes_stat(models, var)
+
+if (knitr::is_latex_output()) {
+        
+        plot_tbl(
+                data = df,
+                selected_columns = sel,
+                by = "sex",
+                stat_descr_loc = "bottom",
+                pkg = "kableExtra",
+                kable_option = "latex",
+                pvalue = FALSE,
+                bayes = TRUE,
+                missing="ifany",
+                stat # adding 'stat# to add bayesian stats
+        ) %>% 
+                kable_styling(latex_options = c("scale_down"))  
+                # column_spec(1, width = "4.5cm") %>%
+                # column_spec(3, width = "2.5cm") %>%
+                # column_spec(4, width = "2.5cm") %>%
+                # column_spec(5, width = "2.5cm") %>%
+                # column_spec(6, width = "2cm")
+        
+} else {
+        
+plot_tbl(data = df, selected_columns = sel, by="sex", stat_descr_loc = "bottom", pkg = "kableExtra", kable_option = "html", pvalue=FALSE, bayes = TRUE, missing="ifany", stat) %>% kable_classic(full_width = TRUE)
+        
+}
+
+```
+
+### Relationship of Age and Sex on Delirium
+
+```{r load-delirium-age, include=FALSE}
+tar_load(res_del_age)
+```
+
+Non-linear consideration of age showed a meaningful association with the occurrence of delirium, with a higher probability of delirium in older patients. After adjusting for age, sex remained an independent predictor, with a higher likelihood of developing delirium for males (`r getMedCI(getRsmb(res_del_age$model), var="sex=male")`, @tbl-delir-age). Interaction of age by sex showed some variability with a pronouciation between the age of 70 and 90 favoring females to develop delirium less likely. (@fig-delirium-age)
+
+```{r tbl-delir-age}
+#| label: tbl-delir-age
+#| tbl-cap: Relationship between age and occurrence of *_New Delirium_* analysed by biological sex
+#| tbl-colwidths: "auto"
+#| out-width: 100%
+#| echo: false
+#| tbl-pos: H
+replace_H_with(res_del_age$tbl)
+```
+
+```{r fig-delirium-age, fig.width=7, fig.asp=1, out.width="100%"}
+#| label: fig-delirium-age
+#| fig-pos: H
+#| echo: false
+#| warning: false
+#| error: false
+#| fig-cap: !expr 'paste0("Overview of the **Relationship of _Age_ and _Sex_ on Delirium** after ischemic stroke from a plain Bayesian Model including internal model characteristics, observed results and predictions. **(A)** Non-linear relationship of age stratified by sex on occurence of delirium using restricted cubic splines with cutpoints ", paste(res_del_age$spline_knots, collapse=", ")," using ", res_del_age$d.f.," degrees of freedom. **(B)** Density plots for the posterior distributions of key predictors, including both main effects (e.g., age) and interactions (e.g., age*sex), illustrating distribution of observed effects are presented. **(C)** Probability difference between females and males given the observed model data at any given age point. **(D)** Distribution of the outcome variable for both sexes of observed data (y) are compared with model-replicated data (y_rep) to determine the model’s predictive accuracy. **(E)** Forest Plot showing odds ratios with 95% credible intervals.", res_del_age$pred_fn)'
+#| cache: false
+library(gridExtra)
+library(ormPlot)
+library(cowplot)
+# library(ggside)
+tar_load(res_del_age)
+plot_grid(
+        plot_grid(
+        plot_grid(
+                res_del_age$p3,
+                # bm_delirium_age_p4,
+                res_del_age$p_diff,
+                # bm_delirium_age_p5,
+                nrow = 2,
+                rel_heights = c(1, 1),
+                # labels = c("A", "B", "C", "D")
+                labels = c("A", "C")
+        ),
+        plot_grid(
+                # bm_delirium_age_p3,
+                res_del_age$p4,
+                # bm_delirium_age_p_diff,
+                res_del_age$p5,
+                nrow = 2,
+                rel_heights = c(2, 1),
+                labels = c("B", "D")
+        ), ncol = 2),
+        plot_grid(res_del_age$p6[[1]], res_del_age$p6[[2]], ncol=2),
+        ncol = 1,
+        rel_heights = c(8, 1),
+        labels = c("", "E")
+)
+
+s <- specs(res_del_age$model_ia)
+s <- s[["how.modeled"]] %>% as.data.frame()
+spline_knots <-
+        as.numeric(unlist(strsplit(trimws(s[["Parameters"]][[1]]), " ")))
+
+
+
+# interaction_P <-
+#         getTableRsmb(res_del_age$model_ia, print = "FALSE", exp = "FALSE") %>%
+#         filter(row.names(.) == "Interaction [Age' * Sex=male]") %>%  # Filter for the specific interaction
+#         pull(P)
+
+```
+
+### Relationship of Premorbid Function and Delirium
+
+```{r load-delirium-pRS, include=FALSE}
+tar_load(res_del_prs)
+```
+
+The premorbid Rankin Scale (pRS) was used to assess the relationship between premorbid function and the occurrence of delirium. For this analysis n=`r sum(!is.na(df$pRS))` out of n=`r nrow(df)` patients were available. None of the levels of premorbid Rankin Scale showed convincing evidence for an association with the occurrence of delirium. The interaction model failed to converge due to a relatively low number of patients in the higher pRS categories (@tbl-delir-pRS). [^results_delir-2]
+
+[^results_delir-2]: *Comment:* For further analysis the pRS was therefore collapsed into a binary variable of 0-2 and 3-5, representing an indicator for a functional independence before stroke.
+
+```{r tbl-2-Delirium-pRS}
+#| label: tbl-delir-pRS
+#| tbl-cap: Relationship between _premorbid Rankin Scale (pRS)_ and occurrence of *_New Delirium_*
+#| tbl-colwidths: "auto"
+#| tbl-pos: H
+#| echo: false
+replace_H_with(res_del_prs$tbl)
+```
+
+### Relationship of Stroke Severity and Delirium
+
+```{r load-delirium-nihss, include=FALSE}
+#Variables
+dv = "outcome_delir"
+iv0 = "rcs(nihss_d0, 3) + side_stroke + sex"
+ia = "rcs(nihss_d0, 3) * sex + side_stroke"
+#Model
+bm_delirium_nihss <- getModel(dv, iv0, file_name = "output/models/bm_delirium_nihss", data = df, force_overwrite = FALSE)
+#Table
+bm_delirium_nihss_tbl <- getLatexTableCH(bm_delirium_nihss, font_size=8)
+#interaction model
+bm_delirium_nihss_ia <- getModel(dv, ia, file_name = "output/models/bm_delirium_nihss_ia", data = df, force_overwrite = FALSE)
+#Prediction
+bm_delirium_nihss_p <- Predict(bm_delirium_nihss_ia, nihss_d0,  sex, side_stroke, funint=FALSE, fun=plogis, conf.int = FALSE)
+bm_delirium_nihss_footnote <- getFootnote(bm_delirium_nihss_p)
+
+# Probability difference
+bm_delirium_nihss_contrast <- contrast(bm_delirium_nihss_ia, 
+                                       list(sex="male", side_stroke=c("left", "right", "posterior", "bilateral"), nihss_d0=c(0:42)),
+                                       list(sex="female", side_stroke=c("left", "right", "posterior", "bilateral"), nihss_d0=c(0:42)))
+
+bm_delirium_nihss_contrast_df <- data.frame(nihss_d0 = bm_delirium_nihss_contrast$nihss_d0, 
+                                            side_stroke = bm_delirium_nihss_contrast$side_stroke,
+                                            probability = bm_delirium_nihss_contrast$PP)
+
+# Plots
+bm_delirium_nihss_p1 <- ggplot(bm_delirium_nihss_p,
+                             adj.subtitle = 0,
+                             ylim = c(0, 0.4)) + theme_minimal() + scale_color_colorblind()  +
+        ylab(expression(P(Delirium ~ "|" ~ Data, x))) +
+        theme(
+                # legend.position = c(0.95, 0.05),
+                # legend.justification = c(1, 0),
+                legend.position = "bottom",
+                legend.title = element_blank(),
+                # plot.title = element_text(hjust = 0.5),
+                panel.grid.major.x = element_blank(),
+                panel.grid.minor.x = element_blank(),
+                axis.ticks = element_line(),
+                axis.text.x = element_text(angle = 0)
+        )
+                        # ) +
+        # scale_x_continuous(sec.axis = sec_axis(~ . , name = "", breaks = NULL, labels = NULL))
+
+
+```
+
+As pointed out earlier, the NIHSS score was used to assess the severity of the stroke. For the following analysis stroke location was added to the model in addition to sex. As expected, the NIHSS score showed a strong association with the occurrence of delirium with higher scores indicating a higher probability of delirium (`r getMedCI(summary(bm_delirium_nihss), var="nihss_d0")`. Analyzing the pattern of this association showed a clear (nearly linear) increase in the NIHSS range from 0 to 16 with males having a trend for a steeper increase. In the mid-range to high-range NIHSS scores (16-42) the probability of delirium stayed relatively stable when looking at females and males revert to the same levels as females. (@fig-delirium-nihss-2)
+
+```{r fig-delirium-nihss, fig.width=7, fig.asp=0.3, out.width="100%"}
+#| label: fig-delirium-nihss
+#| fig-pos: H
+#| echo: false
+#| warning: false
+#| error: false
+#| fig-cap: !expr 'paste0("Forest plot of bayesian regression model including stroke severity, stroke location (left, right, posterior, bilateral) explaining the probability of new onset delirium. ", getFootnote(bm_delirium_nihss, double_escape=FALSE))'
+#| cache: TRUE
+# names <- c("Year of birth", "Height", "Number of children", "Cranial volume", "Sex" )
+header <- c("OR", "Lower", "Upper" )
+bm_delirium_nihss_p6 <- forestplot(summary(bm_delirium_nihss), header=header)
+```
+
+Additionally, the location of the stroke was associated with delirium. Patients with a stroke in the right hemisphere had a higher probability of developing delirium compared to patients with a stroke in the left hemisphere (`r getMedCI(summary(bm_delirium_nihss), var="side_stroke")`). Patients experiencing a stroke in the posterior circulation had also a higher likelihood of delirium than patients with left hemispheric strokes (`r getMedCI(summary(bm_delirium_nihss), var="posterior")`). All these effects did not alter the independent effect of sex on the occurrence of delirium. @fig-delirium-nihss
+
+```{r fig-delirium-nihss-2, fig.width=7, fig.asp=1, out.width="100%"}
+#| label: fig-delirium-nihss-2
+#| fig-pos: H
+#| echo: false
+#| warning: false
+#| error: false
+#| fig-cap: !expr 'paste0("Relationship of stroke severity, stroke location (left, right, posterior, bilateral) and probability of new onset delirium")'
+#| cache: TRUE
+bm_delirium_nihss_p1 
+```
+
+### Relationship of Year of Therapy, Therapy, Sex and Delirium
+
+```{r load-delirium-year, include=FALSE}
+tar_load(res_del_year)
+df <- df %>%
+                mutate(therapy = factor(case_when(
+                        therapy == "IVT" ~ "IVT",
+                        therapy == "EST" | therapy == "IVT/EST" ~ "EST(+/-IVT)"
+                ))) %>% 
+                mutate(date_therapy_year_cat = factor(date_therapy_year))
+```
+
+As demonstrated in the general description of the cohort, the year of therapy and the variability of biological sex within the years is not negligible. Looking at this relationship in terms of delirium occurrence, the mode of therapy is further added to the model. The number of patients treated with intravenous thrombolysis alone increased from 0.7% in early 2000 to 2.9% in 2009. Thereafter, a undulating pattern can be observed with peaks in 2010 and 2018 and bottoms in 2015 and 2020. Patients treated with mechanical thrombectomy (with or without intravenous thrombolysis) showed a steep number increase since 2011 [^results_delir-3]. (@fig-delirium-year A)
+
+[^results_delir-3]: *Comment*: 2022 covers only data until March)
+
+```{r fig-delirium-year, fig.width=7, fig.asp=1, out.width="100%"}
+#| label: fig-delirium-year
+#| fig-pos: H
+#| echo: false
+#| warning: false
+#| error: false
+#| fig-cap: !expr 'paste0("**(A)** Descriptive analysis of counts of therapy modes (intravenous thrombolysis (IVT) or endovascular stroke therapy (EST) (with or without IVT) during the years 1998--2022. **(B)** Relationship of year of therapy, therapy, sex and probability of new onset delirium")'
+#| cache: TRUE
+plot_grid(
+        plot_grouped_bar_chart(df, var="date_therapy_year_cat", group_var = "therapy", chart_type = "lollipop") + ylab("P(Delrium|year)") + xlab("Year of Therapy") + coord_cartesian(expand=TRUE, ylim=c(0,500)) + theme(axis.text.x = element_text(angle = 45)),
+        res_del_year$p1 + xlab("Year of Therapy") + theme(axis.text.x = element_text(angle = 45)), rel_widths = c(1, 1), ncol=1, labels = c("A", "B"))
+```
+
+When considering the influence of the year of therapy on the occurrence of delirium, a clear pattern can be observed with a beginning increase from 2005 onwards (@fig-delirium-year B). The steepest increase in delirium was observed in 2012 (e.g. 1.3% increase from 2011 in males with endovascular therapy), and a top in 2015/2016. The mode of therapy was also associated with the occurrence of delirium. Patients receiving intravenous thrombolysis had lower odds of developing a delirum than patients receiving endovascular therapy (`r getMedCI(summary(res_del_year$model), var="EST")`). Further adjusting for age and NIHSS, this association was at least partly explained by the influence of these variables, with a shift in the median posterior estimate of therapy towards 1 (`r getMedCI(summary(res_del_year$modeladj), var="EST")`). The strong association of biological sex with delirium was even more pronounced when adjusting for year of therapy, therapy mode, age and NIHSS (`r getMedCI(summary(res_del_year$modeladj), var="sex")`).
+
+```{r tbl-delir-year}
+#| label: tbl-delir-year
+#| tbl-cap: Relationship between Year of Therapy and Occurrence of New Delirium analysed by Biological Sex
+#| tbl-colwidths: "auto"
+#| out-width: 100%
+#| echo: false
+#| tbl-pos: H
+replace_H_with(res_del_year$tbl)
+```

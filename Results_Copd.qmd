@@ -1,0 +1,119 @@
+```{r Delirium-copd, include=FALSE}
+# getResDelAphasia <- function(df_adm_f = df_adm_f, data_dic = data_dic){
+        df <- df_adm_f
+        df$dx_prev_copd <- factor(df$dx_prev_copd)
+        dd <- datadist(df)
+        options(datadist = 'dd')
+        options(contrasts=c("contr.treatment", "contr.treatment"))
+        
+        #Variables ? include copd?
+        dv = "outcome_delir"
+        iv0 = "dx_prev_copd + sex"
+        ia = "dx_prev_copd * sex"
+        #Model
+        # bm_delirium_dx_prev_copd <- getModel(dv, iv0, file_name = "output/models/bm_delirium_dx_prev_copd", data = df, force_overwrite = FALSE)
+        bm_delirium_dx_prev_copd <- getModel(dv, iv0, file_name = "output/models/bm_delirium_dx_prev_copd", data = df, force_overwrite = FALSE)
+
+        #Table
+        bm_delirium_dx_prev_copd_tbl <- getLatexTableCH(bm_delirium_dx_prev_copd, font_size=8)
+        #interaction model
+        # bm_delirium_dx_prev_copd_ia <- getModel(dv, ia, file_name = "output/models/bm_delirium_dx_prev_copd_ia", data = df, force_overwrite = FALSE)
+        bm_delirium_dx_prev_copd_ia <- getModel(dv, ia, file_name = "output/models/bm_delirium_dx_prev_copd_ia", data = df, force_overwrite = FALSE)
+
+        # Interaction Table
+        bm_delirium_dx_prev_copd_tbl_ia <- getLatexTableCH(bm_delirium_dx_prev_copd_ia, font_size=8, interactions_only = TRUE)
+        # bm_delirium_dx_prev_copd_ia <- getModel(dv, ia, file_name = "output/models/bm_delirium_dx_prev_copd_ia", data = df, force_overwrite = FALSE, imputation = TRUE)
+
+        #Prediction
+#         
+#         bm_delirium_dx_prev_copd_p <- Predict(bm_delirium_dx_prev_copd_ia, dx_prev_copd,  sex, funint=FALSE, fun=plogis, conf.int = TRUE)
+#         bm_delirium_dx_prev_copd_footnote <- getFootnote(bm_delirium_dx_prev_copd_p)
+#         # Probability difference
+#         bm_delirium_dx_prev_copd_contrast <- contrast(bm_delirium_dx_prev_copd_ia, 
+#                                              list(sex="male", dx_prev_copd=c(bm_delirium_dx_prev_copd_p$dx_prev_copd)),
+#                                              list(sex="female", dx_prev_copd=c(bm_delirium_dx_prev_copd_p$dx_prev_copd)))
+#         
+#         bm_delirium_dx_prev_copd_contrast_df <- data.frame(dx_prev_copd=bm_delirium_dx_prev_copd_contrast$dx_prev_copd, probability=bm_delirium_dx_prev_copd_contrast$PP)
+#         
+#         # Plots
+#         
+#         # lollipop
+#         bm_delirium_dx_prev_copd_p0 <- plot_grouped_bar_chart(df, "dx_prev_copd", "sex", chart_type = "lollipop")
+#         
+#         # jitter
+#           bm_delirium_dx_prev_copd_p1 <- ggplot(bm_delirium_dx_prev_copd_p %>% as_tibble(), aes(x = dx_prev_copd, y = yhat, color = sex, group = sex)) +
+#     geom_jitter(position = position_dodge(width = 0.5), size = 3) +  
+#     geom_errorbar(aes(ymin = lower, ymax = upper), width = 0.2, position = position_dodge(width = 0.5)) +  # Adding error bars with the same jitter
+#     geom_line(position = position_dodge(width = 0.5)) + 
+#     theme_ch() +  scale_color_colorblind()  +
+#     # labs(x = "Neglect Grade", y = "Predicted Value (yhat)", color = "Sex") +  # Adding labels + coor_flip()
+# ylab(expression(P(Delirium ~ "|" ~ Data, x)))  +
+#                 theme(
+#                         # legend.position = c(0.95, 0.05),
+#                         # legend.justification = c(1, 0),
+#                         legend.position = "none",
+#                         legend.title = element_blank(),
+#                         # plot.title = element_text(hjust = 0.5),
+#                         panel.grid.major.x = element_blank(),
+#                         panel.grid.minor.x = element_blank(),
+#                         axis.ticks = element_line(),
+#                         axis.text.x = element_text(angle = 0),
+#                         text = element_text(size = 10)
+#                 )
+#         
+#         bm_delirium_dx_prev_copd_p_diff <-
+#                 plotSexDiffGradient(
+#                         df,
+#                         bm_delirium_dx_prev_copd_ia,
+#                         var = "dx_prev_copd",
+#                         xlab = expression(P(Delta ~ "|" ~ data, x) == P(theta[F] ~ "|" ~ data, x) - P(theta[M] ~ "|" ~ data, x))) +
+#                 coord_cartesian(expand = TRUE, ylim = c(0, 50)) + 
+#                 coord_flip()
+#         
+# 
+#         bm_delirium_dx_prev_copd_p2_footnote <- paste0(expression(P(Delta ~ "|" ~ data, x)), " is the posterior probability density of the contrast between females and males of developing a delirium at a given level of copd x.")
+#         
+#         library(gridExtra)
+#         library(ormPlot)
+#         library(cowplot)
+#         # bm_delirium_dx_prev_copd_p1 <- ggplot(Predict(bm_delirium_dx_prev_copd_ia, dx_prev_copd)) + theme_ch() + scale_color_viridis(discrete = TRUE, option = "D") + theme(plot.margin = unit(c(0.5,0,0,0.5), "cm"))
+#         bm_delirium_dx_prev_copd_p2 <- ggplot(Predict(bm_delirium_dx_prev_copd_ia, sex)) + theme_ch() + scale_color_viridis(discrete = TRUE, option = "D") + coord_cartesian(expand = TRUE, ylim = c(-4, 0)) + theme(plot.margin = unit(c(0.5,0,0,0.5), "cm"))
+#         
+#         bm_delirium_dx_prev_copd_p3 <- ggplot(Predict(bm_delirium_dx_prev_copd_ia, dx_prev_copd, sex, conf.int = FALSE)) + theme_ch() + scale_color_viridis(discrete = TRUE, option = "D")+ theme(plot.margin = unit(c(0.5,0,0,0.5), "cm")) 
+#         bm_delirium_dx_prev_copd_p4 <- plot(bm_delirium_dx_prev_copd_ia) + theme_ch() + scale_color_viridis(discrete = TRUE, option = "D") + coord_cartesian(expand = TRUE, xlim = c(-3, 3)) + theme(plot.margin = unit(c(0.5,0,0,0.5), "cm"))
+#         bm_delirium_dx_prev_copd_p5 <- pp_check.blrm(bm_delirium_dx_prev_copd_ia, type = "violin_grouped", group = "sex", df=df) + coord_cartesian(expand = TRUE) + theme(legend.position = "top", plot.margin = unit(c(0.5,0,0,1), "cm"))
+#         #forest plot
+#         # p6_temp <- forestplot(summary(bm_delirium_dx_prev_copd_ia), return_ggplots = TRUE)
+#         bm_delirium_dx_prev_copd_p6 <- forestplot(summary(bm_delirium_dx_prev_copd), return_ggplots = TRUE)
+#         bm_delirium_dx_prev_copd_p7 <- stanDxplot(bm_delirium_dx_prev_copd_ia, which="sex=male") + theme_ch() + coord_cartesian(expand = TRUE, xlim=c(0,1400), ylim=c(-10,25)) + coord_flip() + theme(plot.margin = unit(c(0.5,0,0,0.5), "cm"))
+#         
+        
+        res_del_copd <-
+                list(
+                        dv = dv,
+                        iv0 = iv0,
+                        ia = ia,
+                        model = bm_delirium_dx_prev_copd,
+                        tbl = bm_delirium_dx_prev_copd_tbl,
+                        model_ia = bm_delirium_dx_prev_copd_ia,
+                        tbl_ia = bm_delirium_dx_prev_copd_tbl_ia
+                        # pred = bm_delirium_dx_prev_copd_p,
+                        # pred_fn = bm_delirium_dx_prev_copd_footnote,
+                        # p0 = bm_delirium_dx_prev_copd_p0,
+                        # p1 = bm_delirium_dx_prev_copd_p1,
+                        # p2 = bm_delirium_dx_prev_copd_p2,
+                        # p3 = bm_delirium_dx_prev_copd_p3,
+                        # p4 = bm_delirium_dx_prev_copd_p4,
+                        # p5 = bm_delirium_dx_prev_copd_p5,
+                        # p6 = bm_delirium_dx_prev_copd_p6,
+                        # p7 = bm_delirium_dx_prev_copd_p7,
+                        # p_diff = bm_delirium_dx_prev_copd_p_diff
+                )
+        # return(res_del_dx_prev_copd)
+```
+### Chronic obstructive pulmonary disease (COPD), sex and delirium
+
+This analysis addresses the frequency of an established diagnosis of COPD prior to stroke at hospital presentation between the sexes and their relationship with occureence of delirium. COPD was present in 5.5% of the total patient population with fewer females (2.4%) than males (3.1%).
+A meaningful association of having COPD to developing new onset delirium was not given based on the models (`r getMedCI(summary(res_del_copd$model), var="copd")`) There was a tendency of sex moderating this weak association of COPD and delirium with an increase of delirium risk in males who suffer from COPD compared to a decrease of delirium risk in females with COPD. The probability of this interaction was 92.2%.
+
+

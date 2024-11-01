@@ -1,0 +1,193 @@
+### Level of Consciousness
+
+```{r Delirium-Vigilance, include=FALSE}
+# getResDelAphasia <- function(df_adm_f = df_adm_f, data_dic = data_dic){
+        df <- df_adm_f
+        dd <- datadist(df)
+        options(datadist = 'dd')
+        options(contrasts=c("contr.treatment", "contr.treatment"))
+        
+        #Variables ? include Vigilance?
+        dv = "outcome_delir"
+        iv0 = "var_vigil + sex"
+        ia = "var_vigil * sex"
+        iv0a = "var_vigil + sex + side_stroke"
+        iv0b = "var_vigil + sex + side_stroke + rcs(nihss_d0, 3)"
+        
+        #Model
+        bm_delirium_var_vigil_univar <- blrm(var_vigil~sex, data=df)
+        bm_delirium_var_vigil_univar_P <- getRsmb(bm_delirium_var_vigil_univar) %>% pull(P) %>% transform_P_value()
+       
+        bm_delirium_var_vigil <- getModel(dv, iv0, file_name = "output/models/bm_delirium_var_vigil", data = df, force_overwrite = FALSE)
+        #Table
+        bm_delirium_var_vigil_tbl <- getLatexTableCH(bm_delirium_var_vigil, font_size=8)
+        #interaction model
+        bm_delirium_var_vigil_ia <- getModel(dv, ia, file_name = "output/models/bm_delirium_var_vigil_ia", data = df, force_overwrite = FALSE)
+        # Interaction Table
+        bm_delirium_var_vigil_tbl_ia <- getLatexTableCH(bm_delirium_var_vigil_ia, font_size=8, interactions_only = TRUE)
+        
+        #Prediction
+        
+        bm_delirium_var_vigil_p <- Predict(bm_delirium_var_vigil_ia, var_vigil,  sex, funint=FALSE, fun=plogis, conf.int = TRUE)
+        bm_delirium_var_vigil_footnote <- getFootnote(bm_delirium_var_vigil_p)
+        # Probability difference
+        bm_delirium_var_vigil_contrast <- contrast(bm_delirium_var_vigil_ia, 
+                                             list(sex="male", var_vigil=c(bm_delirium_var_vigil_p$var_vigil)),
+                                             list(sex="female", var_vigil=c(bm_delirium_var_vigil_p$var_vigil)))
+        
+        bm_delirium_var_vigil_contrast_df <- data.frame(var_vigil=bm_delirium_var_vigil_contrast$var_vigil, probability=bm_delirium_var_vigil_contrast$PP)
+        
+        # Plots
+        
+        # lollipop
+        bm_delirium_var_vigil_p0 <- plot_grouped_bar_chart(df, "var_vigil", "sex", chart_type = "lollipop") + coord_cartesian(expand=TRUE, ylim=c(0,2200))
+        
+        # jitter
+#           bm_delirium_var_vigil_p1 <- ggplot(bm_delirium_var_vigil_p %>% as_tibble(), aes(x = var_vigil, y = yhat, color = sex, group = sex)) +
+#     geom_jitter(position = position_dodge(width = 0.5), size = 3) +  
+#     geom_errorbar(aes(ymin = lower, ymax = upper), width = 0.2, position = position_dodge(width = 0.5)) +  # Adding error bars with the same jitter
+#     geom_line(position = position_dodge(width = 0.5)) + 
+#     theme_ch() +  scale_color_colorblind()  +
+#     # labs(x = "Neglect Grade", y = "Predicted Value (yhat)", color = "Sex") +  # Adding labels + coor_flip()
+# ylab(expression(P(Delirium ~ "|" ~ Data, x)))  +
+#                 theme(
+#                         # legend.position = c(0.95, 0.05),
+#                         # legend.justification = c(1, 0),
+#                         legend.position = "bottom",
+#                         legend.title = element_blank(),
+#                         # plot.title = element_text(hjust = 0.5),
+#                         panel.grid.major.x = element_blank(),
+#                         panel.grid.minor.x = element_blank(),
+#                         axis.ticks = element_line(),
+#                         axis.text.x = element_text(angle = 0),
+#                         text = element_text(size = 10)
+#                 )
+          bm_delirium_var_vigil_p1 <- plotInteraction(bm_delirium_var_vigil_ia,
+                                                               bm_delirium_var_vigil_p,
+                                                               var_of_interest = "var_vigil",
+                                                               group_var = "sex",
+                                                               display_annotations = TRUE, display_sign=FALSE)
+        
+        bm_delirium_var_vigil_p_diff <-
+                plotSexDiffGradient(
+                        df,
+                        bm_delirium_var_vigil_ia,
+                        var = "var_vigil",
+                        xlab = expression(P(Delta ~ "|" ~ data, x) == P(theta[F]-theta[M]))) +
+                coord_flip()
+        
+
+        bm_delirium_var_vigil_p2_footnote <- paste0(expression(P(Delta ~ "|" ~ data, x)), " is the posterior probability density of the contrast between females and males of developing a delirium at a given level of Vigilance x.")
+        
+        library(gridExtra)
+        library(ormPlot)
+        library(cowplot)
+        # bm_delirium_var_vigil_p1 <- ggplot(Predict(bm_delirium_var_vigil_ia, var_vigil)) + theme_ch() + scale_color_viridis(discrete = TRUE, option = "D") + theme(plot.margin = unit(c(0.5,0,0,0.5), "cm"))
+        bm_delirium_var_vigil_p2 <- ggplot(Predict(bm_delirium_var_vigil_ia, sex)) + theme_ch() + scale_color_viridis(discrete = TRUE, option = "D") + coord_cartesian(expand = TRUE, ylim = c(-4, 0)) + theme(plot.margin = unit(c(0.5,0,0,0.5), "cm"))
+        
+        bm_delirium_var_vigil_p3 <- ggplot(Predict(bm_delirium_var_vigil_ia, var_vigil, sex, conf.int = FALSE)) + theme_ch() + scale_color_viridis(discrete = TRUE, option = "D")+ theme(plot.margin = unit(c(0.5,0,0,0.5), "cm")) 
+        bm_delirium_var_vigil_p4 <- plot(bm_delirium_var_vigil_ia) + theme_ch() + scale_color_viridis(discrete = TRUE, option = "D") + coord_cartesian(expand = TRUE, xlim = c(-3, 3)) + theme(plot.margin = unit(c(0.5,0,0,0.5), "cm"))
+        # bm_delirium_var_vigil_p5 <- pp_check.blrm(bm_delirium_var_vigil_ia, type = "violin_grouped", group = "sex", df=df) + coord_cartesian(expand = TRUE) + theme(legend.position = "top", plot.margin = unit(c(0.5,0,0,1), "cm"))
+        #forest plot
+        # p6_temp <- forestplot(summary(bm_delirium_var_vigil_ia), return_ggplots = TRUE)
+        bm_delirium_var_vigil_p6 <- forestplot(summary(bm_delirium_var_vigil), return_ggplots = TRUE)
+        bm_delirium_var_vigil_p7 <- stanDxplot(bm_delirium_var_vigil_ia, which="sex=male") + theme_ch() + coord_cartesian(expand = TRUE, xlim=c(0,1400), ylim=c(-10,25)) + coord_flip() + theme(plot.margin = unit(c(0.5,0,0,0.5), "cm"))
+        
+        # level of consciousness loc
+        res_del_loc <-
+                list(
+                        dv = dv,
+                        iv0 = iv0,
+                        ia = ia,
+                        model = bm_delirium_var_vigil,
+                        tbl = bm_delirium_var_vigil_tbl,
+                        model_ia = bm_delirium_var_vigil_ia,
+                        tbl_ia = bm_delirium_var_vigil_tbl_ia,
+                        pred = bm_delirium_var_vigil_p,
+                        pred_fn = bm_delirium_var_vigil_footnote,
+                        p0 = bm_delirium_var_vigil_p0,
+                        p1 = bm_delirium_var_vigil_p1,
+                        p2 = bm_delirium_var_vigil_p2,
+                        p3 = bm_delirium_var_vigil_p3,
+                        p4 = bm_delirium_var_vigil_p4,
+                        # p5 = bm_delirium_var_vigil_p5,
+                        p6 = bm_delirium_var_vigil_p6,
+                        p7 = bm_delirium_var_vigil_p7,
+                        p_diff = bm_delirium_var_vigil_p_diff
+                )
+        # return(res_del_var_vigil)
+        
+# }
+```
+
+This analysis investigates the frequency of differences in the level of consciousness in the initial presentation by sex. Out of `r nrow(df)` total observations, `r 100-round(sum(!is.na(df$var_vigil))/nrow(df)*100,1)`% (n = `r nrow(df)-sum(!is.na(df$var_vigil))`) were not available for information on the level of consciousness. Frequencies of different levels of consciousness at the initial clinical presenation of available data are shown. (@tbl-delirium-loc, @fig-delirium-loc A)
+
+```{r tbl-Delirium-LOC}
+#| label: tbl-delirium-loc
+#| tbl-cap: Descriptive analysis of _Levels of Consciousness_ within the whole cohort and the subgroups of biological sex
+#| tbl-colwidths: "auto"
+#| echo: false
+sel <- c("sex", "var_vigil")
+var <- setdiff(sel, "sex")
+# file storage
+file <- "output/models/bm_delirium_loc_uni.rds"
+# Run Bayesian Univariate calculations
+if (file.exists(file)) {
+        models <- readRDS(file)
+} else {
+        models <- run_models(df, var)
+        saveRDS(models,
+                file,
+                compress = "xz")
+}
+stat <- extract_bayes_stat(models, var)
+plot_tbl(
+    data = df,
+    selected_columns = c("var_vigil","sex"),
+    by = "sex",
+    stat_descr_loc = "bottom",
+    pkg = "kableExtra",
+    kable_option = "latex",
+    pvalue = FALSE,
+    bayes = TRUE,
+    missing="ifany",
+    stat # adding 'stat# to add bayesian stats
+) %>% 
+    kable_styling(latex_options = c("scale_down"))  
+
+```
+
+The majority of patients in this dataset were awake (`r round((df %>% filter(var_vigil=="awake") %>% nrow()) /  (df %>% filter(!is.na(var_vigil)) %>% nrow())*100,1)`% of available data), with a minimal higher proportion of males (`r round((df %>% filter(var_vigil=="awake") %>% filter(sex=="male") %>% nrow()) /  (df %>% filter(!is.na(var_vigil)) %>% nrow())*100,1)`%) compared to females (`r round((df %>% filter(var_vigil=="awake") %>% filter(sex=="female") %>% nrow()) /  (df %>% filter(!is.na(var_vigil)) %>% nrow())*100,1)`%). Somnolence affected about `r round((df %>% filter(var_vigil=="somnolence") %>% nrow()) /  (df %>% filter(!is.na(var_vigil)) %>% nrow())*100,1)`% of the patients, with females showing slightly higher frequencies (6% in females versus 5.3% in males).
+
+```{r fig-Delirium-LOC, fig.width=6, fig.asp=0.5, out.width="100%"}
+#| label: fig-delirium-loc
+#| echo: false
+#| warning: false
+#| error: false
+#| fig-cap: !expr 'paste0("**(A)** Descriptive Analysis of _Levels of Consciousness (awake, somnolence, sopor, coma)_ stratified by biological sex. **(B)** Probability of Occurrence of a New Delirium given the different levels of consciousness comparing females and males, **(C)** Differences in posterior probability of females - males in each level of consciousness")'
+#| cache: TRUE
+p <-       plot_grid(
+        res_del_loc$p0 + ylim(0, 3000) + theme(legend.position = c(0.83,0.95), 
+                                   axis.text.x = element_text(angle = 45, hjust = 1),
+                                   legend.background = element_rect(fill = NA),
+                                   legend.key.size = unit(0.2, "cm")),
+        res_del_loc$p1 + theme(legend.position = "", axis.text.x = element_text(angle = 45, hjust = 1)),
+        res_del_loc$p_diff + theme(legend.position = "", axis.text.x = element_text(angle = 45, hjust = 1)),
+        nrow = 1,
+        labels = c("A", "B", "C")
+)
+
+p
+```
+
+In the bayesian regression model males were less likely to present with a worse level of consciousness (awake \> somnolence \> sopor \> coma) compared to females. Compared to being awake at admission, patients with somnolence, sopor, or coma had a higher likelihood of developing delirium with 94.3%, 82.1% and 96.9%, respectively. (@tbl-delirium-loc2) Because probability levels were not \>97.5% there is still some uncertainty of this association. There may be a certain association of consciousness levels with sex as seen in the interaction model. The likelihood of new delirium was higher in awake males and when having somnolence (compared to females), but not when presenting with sopor or coma. ($P_{interaction} (\beta>0)$ @fig-delirium-loc B)
+
+```{r tbl-delirium-loc2}
+#| label: tbl-delirium-loc2
+#| tbl-cap: Relationship between _Levels of Consciousness_ of *_New Delirium_*
+#| tbl-colwidths: "auto"
+#| echo: false
+library(gt)
+library(kableExtra)
+res_del_loc$tbl
+```

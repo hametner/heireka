@@ -1,0 +1,169 @@
+### Handedness
+```{r Delirium-Handedness, include=FALSE}
+# getResDelAphasia <- function(df_adm_f = df_adm_f, data_dic = data_dic){
+        df <- df_adm_f
+        dd <- datadist(df)
+        options(datadist = 'dd')
+        options(contrasts=c("contr.treatment", "contr.treatment"))
+        
+        #Variables ? include handedness?
+        dv = "outcome_delir"
+        iv0 = "var_handed + sex"
+        ia = "var_handed * sex"
+        #Model
+        bm_delirium_var_handed_univar <- blrm(var_handed~sex, data=df)
+        bm_delirium_var_handed_univar_P <- getRsmb(bm_delirium_var_handed_univar) %>% pull(P) %>% transform_P_value()
+        
+        # bm_delirium_var_handed <- getModel(dv, iv0, file_name = "output/models/bm_delirium_var_handed", data = df, force_overwrite = FALSE)
+        bm_delirium_var_handed <- getModel(dv, iv0, file_name = "output/models/bm_delirium_var_handed", data = df, force_overwrite = FALSE, imputation = TRUE)
+
+        #Table
+        bm_delirium_var_handed_tbl <- getLatexTableCH(bm_delirium_var_handed, font_size=8)
+        #interaction model
+        # bm_delirium_var_handed_ia <- getModel(dv, ia, file_name = "output/models/bm_delirium_var_handed_ia", data = df, force_overwrite = FALSE)
+        bm_delirium_var_handed_ia <- getModel(dv, ia, file_name = "output/models/bm_delirium_var_handed_ia", data = df, force_overwrite = FALSE, imputation = TRUE)
+
+        # Interaction Table
+        bm_delirium_var_handed_tbl_ia <- getLatexTableCH(bm_delirium_var_handed_ia, font_size=8, interactions_only = TRUE)
+        # bm_delirium_var_handed_ia <- getModel(dv, ia, file_name = "output/models/bm_delirium_var_handed_ia", data = df, force_overwrite = FALSE, imputation = TRUE)
+
+        #Prediction
+        
+        bm_delirium_var_handed_p <- Predict(bm_delirium_var_handed_ia, var_handed,  sex, funint=FALSE, fun=plogis, conf.int = TRUE)
+        bm_delirium_var_handed_footnote <- getFootnote(bm_delirium_var_handed_p)
+        # Probability difference
+        bm_delirium_var_handed_contrast <- contrast(bm_delirium_var_handed_ia, 
+                                             list(sex="male", var_handed=c(bm_delirium_var_handed_p$var_handed)),
+                                             list(sex="female", var_handed=c(bm_delirium_var_handed_p$var_handed)))
+        
+        bm_delirium_var_handed_contrast_df <- data.frame(var_handed=bm_delirium_var_handed_contrast$var_handed, probability=bm_delirium_var_handed_contrast$PP)
+        
+        # Plots
+        
+        # lollipop
+        bm_delirium_var_handed_p0 <- plot_grouped_bar_chart(df, "var_handed", "sex", chart_type = "lollipop") + coord_cartesian(expand=TRUE, ylim=c(0,1800))
+        
+        # jitter
+          bm_delirium_var_handed_p1 <- ggplot(bm_delirium_var_handed_p %>% as_tibble(), aes(x = var_handed, y = yhat, color = sex, group = sex)) +
+    geom_jitter(position = position_dodge(width = 0.5), size = 3) +  
+    geom_errorbar(aes(ymin = lower, ymax = upper), width = 0.2, position = position_dodge(width = 0.5)) +  # Adding error bars with the same jitter
+    geom_line(position = position_dodge(width = 0.5)) + 
+    theme_ch() +  scale_color_colorblind()  +
+    # labs(x = "Neglect Grade", y = "Predicted Value (yhat)", color = "Sex") +  # Adding labels + coor_flip()
+ylab(expression(P(Delirium ~ "|" ~ Data, x)))  +
+                theme(
+                        # legend.position = c(0.95, 0.05),
+                        # legend.justification = c(1, 0),
+                        legend.position = "none",
+                        legend.title = element_blank(),
+                        # plot.title = element_text(hjust = 0.5),
+                        panel.grid.major.x = element_blank(),
+                        panel.grid.minor.x = element_blank(),
+                        axis.ticks = element_line(),
+                        axis.text.x = element_text(angle = 0),
+                        text = element_text(size = 10)
+                )
+        
+        bm_delirium_var_handed_p_diff <-
+                plotSexDiffGradient(
+                        df,
+                        bm_delirium_var_handed_ia,
+                        var = "var_handed",
+                        xlab = expression(P(Delta ~ "|" ~ data, x) == P(theta[F] ~ "|" ~ data, x) - P(theta[M] ~ "|" ~ data, x))) +
+                coord_cartesian(expand = TRUE, ylim = c(0, 50)) + 
+                coord_flip()
+        
+
+        bm_delirium_var_handed_p2_footnote <- paste0(expression(P(Delta ~ "|" ~ data, x)), " is the posterior probability density of the contrast between females and males of developing a delirium at a given level of handedness x.")
+        
+        library(gridExtra)
+        library(ormPlot)
+        library(cowplot)
+        # bm_delirium_var_handed_p1 <- ggplot(Predict(bm_delirium_var_handed_ia, var_handed)) + theme_ch() + scale_color_viridis(discrete = TRUE, option = "D") + theme(plot.margin = unit(c(0.5,0,0,0.5), "cm"))
+        bm_delirium_var_handed_p2 <- ggplot(Predict(bm_delirium_var_handed_ia, sex)) + theme_ch() + scale_color_viridis(discrete = TRUE, option = "D") + coord_cartesian(expand = TRUE, ylim = c(-4, 0)) + theme(plot.margin = unit(c(0.5,0,0,0.5), "cm"))
+        
+        bm_delirium_var_handed_p3 <- ggplot(Predict(bm_delirium_var_handed_ia, var_handed, sex, conf.int = FALSE)) + theme_ch() + scale_color_viridis(discrete = TRUE, option = "D")+ theme(plot.margin = unit(c(0.5,0,0,0.5), "cm")) 
+        bm_delirium_var_handed_p4 <- plot(bm_delirium_var_handed_ia) + theme_ch() + scale_color_viridis(discrete = TRUE, option = "D") + coord_cartesian(expand = TRUE, xlim = c(-3, 3)) + theme(plot.margin = unit(c(0.5,0,0,0.5), "cm"))
+        bm_delirium_var_handed_p5 <- pp_check.blrm(bm_delirium_var_handed_ia, type = "violin_grouped", group = "sex", df=df) + coord_cartesian(expand = TRUE) + theme(legend.position = "top", plot.margin = unit(c(0.5,0,0,1), "cm"))
+        #forest plot
+        # p6_temp <- forestplot(summary(bm_delirium_var_handed_ia), return_ggplots = TRUE)
+        bm_delirium_var_handed_p6 <- forestplot(summary(bm_delirium_var_handed), return_ggplots = TRUE)
+        bm_delirium_var_handed_p7 <- stanDxplot(bm_delirium_var_handed_ia, which="sex=male") + theme_ch() + coord_cartesian(expand = TRUE, xlim=c(0,1400), ylim=c(-10,25)) + coord_flip() + theme(plot.margin = unit(c(0.5,0,0,0.5), "cm"))
+        
+        
+        res_del_handedness <-
+                list(
+                        dv = dv,
+                        iv0 = iv0,
+                        ia = ia,
+                        model = bm_delirium_var_handed,
+                        tbl = bm_delirium_var_handed_tbl,
+                        model_ia = bm_delirium_var_handed_ia,
+                        tbl_ia = bm_delirium_var_handed_tbl_ia,
+                        pred = bm_delirium_var_handed_p,
+                        pred_fn = bm_delirium_var_handed_footnote,
+                        p0 = bm_delirium_var_handed_p0,
+                        p1 = bm_delirium_var_handed_p1,
+                        p2 = bm_delirium_var_handed_p2,
+                        p3 = bm_delirium_var_handed_p3,
+                        p4 = bm_delirium_var_handed_p4,
+                        p5 = bm_delirium_var_handed_p5,
+                        p6 = bm_delirium_var_handed_p6,
+                        p7 = bm_delirium_var_handed_p7,
+                        p_diff = bm_delirium_var_handed_p_diff
+                )
+        # return(res_del_var_handed)
+        
+# }
+        
+            
+
+```
+Handedness was evaluated as 3-level variable with levels of being right- or lefthanded, or being ambidextrous. Self reported handedness was available in n = 3227 (55.9%). Ambidextrousness was overall rare with 0.2-0.4%. Being male is associated with higher odds of being left-handed (males (2.3%), females (1.5%, probability of this association `r bm_delirium_var_handed_univar_P`) or ambidextrous (compared to being right-handed). (@tbl-delir-handedness) 
+```{r tbl-delirium-handedness}
+#| label: tbl-delir-handedness
+#| tbl-cap: Relationship between _Lateralization of Handedness_ and Occurrence of *_New Delirium_*
+#| tbl-colwidths: "auto"
+#| echo: false
+# t <- getLatexTableCH(bm_delirium_age, font_size=8)
+# bm <- blrm(var_handed~sex, data = df)
+# stat <- getRsmb(bm, col_var=TRUE) %>% as_tibble() %>% rename(`P(β>0)`=P)
+sel <- c("sex", "var_handed")
+var <- setdiff(sel, "sex")
+# file storage
+file <- "output/models/bm_delirium_var_handed_uni.rds"
+# Run Bayesian Univariate calculations
+if (file.exists(file)) {
+        models <- readRDS(file)
+} else {
+        models <- run_models(df, var)
+        saveRDS(models,
+                file,
+                compress = "xz")
+}
+stat <- extract_bayes_stat(models, var)
+
+plot_tbl(
+    data = df,
+    selected_columns = c("var_handed","sex"),
+    by = "sex",
+    stat_descr_loc = "bottom",
+    pkg = "kableExtra",
+    kable_option = "latex",
+    pvalue = FALSE,
+    bayes = TRUE,
+    missing = "ifany",
+    stat # adding 'stat# to add bayesian stats
+) %>% 
+    kable_styling(latex_options = c("scale_down"))  
+```
+Bayesian logistic regression analysis evaluated the occurence of a new delirium after stroke during hosptial stay and its association to the handedness of the patient. No meaningful associations in the main effect analysis or the sex specific analysis (including a multiplicative interaction by sex) was found. (@tbl-delir-handedness2)
+```{r tbl-Delirium-Handedness2}
+#| label: tbl-delir-handedness2
+#| tbl-cap: Relationship between _lateralization of handedness_ and occurrence of *_New Delirium_*
+#| tbl-colwidths: "auto"
+#| echo: false
+replace_H_with(res_del_handedness$tbl)
+```
+
+

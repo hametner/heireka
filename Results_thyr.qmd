@@ -1,0 +1,179 @@
+```{r Delirium-thyr, include=FALSE}
+
+        df <- df_adm_f
+        dd <- datadist(df)
+        options(datadist = 'dd')
+        options(contrasts=c("contr.treatment", "contr.treatment"))
+        
+        #Variables ? include thyr?
+        dv = "outcome_delir"
+        iv0 = "var_prev_thyr + sex"
+        ia = "var_prev_thyr * sex"
+        #Model
+        # bm_delirium_var_prev_thyr <- getModel(dv, iv0, file_name = "output/models/bm_delirium_var_prev_thyr", data = df, force_overwrite = FALSE)
+        bm_delirium_var_prev_thyr <- getModel(dv, iv0, file_name = "output/models/bm_delirium_var_prev_thyr", data = df, force_overwrite = FALSE)
+
+        #Table
+        bm_delirium_var_prev_thyr_tbl <- getLatexTableCH(bm_delirium_var_prev_thyr, font_size=8)
+        #interaction model
+        # bm_delirium_var_prev_thyr_ia <- getModel(dv, ia, file_name = "output/models/bm_delirium_var_prev_thyr_ia", data = df, force_overwrite = FALSE)
+        bm_delirium_var_prev_thyr_ia <- getModel(dv, ia, file_name = "output/models/bm_delirium_var_prev_thyr_ia", data = df, force_overwrite = FALSE)
+
+        # Interaction Table
+        bm_delirium_var_prev_thyr_tbl_ia <- getLatexTableCH(bm_delirium_var_prev_thyr_ia, font_size=8, interactions_only = TRUE)
+        # bm_delirium_var_prev_thyr_ia <- getModel(dv, ia, file_name = "output/models/bm_delirium_var_prev_thyr_ia", data = df, force_overwrite = FALSE, imputation = TRUE)
+
+        #Prediction
+        
+        bm_delirium_var_prev_thyr_p <- Predict(bm_delirium_var_prev_thyr_ia, var_prev_thyr,  sex, funint=FALSE, fun=plogis, conf.int = TRUE)
+        bm_delirium_var_prev_thyr_footnote <- getFootnote(bm_delirium_var_prev_thyr_p)
+        # Probability difference
+        bm_delirium_var_prev_thyr_contrast <- contrast(bm_delirium_var_prev_thyr_ia, 
+                                             list(sex="male", var_prev_thyr=c(bm_delirium_var_prev_thyr_p$var_prev_thyr)),
+                                             list(sex="female", var_prev_thyr=c(bm_delirium_var_prev_thyr_p$var_prev_thyr)))
+        
+        bm_delirium_var_prev_thyr_contrast_df <- data.frame(var_prev_thyr=bm_delirium_var_prev_thyr_contrast$var_prev_thyr, probability=bm_delirium_var_prev_thyr_contrast$PP)
+        
+        # Plots
+        
+        # lollipop
+        bm_delirium_var_prev_thyr_p0 <- plot_grouped_bar_chart(df, "var_prev_thyr", "sex", chart_type = "lollipop")
+        
+        # jitter
+        bm_delirium_var_prev_thyr_p1 <- plotInteraction(bm_delirium_var_prev_thyr_ia,
+                                                               bm_delirium_var_prev_thyr_p,
+                                                               var_of_interest = "var_prev_thyr",
+                                                               group_var = "sex",
+                                                               display_annotations = TRUE)
+        
+          
+          
+          
+        bm_delirium_var_prev_thyr_p_diff <-
+                plotSexDiffGradient(
+                        df,
+                        bm_delirium_var_prev_thyr_ia,
+                        var = "var_prev_thyr",
+                        xlab = expression(P(Delta ~ "|" ~ data, x) == P(theta[F]-theta[M]))) +
+                coord_cartesian(expand = TRUE) +
+                coord_flip()
+
+# ylim = c(0, 50)
+        # bm_delirium_var_prev_thyr_p2_footnote <- paste0(expression(P(Delta ~ "|" ~ data, x)), " is the posterior probability density of the contrast between females and males of developing a delirium at a given level of thyr x.")
+        
+        library(gridExtra)
+        library(ormPlot)
+        library(cowplot)
+        # bm_delirium_var_prev_thyr_p1 <- ggplot(Predict(bm_delirium_var_prev_thyr_ia, var_prev_thyr)) + theme_ch() + scale_color_viridis(discrete = TRUE, option = "D") + theme(plot.margin = unit(c(0.5,0,0,0.5), "cm"))
+        bm_delirium_var_prev_thyr_p2 <- ggplot(Predict(bm_delirium_var_prev_thyr_ia, sex)) + theme_ch() + scale_color_viridis(discrete = TRUE, option = "D") + coord_cartesian(expand = TRUE, ylim = c(-4, 0)) + theme(plot.margin = unit(c(0.5,0,0,0.5), "cm"))
+        
+        bm_delirium_var_prev_thyr_p3 <- ggplot(Predict(bm_delirium_var_prev_thyr_ia, var_prev_thyr, sex, conf.int = FALSE)) + theme_ch() + scale_color_viridis(discrete = TRUE, option = "D")+ theme(plot.margin = unit(c(0.5,0,0,0.5), "cm")) 
+        bm_delirium_var_prev_thyr_p4 <- plot(bm_delirium_var_prev_thyr_ia) + theme_ch() + scale_color_viridis(discrete = TRUE, option = "D") + coord_cartesian(expand = TRUE, xlim = c(-3, 3)) + theme(plot.margin = unit(c(0.5,0,0,0.5), "cm"))
+        # bm_delirium_var_prev_thyr_p5 <- pp_check.blrm(bm_delirium_var_prev_thyr_ia, type = "violin_grouped", group = "sex", df=df) + coord_cartesian(expand = TRUE) + theme(legend.position = "top", plot.margin = unit(c(0.5,0,0,1), "cm"))
+        #forest plot
+        # p6_temp <- forestplot(summary(bm_delirium_var_prev_thyr_ia), return_ggplots = TRUE)
+        bm_delirium_var_prev_thyr_p6 <- forestplot(summary(bm_delirium_var_prev_thyr), return_ggplots = TRUE)
+        bm_delirium_var_prev_thyr_p7 <- stanDxplot(bm_delirium_var_prev_thyr_ia, which="sex=male") + theme_ch() + coord_cartesian(expand = TRUE, xlim=c(0,1400), ylim=c(-10,25)) + coord_flip() + theme(plot.margin = unit(c(0.5,0,0,0.5), "cm"))
+        
+        
+        res_del_thyr <-
+                list(
+                        dv = dv,
+                        iv0 = iv0,
+                        ia = ia,
+                        model = bm_delirium_var_prev_thyr,
+                        tbl = bm_delirium_var_prev_thyr_tbl,
+                        model_ia = bm_delirium_var_prev_thyr_ia,
+                        tbl_ia = bm_delirium_var_prev_thyr_tbl_ia,
+                        pred = bm_delirium_var_prev_thyr_p,
+                        pred_fn = bm_delirium_var_prev_thyr_footnote,
+                        p0 = bm_delirium_var_prev_thyr_p0,
+                        p1 = bm_delirium_var_prev_thyr_p1,
+                        p2 = bm_delirium_var_prev_thyr_p2,
+                        p3 = bm_delirium_var_prev_thyr_p3,
+                        p4 = bm_delirium_var_prev_thyr_p4,
+                        # p5 = bm_delirium_var_prev_thyr_p5,
+                        p6 = bm_delirium_var_prev_thyr_p6,
+                        p7 = bm_delirium_var_prev_thyr_p7,
+                        p_diff = bm_delirium_var_prev_thyr_p_diff
+                )
+        # return(res_del_var_prev_thyr)
+        
+# }
+```
+### Thyroid and Delirium
+This analysis investigates the frequency and differences in pre-stroke thyroid diseases by biological sex.
+Frequencies of hypothyroidism, hyperthyroidism, and euthyroidism are presented. (@tbl-delirium-thyr, @fig-delirium-thyr (A)) 
+Not surprisingly, more females in this cohort presented with any form of thyroid disease (females `r round((df %>% filter(var_prev_thyr!="euthyroidism") %>% filter(sex=="female") %>% nrow()) /  (df %>% filter(!is.na(var_prev_thyr)) %>% nrow())*100,1)`% versus males `r round((df %>% filter(var_prev_thyr!="euthyroidism") %>% filter(sex=="male") %>% nrow()) /  (df %>% filter(!is.na(var_prev_thyr)) %>% nrow())*100,1)`%). Of all females (n=`r df %>% filter(sex=="female") %>% nrow()`) hypothyroidism was present in `r round((df %>% filter(sex=="female") %>% filter(var_prev_thyr=="hypo") %>% nrow() )/(df %>% filter(sex=="female") %>% nrow())*100,1)`% compared to males (n= `r df %>% filter(sex=="male") %>% nrow()`) with `r round((df %>% filter(sex=="male") %>% filter(var_prev_thyr=="hypo") %>% nrow() )/(df %>% filter(sex=="female") %>% nrow())*100,1)`%. 
+```{r tbl-delirium-thyr}
+#| label: tbl-delirium-thyr
+#| tbl-cap: Descriptive analysis of _Thyroid Disesease_ in subgroups of sex
+#| tbl-colwidths: "auto"
+#| results: hold
+#| tbl-pos: H
+#| echo: false
+library(gt)
+library(kableExtra)
+sel <- c("sex", "var_prev_thyr")
+var <- setdiff(sel, "sex")
+# file storage
+file <- "output/models/bm_delirium_var_prev_thyr_uni.rds"
+# Run Bayesian Univariate calculations
+if (file.exists(file)) {
+        models <- readRDS(file)
+} else {
+        models <- run_models(df, var)
+        saveRDS(models,
+                file,
+                compress = "xz")
+}
+stat <- extract_bayes_stat(models, var)
+plot_tbl(
+    data = df,
+    selected_columns = c("var_prev_thyr","sex"),
+    by = "sex",
+    stat_descr_loc = "bottom",
+    pkg = "kableExtra",
+    kable_option = "latex",
+    pvalue = FALSE,
+    bayes = TRUE,
+    missing="ifany",
+    stat # adding 'stat# to add bayesian stats
+) %>% 
+    kable_styling(latex_options = c("scale_down"))  
+```
+Patients that were diagnosed with _hypothyroidism_ before stroke, when compared to euthyroid patients, had no signs of an increased likelihood of developing delirium `r getMedCI(summary(res_del_thyr$model), var="hypo")`. Patients with already diagnosed _hyperthyroidism_ on the other hand, showed an increased likelihood of developing delirium `r getMedCI(summary(res_del_thyr$model), var="hyper")` with a probability of the direction of this effect of `r round(parse_number(getP(getRsmb(res_del_thyr$model), var="var_prev_thyr=hyper", text=FALSE))*100,1)`%. 
+The interaction model showed that being female or male was not clinically relevant (`r round(parse_number(getP(getRsmb(res_del_thyr$model_ia), var="var_prev_thyr=hyper * sex=male", text=FALSE))*100,1)`%) for the association of thyroid disease and delirium. 
+```{r fig-delirium-thyr, fig.width=6, fig.asp=0.5, out.width="100%"}
+#| label: fig-delirium-thyr
+#| echo: false
+#| warning: false
+#| error: false
+#| fig-cap: !expr 'paste0("**(A)** Descriptive Analysis of _Previously Diagnosed Thyroid Disease_ stratified by biological sex. **(B)** Probability of Occurrence of a New Delirium given the presence of thyroid disesase in feales and males, **(C)** Differences in posterior probability of females - males depending on the status of thyroid disease")'
+#| cache: TRUE
+p <-       plot_grid(
+        res_del_thyr$p0 + ylim(0, 2000) + theme(legend.position = c(0.83,0.95), 
+                                   axis.text.x = element_text(angle = 45, hjust = 1),
+                                   legend.background = element_rect(fill = NA),
+                                   legend.key.size = unit(0.2, "cm")),
+        res_del_thyr$p1 + ylim(0,0.4) + theme(legend.position = "", axis.text.x = element_text(angle = 45, hjust = 1)),
+        res_del_thyr$p_diff + theme(legend.position = "", axis.text.x = element_text(angle = 45, hjust = 1)),
+        nrow = 1,
+        labels = c("A", "B", "C")
+)
+p
+```
+```{r tbl2-delirium-thyr}
+#| label: tbl2-delirium-thyr
+#| tbl-cap: Relationship between _thyroid disease_ and occurrence of *_New Delirium_*
+#| tbl-colwidths: "auto"
+#| results: hold
+#| echo: false
+#| tbl-pos: H
+library(gt)
+library(kableExtra)
+res_del_thyr$tbl
+```
+
+
+

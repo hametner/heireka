@@ -2,59 +2,63 @@
 
 Stroke is a significant, global challenge, because it is one of the top causes of death and disability worldwide. The World Health Organization (WHO) states that stroke accounts for about 11% of all global deaths. It is the second leading cause of death in non-communicable diseases and the third leading cause of death overall in 2024 (after ischemic heart disease and COVID-19 [@feigin2024; @feigin2021].
 
-According to the Global Burden of Disease (GBD) study from 2024 there were 11.9 million new stroke cases, with 52.6% occurring in men and 47.4% in women. The prevalence of stroke showed a similar pattern, with 51.0% of cases in men and 49.0% in women. Stroke-related deaths were slightly higher in men, accounting for 52.1%, compared to 47.9% in women. Additionally, men contributed 55.0% of stroke-related disability-adjusted life years (DALYs), while women accounted for 45.0% [@feigin2024]. Stroke leads to long-term disability with severe physical, cognitive, and emotional impairments. The impact of stroke extends beyond the individual but affects whole families, communities, and healthcare systems. The economic burden includes direct costs for medications and hospitalizations but also indirect costs such as lost productivity and sourcing of long-term care [@feigin2017; @vos2020]. In high-income countries, for example, in the European Union, the economic obligation of stroke is estimated to be €60 billion annually [@luengo-fernandez2024].
+According to the Global Burden of Disease (GBD) study from 2024 there were 11.9 million new stroke cases, with 52.6% occurring in men and 47.4% in women. The prevalence of stroke showed a similar pattern, with 51.0% of cases in men and 49.0% in women. Stroke-related deaths were slightly higher in men, accounting for 52.1%, compared to 47.9% in women. Additionally, men contributed 55.0% of stroke-related disability-adjusted life years (DALYs), while women accounted for 45.0% [@feigin2024]. Stroke leads to long-term disability with severe physical, cognitive, and emotional impairments. The impact of stroke extends beyond the individual but affects whole families, communities, and healthcare systems. The economic burden includes direct costs for medications and hospitalizations but also indirect costs such as lost productivity and sourcing of long-term care [@feigin2017; @vos2020]. In high-income countries, for example, in the European Union, the economic burden of stroke is estimated to be €60 billion annually [@luengo-fernandez2024].
 
 Ischemia accounts for 62% of all incidence strokes, intracerebral haemorrhage for 28% of cases, and subarachnoid haemorrhage for 10% of cases worldwide [@krishnamurthi2013].
-
-\[DECIDE\]*where to put:*
-
-In low- and middle-income countries (LMICs), the burden of stroke remains still higher than in high-income countries. Nearly 70% of strokes and over 80% of stroke-related deaths occur in LMICs. Reasons for high stroke rates include limited access to healthcare, absence of stroke prevention programs, and scarce rehabilitation facilities. Lifestyle changes have led to an increase in conditions such as hypertension, diabetes, and obesity, which are significant risk factors for stroke (@mendis2014).
-
-Adult men and women (aged 25 and over) have a lifetime risk of stroke of 25% [@global2018]. Stroke is most common in East Asia, Central Europe, and Eastern Europe [@xu2013] with China having one of the highest rates of stroke incidence and death in the world [@xu2013]. While the incidence of stroke is decreasing in high-income countries, it is increasing in low-income countries [@johnson2016]. The absolute number of stroke victims, stroke survivors, stroke-related fatalities, and the global burden of stroke-related disability remains growing. Low-income and middle-income countries have a higher proportion of hemorrhagic stroke than high-income countries, and geographical variation is high in the incidence of major pathological types of stroke [@krishnamurthi2013][@feigin2021].
-
-*DECIDE END*
 
 ## Short History of Stroke
 
 Historically, "apoplexy" and "brain softening" were used to describe many conditions now recognized as strokes. Johann Jakob Wepfer (1650-1695) was the first to draw an association between apoplexy and cerebral haemorrhage. (Wepfer, J.J. Observationes Anatomicae, ex Cadaveribus Eorum, quos Sustulit Apoplexia, cum Exercitatione de eius Loco Affecto; Joh Caspari Suteri: Schaffhausen, Switzerland, 1658.) In 1847, Rudolf Virchow (1821–1902) made decisive arguments conﬁrming the vascular theory of softening by introducing the concepts of thrombosis and embolism (Virchow, R. Über die akute Entzündung der Artérien. Arch. Für Pathol. Anat. Und Physiol. Und Für Klin. Med. (Virchow Arch.) 1847, 1, 272–378.):
 
 ::: {.callout-note appearance="minimal" icon="true"}
-"These clots never originate in the local circulation but are torn off at a distance and carried along in the blood stream as far as they can go" *(Rudolf Virchow)*
+"These clots never originate in the local circulation\
+but are torn off at a distance and carried along in the blood stream\
+as far as they can go"
+
+*(Rudolf Virchow)*
 :::
 
-Early Knowledge and Anatomical Findings Understanding brain anatomy, particularly the arteries, has improved immensely over the centuries. Initially, anatomical diagrams of the brain lacked detail regarding blood vessels, leaving a gap for a long time. The discovery and study of brain arteries may be divided into two eras: the first focused on observing the major arteries along the brain's base, while the second concentrated on studying the branching patterns in detail through techniques like intra-arterial injection. Charles Foix (1882–1927) - the first modern vascular neurologist - made significant contributions by translating anatomical knowledge into practical clinical applications (@caplan1990).
+Early Knowledge and Anatomical Findings
 
-Stroke Concept, Pathophysiology, Stroke Imaging The 19th century introduced concepts like cerebral ischemia and infarction, now understood as the most common forms of stroke. During this period, systematic research into the pathophysiology of cerebrovascular diseases (CVD) laid the foundation for modern neurology.
+Understanding brain anatomy, particularly the arteries, has improved immensely over the centuries. Initially, anatomical diagrams of the brain lacked detail regarding blood vessels, leaving a gap for a long time. The discovery and study of brain arteries may be divided into two eras: the first focused on observing the major arteries along the brain's base, while the second concentrated on studying the branching patterns in detail through techniques like intra-arterial injection. Charles Foix (1882–1927) - the first modern vascular neurologist - made significant contributions by translating anatomical knowledge into practical clinical applications [@caplan1990].
 
-Imaging has been pivotal in the evolution of stroke treatment - a significant breakthroughs occurred only in the 20th century when computed tomography (CT) and magnetic resonance imaging (MRI) were established. These advancements have revolutionized the diagnosis and treatment of strokes effectively by quickly identifying large vessel occlusions salvaging the ischemic penumbra—a critical area around the core of an ischemic stroke (@astrup1981).
+Stroke Concept, Pathophysiology, Stroke Imaging
 
-Stroke Units and Trials Before 1950, a clinical management was barely existing. It was Charles Miller Fisher (1913–2012) who challenged old beliefs and newly described transient ischaemic attacks (@fisher2001). Implementing specialized stroke units (@drouin2023) in hospitals that are dedicated solely to stroke patients further evolved the clinical management of stroke. The first stroke unit was described in the 1950s, and subsequent studies throughout the 20th century demonstrated that organized stroke care significantly reduces mortality and improves outcomes. In 1957, the first clinical trial started investigating anticoagulant therapy in strokes. The development of stroke registries has also contributed to improving care quality by providing feedback on clinical practices through the collected data.
+The 19th century introduced concepts like cerebral ischemia and infarction, now understood as the most common forms of stroke. During this period, systematic research into the pathophysiology of cerebrovascular diseases (CVD) laid the foundation for modern neurology.
 
-## Defintions
+Imaging has been pivotal in the evolution of stroke treatment - a significant breakthroughs occurred only in the 20th century when computed tomography (CT) and magnetic resonance imaging (MRI) were established. These advancements have revolutionized the diagnosis and treatment of strokes effectively by quickly identifying large vessel occlusions salvaging the ischemic penumbra—a critical area around the core of an ischemic stroke [@astrup1981].
+
+Stroke Units and Trials
+
+Before 1950, a clinical management was barely existing. It was Charles Miller Fisher (1913–2012) who challenged old beliefs and newly described transient ischaemic attacks [@fisher2001]. Implementing specialized stroke units [@drouin2023] in hospitals that are dedicated solely to stroke patients further evolved the clinical management of stroke. The first stroke unit was described in the 1950s, and subsequent studies throughout the 20th century demonstrated that organized stroke care significantly reduces mortality and improves outcomes. In 1957, the first clinical trial started investigating anticoagulant therapy in strokes. The development of stroke registries has also contributed to improving care quality by providing feedback on clinical practices through the collected data.
+
+## Definitions
 
 In the present study, the term "sex" as it pertains to ischemic stroke shall be construed as a truncated form of biological sex. The present study recognizes the existence of a spectrum of biological sex. The concept of gender encompasses various social constructs such as gender identity, expression, roles, and stereotypes, which are attributed to individuals who identify as female, male, or gender diverse. Although sex and gender are not binary, the majority of data collection in trials and cohorts has been binary in nature, using the two terms interchangeably. Therefore, due to the retrospective nature of data collection, the simplified categories of "women/men" or "female/male" are employed.
 
 ## Definition of ischemic stroke
 
-The word apoplexy was already in use by Hippocrates circa 400 BC and ascribed mainly to a nontraumatic brain injury. (Hippocrates. The Genuine Works of Hippocrates: Translated From the Greek With a Preliminary Discourse and Annotations by Francis Adams. Adams, trans-ed.Baltimore, MD: Williams & Wilkins; 1939.) In "Physico-Medical Essay Concerning the Late Frequencies of Apoplexies," Willian Cole very likely described the word stroke the first time. (Cole W. A Physico-Medical Essay Concerning the Late Frequency of Apoplexies Together With a General Method of Their Prevention and Cure: In a Letter to a Physician. Oxford, United Kingdom; The Theater; 1869. Reprinted by: New York, NY: Classics of Neurology & Neurosurgery Library; 1995.) @cole1693
+The word *apoplexy* was already in use by Hippocrates about 400 BC and ascribed mainly to a nontraumatic brain injury. (Hippocrates. The Genuine Works of Hippocrates: Translated From the Greek With a Preliminary Discourse and Annotations by Francis Adams. Adams, trans-ed.Baltimore, MD: Williams & Wilkins; 1939.) In "Physico-Medical Essay Concerning the Late Frequencies of Apoplexies," Willian Cole very likely described the word stroke the first time. (Cole W. A Physico-Medical Essay Concerning the Late Frequency of Apoplexies Together With a General Method of Their Prevention and Cure: In a Letter to a Physician. Oxford, United Kingdom; The Theater; 1869. Reprinted by: New York, NY: Classics of Neurology & Neurosurgery Library; 1995.) [@cole1693]
 
-Today a modern, updated definition is followed: Sacco and coworkers defined infarction of the "central nervous system (CNS) or spinal cord, or retinal cell death attributable to ischemia, based on 1. pathological, imaging, or other objective evidence of cerebral, spinal cord, or retinal focal ischemic injury in a defined vascular distribution; or 2. clinical evidence of cerebral, spinal cord, or retinal focal ischemic injury based on symptoms persisting ≥24 hours or until death, and other etiologies excluded." (@sacco2013)
+Today a modern, updated definition is followed: Sacco and coworkers defined infarction of the "central nervous system (CNS) or spinal cord, or retinal cell death attributable to ischemia, based on 1. pathological, imaging, or other objective evidence of cerebral, spinal cord, or retinal focal ischemic injury in a defined vascular distribution; or 2. clinical evidence of cerebral, spinal cord, or retinal focal ischemic injury based on symptoms persisting ≥24 hours or until death, and other etiologies excluded." [@sacco2013]
 
 Ischemic stroke is further defined as "episode of neurological dysfunction caused by focal cerebral, spinal, or retinal infarction." and silent infarction of the CNS as "imaging or neuropathological evidence of CNS infarction, without a history of acute neurological dysfunction attributable to the lesion."
 
 ## Importance of studying sex differences in ischemic stroke
 
-Investigating ischemic stroke with an emphasis on the differential attainment of biological sex is essential for enhancing our understanding of the disease. It ultimately leads to more effective, individualized therapies for both sexes. Sexual dimorphism in brain structure and function, hormonal states, and underlying genetics might influence the risk for stroke, the course of the disease, and its recuperation (Szadvári et al., 2023). By looking at these differences, researchers may be able to find risk factors and protective mechanisms that are unique to each sex. This could lead to new ideas for targeted therapies that are made to meet the needs of each sex.
+Investigating ischemic stroke with an emphasis on the differential attainment of biological sex is essential for enhancing our understanding of the disease. It ultimately leads to more effective, individualized therapies for both sexes. Sexual dimorphism in brain structure and function, hormonal states, and underlying genetics might influence the risk for stroke, the course of the disease, and its recuperation [@szadvári2023]. By looking at these differences, researchers may be able to find risk factors and protective mechanisms that are unique to each sex. This could lead to new ideas for targeted therapies that are made to meet the needs of each sex.
 
-When analyzing sex as a biological variable, it is imperative to examine differences using adequate scientific methodologies. Their absence may result in misunderstanding of findings, exaggeration of sex differences, or concealment of sex-specific effects when data from males and females are simply aggregated. Out of 147 papers from many scientific fields, Garcia-Sifuentes and Maney discovered that researchers often failed to statistically assess whether the treatment response varied across sexes. To circumvent these difficulties, it is essential that researchers examine interactions between sex and other factors, instead of only comparing outcomes within each sex (Garcia-Sifuentes and Maney, 2021).
+When analyzing sex as a biological variable, it is imperative to examine differences using adequate scientific methodologies. Their absence may result in misunderstanding of findings, exaggeration of sex differecunces, or concealment of sex-specific effects when data from males and females are simply aggregated. Out of 147 papers from many scientific fields, Garcia-Sifuentes and Maney discovered that researchers often failed to statistically assess whether the treatment response varied across sexes. To circumvent these difficulties, it is essential that researchers examine interactions between sex and other factors, instead of only comparing outcomes within each sex [@garcia-sifuentes2021].
 
 ## Translational links between age and the (patho)physiological basis of sex differences within the neurovascular unit
 
 ## Age, Neurovascular Unit and Sex
 
-The neurovascular unit - introduced by del Zoppo in 2006 - describes the concept focuses not only on the neuron itself, but rather holistically on the complex of neurons and the supplying (micro)vessels aside from astrocytes, other glial cells, and resident inflammatory cells @delzoppo2006. Translational research on the neurovascular unit (NVU) has shown significant sex variations in the response to ischemic stroke @tang2022. In premenopausal women, estrogen and progesterone exert neuroprotective effects by regulating the elements of the NVU. Estrogen increases neuronal survival, facilitates vasodilation, diminishes excitotoxicity, and preserves blood-brain barrier integrity. Death of neurons is minimized, astrocyte activation is limited, and cerebral perfusion is enhanced, hypothesizing better stroke outcomes for women compared to men of equivalent age.
+The neurovascular unit - introduced by del Zoppo in 2006 - describes the concept focuses not only on the neuron itself, but rather holistically on the complex of neurons and the supplying (micro)vessels aside from astrocytes, other glial cells, and resident inflammatory cells [@delzoppo2006]. Translational research on the neurovascular unit (NVU) has shown significant sex variations in the response to ischemic stroke [@tang2022].
 
-On the other hand, postmenopausal women have reduced (protective) hormones, which may increase vulnerability to stroke and worse results compared to age-matched males (@lang2008). The aging process modifies hormonal equilibrium and immunological reactions, weakening neuroprotective systems and perhaps making hormone replacement therapy less effective or even harmful. Moreover, genetic and epigenetic factors—such as variations in X chromosome gene expression and histone modifications—contribute to sex-specific responses to stroke. These elements affect neuronal apoptotic mechanisms, immune cell activation, and vascular functionality within the neurovascular unit (@tang2022).
+In *premenopausal* women, estrogen and progesterone exert neuroprotective effects by regulating the elements of the NVU. Estrogen increases neuronal survival, facilitates vasodilation, diminishes excitotoxicity, and preserves blood-brain barrier integrity. Death of neurons is minimized, astrocyte activation is limited, and cerebral perfusion is enhanced, hypothesizing better stroke outcomes for women compared to men of equivalent age.
+
+On the other hand, *postmenopausal* women have reduced (protective) hormones, which may increase vulnerability to stroke and worse results compared to age-matched males [@lang2008]. The aging process modifies hormonal equilibrium and immunological reactions, weakening neuroprotective systems and perhaps making hormone replacement therapy less effective or even harmful. Moreover, genetic and epigenetic factors—such as variations in X chromosome gene expression and histone modifications—contribute to sex-specific responses to stroke. These elements affect neuronal apoptotic mechanisms, immune cell activation, and vascular functionality within the neurovascular unit [@tang2022].
 
 ## Epidemiology of ischemic stroke
 
@@ -72,17 +76,17 @@ In the female population, stroke is more frequently observed as the initial pres
 
 The increase in cardiovascular risk factors observed from 1990 to 2010 suggests a worldwide epidemiological shift, although it conceals significant regional variations [@bennett2014]. Hypertension, tobacco consumption, alcohol consumption, and a high body mass index were essential risk factors across North and South America, Europe, and Asia-Pacific. Conversely, being underweight during childhood, exposure to household air pollution from solid fuels, suboptimal breastfeeding practices, and iron deficiency were found to be primary contributors to disease burden in most African regions [@yusuf2020].
 
-Ethnic variations contribute as well to the observed sex differences in stroke. For example, African American individuals in the United States are more susceptible to stroke than their non-Hispanic white counterparts. A further disparity in stroke risk exists between African American men and women, with the former having a 1.5-fold higher risk. Similarly, non-Hispanic white men have a 1.3-fold higher risk of stroke compared to non-Hispanic white women. [@howard2019][@graham2015]
+Ethnic variations contribute as well to the observed sex differences in stroke. For example, African American individuals in the United States are more susceptible to stroke than their non-Hispanic white counterparts. A further disparity in stroke risk exists between African American men and women, with the former having a 1.5-fold higher risk. Similarly, non-Hispanic white men have a 1.3-fold higher risk of stroke compared to non-Hispanic white women. [@howard2019; @graham2015]
 
 ## Temporal trends
 
 Two studies are presented, one concerning stroke incidences and one concerning stroke management differences in temporal trends.
 
-Research from the The Greater Cincinnati/Northern Kentucky Stroke Study (GCNKSS) indicated that both sexes experienced notable reductions in the overall incidence of stroke and ischemic stroke from 1993/1994 to 2015. In women, the incidence of IS declined from 202 per 100,000 in 1993/1994 to 151 per 100,000 in 2015 (P\<0.05). In men, it decreased from 254 to 182 per 100,000 (P\<0.05). In age-specific analyses, the incidence among individuals aged 65–84 showed a significant decrease in both sexes. In the 20–44 age group, stroke incidence remained stable among women, while it significantly increased among men, rising from 15 to 31 per 100,000 (P\<0.05). In the age group of 85 and older, there was a significant decrease in incidence among men, whereas no such decrease was observed in women. In 2015, the 30-day case fatality rates indicated that women's rate rose to 12.8%, exceeding men's rate of 9.2% (P\<0.05). This represented the first instance of women's rates surpassing those of men, even after controlling for age and race. The findings indicate that, although the overall incidence of IS has declined, disparities based on sex remain evident in certain age cohorts. @madsen2020
+Research from the The Greater Cincinnati/Northern Kentucky Stroke Study (GCNKSS) indicated that both sexes experienced notable reductions in the overall incidence of stroke and ischemic stroke from 1993/1994 to 2015. In women, the incidence of IS declined from 202 per 100,000 in 1993/1994 to 151 per 100,000 in 2015 (P\<0.05). In men, it decreased from 254 to 182 per 100,000 (P\<0.05). In age-specific analyses, the incidence among individuals aged 65–84 showed a significant decrease in both sexes. In the 20–44 age group, stroke incidence remained stable among women, while it significantly increased among men, rising from 15 to 31 per 100,000 (P\<0.05). In the age group of 85 and older, there was a significant decrease in incidence among men, whereas no such decrease was observed in women. In 2015, the 30-day case fatality rates indicated that women's rate rose to 12.8%, exceeding men's rate of 9.2% (P\<0.05). This represented the first instance of women's rates surpassing those of men, even after controlling for age and race. The findings indicate that, although the overall incidence of IS has declined, disparities based on sex remain evident in certain age cohorts. [@madsen2020]
 
-From the Stroke Registry of Northwestern Germany covering 2000 to 2018 stroke treatment underwent relevant changes concerning women and men. In the early 2000s, women were less likely than men to receive intravenous thrombolysis (IVT) for acute ischemic stroke (AIS) when only age and admission year were considered. However, this disparity shifted in the period from 2010 to 2018, with unadjusted analyses showing women were slightly more likely to receive IVT. Importantly, these differences between men and women in IVT administration went away when other clinical factors were taken into account, such as the severity of the stroke at admission, the time from the start of symptoms to admission, comorbidities, and the cause of the stroke. This suggests that earlier observed disparities were not due to inherent sex differences but were influenced by other variables. Overall, the utilization of IVT increased substantially for both sexes, from 2.4% in 2000 to 20.5% in 2018, reflecting advancements in stroke treatment protocols. @bonkhoff2021
+From the Stroke Registry of Northwestern Germany covering 2000 to 2018 stroke treatment underwent relevant changes concerning women and men. In the early 2000s, women were less likely than men to receive intravenous thrombolysis (IVT) for acute ischemic stroke (AIS) when only age and admission year were considered. However, this disparity shifted in the period from 2010 to 2018, with unadjusted analyses showing women were slightly more likely to receive IVT. Importantly, these differences between men and women in IVT administration went away when other clinical factors were taken into account, such as the severity of the stroke at admission, the time from the start of symptoms to admission, comorbidities, and the cause of the stroke. This suggests that earlier observed disparities were not due to inherent sex differences but were influenced by other variables. Overall, the utilization of IVT increased substantially for both sexes, from 2.4% in 2000 to 20.5% in 2018, reflecting advancements in stroke treatment protocols. [@bonkhoff2021]
 
-In contrast, women consistently had a higher likelihood of receiving intra-arterial therapy (IAT) during the 2010–2018 period, even after adjusting for multiple covariates (odds ratio for women receiving intra-arterial treatment: 1.12 (95% CI, 1.08–1.15)). Interestingly, clinical factors like age, premorbid disability, stroke severity, or cause could not fully account for this difference. The overall use of IAT also rose markedly during this time, from 1.7% in 2010 to 9.7% in 2018, signifying its growing role in AIS management. The reasons behind the higher IAT rates in women remain unclear Moreover, despite having more severe strokes upon admission (odds ratios of 1.10 and 1.09 for the periods 2000–2009 and 2010–2018, respectively), women experienced better early outcomes compared to men. They also had lower in-hospital mortality rates (odds ratios of 0.92 and 0.91 for the respective periods) and were more likely to be discharged with favorable functional outcomes. The findings remained consistent even after adjusting for covariates, suggesting that women may have a more favorable in-hospital recovery. @bonkhoff2021
+In contrast, women consistently had a higher likelihood of receiving intra-arterial therapy (IAT) during the 2010–2018 period, even after adjusting for multiple covariates (odds ratio for women receiving intra-arterial treatment: 1.12 (95% CI, 1.08–1.15)). Interestingly, clinical factors like age, premorbid disability, stroke severity, or cause could not fully account for this difference. The overall use of IAT also rose markedly during this time, from 1.7% in 2010 to 9.7% in 2018, signifying its growing role in AIS management. The reasons behind the higher IAT rates in women remain unclear Moreover, despite having more severe strokes upon admission (odds ratios of 1.10 and 1.09 for the periods 2000–2009 and 2010–2018, respectively), women experienced better early outcomes compared to men. They also had lower in-hospital mortality rates (odds ratios of 0.92 and 0.91 for the respective periods) and were more likely to be discharged with favorable functional outcomes. The findings remained consistent even after adjusting for covariates, suggesting that women may have a more favorable in-hospital recovery. [@bonkhoff2021]
 
 These temporal trends illustrate that while some sex disparities in stroke treatment, such as in IVT administration, have diminished over time, others persist. Overall, the evolution of stroke treatment reflects a growing awareness and adjustment to sex differences.
 
@@ -92,179 +96,160 @@ Understanding the sex differences in the risk factors is crucial for developing 
 
 ### Nonmodifiable Risk Factors
 
-#### Age and Sex Relationship in Stroke Risk - *Age – A Silent Amplifier*
+#### Age and Sex Relationship in Stroke Risk
 
-Age is one of the most significant risk factors for stroke, but it plays out differently between the sexes. The relationship between age and stroke incidence is nonlinear, with the risk of stroke increasing more rapidly after age 65 for both women and men (@reeves2008). Women are typically five years older than men when experiencing a stroke. This difference is usually attributed to an estrogen-protective effect and a generally more extended life expectancy of women (@appelros2009). A decline in estrogen levels—as after menopause—levels out their risk of stroke compared to men. Age significantly impacts patient outcomes following a stroke, which occurs primarily in older adults. As women are, on average, older when a stroke occurs, their comorbidities and pre-existing conditions may ultimately complicate long-term outcomes. Aged stroke patients have higher mortality and morbidity and poorer functional recovery than younger patients. Ischemic stroke patients are biologically older than their chronological age, and the difference between biological age and actual chronological age would indicate an individual's ageing level. In younger generations, males have a higher incidence of ischemic stroke and poorer functional outcomes than females (@rexrode2022).
+Age is one of the most significant risk factors for stroke, but it plays out differently between the sexes. The relationship between age and stroke incidence is nonlinear, with the risk of stroke increasing more rapidly after age 65 for both women and men [@reeves2008]. Women are typically five years older than men when experiencing a stroke. This difference is usually attributed to an estrogen-protective effect and a generally more extended life expectancy of women [@appelros2009]. A decline in estrogen levels—as after menopause—levels out their risk of stroke compared to men.
 
-The higher stroke risk among women at younger ages likely reflects risks related to pregnancy and the postpartum state, as well as other hormonal factors, such as the use of hormonal contraceptives (@demel2018). In middle age, the rates of ischemic stroke begin to increase for women, concurrent with the onset of menopause and loss of female sex hormones. After middle age, stroke rates continue to grow in women, with some reports of higher stroke incidence in older women (age \>85 years) compared with older men (@bushnell2018). Mortality risk in ischemic stroke is high, with estimated 30-day case fatalities ranging from 16% to 32%. This complex relationship between age and sex complicates the assessment of sex differences in stroke-related mortality, as no independent effect of sex on stroke mortality risk was observed. Earlier reports suggested higher mortality in women because of a nonlinear relationship between age and mortality rate. More recently, it was suggested that higher mortality—especially in older women—could most likely be explained by advanced age, stroke severity, stroke morbidity, and atrial fibrillation as a risk factor (@reeves2008).
+Age significantly impacts patient outcomes following a stroke, which occurs primarily in older adults. As women are, on average, older when a stroke occurs, their comorbidities and pre-existing conditions may ultimately complicate long-term outcomes. Aged stroke patients have higher mortality and morbidity and poorer functional recovery than younger patients. Ischemic stroke patients are biologically older than their chronological age, and the difference between biological age and actual chronological age would indicate an individual's ageing level. In younger generations, males have a higher incidence of ischemic stroke and poorer functional outcomes than females [@rexrode2022].
 
-### Pre-Stroke Disability - *An Underestimated Burden*
+The higher stroke risk among women at younger ages likely reflects risks related to pregnancy and the postpartum state, as well as other hormonal factors, such as the use of hormonal contraceptives [@demel2018]. In middle age, the rates of ischemic stroke begin to increase for women, concurrent with the onset of menopause and loss of female sex hormones. After middle age, stroke rates continue to grow in women, with some reports of higher stroke incidence in older women (age \>85 years) compared with older men [@bushnell2018].
 
-Pre-stroke disabilities also influence stroke outcomes to a great extent. Women are more likely to have pre-stroke disabilities than men (@hoyer2022). For instance, conditions like arthritis, osteoporosis, and age-related mobility issues are more prevalent in women, leading to greater dependency on daily activities even before a stroke occurs (@ospel2023). Additionally, women often live alone more frequently than men. Living alone may have an impact on stroke recognition and immediate access to acute care. Furthermore, it may also act as a confounder of sex differences when determining functional outcome (@renoux2017).
+Mortality risk in ischemic stroke is high, with estimated 30-day case fatalities ranging from 16% to 32%. This complex relationship between age and sex complicates the assessment of sex differences in stroke-related mortality, as no independent effect of sex on stroke mortality risk was observed. Earlier reports suggested higher mortality in women because of a nonlinear relationship between age and mortality rate. More recently, it was suggested that higher mortality—especially in older women—could most likely be explained by advanced age, stroke severity, stroke morbidity, and atrial fibrillation as a risk factor [@reeves2008].
+
+### Pre-Stroke Disability
+
+In addition to age, another nonmodifiable factor is pre-stroke disability. Women are more likely to have pre-stroke disabilities than men [@hoyer2022]. For instance, conditions like arthritis, osteoporosis, and age-related mobility issues are more prevalent in women, leading to greater dependency on daily activities even before a stroke occurs [@ospel2023]. Additionally, women often live alone more frequently than men. Living alone may have an impact on stroke recognition and immediate access to acute care. Furthermore, it may also act as a confounder of sex differences when determining functional outcome [@renoux2017].
 
 ### Modifiable Risk Factors and Sex Differences
 
-Modifiable risk factors are crucial because intervention strategies to reduce them may lower stroke risk. Several well-established risk factors contribute to the risk of stroke—for example, hypertension, diabetes mellitus, hyperlipidemia, and smoking. In addition, new or emerging risk factors are continuously being studied (@peters2020). Most reliable information on conventional risk factors and their differences between the sexes comes from the INTERSTROKE research, which was a case-control study including 26,919 first-ever stroke cases from 32 nations (@odonnell2016). One of the key messages was that almost 90% of the population-attributable risk (PAR) for stroke may be attributed to many modifiable risk factors in both women and men. These factors encompass arterial hypertension, active smoking, diabetes mellitus, dietary habits and abdominal obesity (assessed via waist-to-hip ratio), physical inactivity, amount of alcohol intake, cardiac conditions (such as atrial fibrillation, previous myocardial infarction, rheumatic valve disease, or prosthetic heart valves), and pathological lipid profiles.
+Modifiable risk factors are crucial because intervention strategies to reduce them may lower stroke risk. Several well-established risk factors contribute to the risk of stroke—for example, hypertension, diabetes mellitus, hyperlipidemia, and smoking. In addition, new or emerging risk factors are continuously being studied [@peters2020]. Most reliable information on conventional risk factors and their differences between the sexes comes from the INTERSTROKE research, which was a case-control study including 26,919 first-ever stroke cases from 32 nations [@odonnell2016].
+
+One of the key messages was that almost 90% of the population-attributable risk (PAR) for stroke may be attributed to many modifiable risk factors in both women and men. These factors encompass arterial hypertension, active smoking, diabetes mellitus, dietary habits and abdominal obesity (assessed via waist-to-hip ratio), physical inactivity, amount of alcohol intake, cardiac conditions (such as atrial fibrillation, previous myocardial infarction, rheumatic valve disease, or prosthetic heart valves), and pathological lipid profiles. Among these risk factors, hypertension stands out due to its significant impact on stroke risk across both sexes, yet it manifests differently in women and men.
 
 ### Hypertension
 
-Arterial Hypertension
+Hypertension is one of the leading risk factors for stroke in both sexes, but the aforementioned age-specific sex differences also apply to hypertension. High blood pressure is a major risk factor that can be modified to reduce the risk of cardiovascular disease [@peters2020]. Irrespective of whether a patient is classified as having arterial hypertension, older age comes with higher blood pressure. About two-thirds of people aged 65 or older have hypertensive blood pressure. After menopause, women are more susceptible to hypertension due to hormonal changes that affect blood vessel elasticity and salt sensitivity. Studies indicate that even after adjusting for antihypertensive medication use, women with hypertension have a higher stroke risk than men [@madsen2019].
 
-Hypertension is one of the leading risk factors for stroke in both sexes, but the aforementioned age-specific sex differences also apply to hypertension. High blood pressure is a major risk factor that can be modified to reduce the risk of cardiovascular disease (@peters2020). Irrespective of whether a patient is classified as having arterial hypertension, older age comes with higher blood pressure. About two-thirds of people aged 65 or older have hypertensive blood pressure. After menopause, women are more susceptible to hypertension due to hormonal changes that affect blood vessel elasticity and salt sensitivity. Studies indicate that even after adjusting for antihypertensive medication use, women with hypertension have a higher stroke risk than men (@madsen2019). In the INTERSTROKE study, hypertension contributed to a higher PAR in women (52.3%) compared to men (45.2%). The odds ratios for hypertension were comparable across women (OR 3.21; 99% CI, 2.74–3.76) and men (OR 2.87; 99% CI, 2.55–3.23), highlighting the significance of hypertension as a stroke risk factor in both sexes (@odonnell2016). Not only does mean blood pressure seem to predict stroke, but variability in blood pressure is also a risk factor independent of mean blood pressure. Recent research analyzing four randomized trials of patients with hypertension, previous stroke, or previous transient ischemic attack found that variability in 2 to 10 blood pressure measures over two years is a risk factor for stroke independent of mean blood pressure (@rothwell2010a).
+In the INTERSTROKE study, hypertension contributed to a higher PAR in women (52.3%) compared to men (45.2%). The odds ratios for hypertension were comparable across women (OR 3.21; 99% CI, 2.74–3.76) and men (OR 2.87; 99% CI, 2.55–3.23), highlighting the significance of hypertension as a stroke risk factor in both sexes [@odonnell2016]. Not only does mean blood pressure seem to predict stroke, but variability in blood pressure is also a risk factor independent of mean blood pressure. Recent research analyzing four randomized trials of patients with hypertension, previous stroke, or previous transient ischemic attack found that variability in 2 to 10 blood pressure measures over two years is a risk factor for stroke independent of mean blood pressure [@rothwell2010a].
 
 ### Atrial Fibrillation
 
-Women have a higher incidence of atrial fibrillation (AF) but tend to be underdiagnosed and undertreated. AF is the predominant form of sustained cardiac arrhythmia and has a five-fold risk of stroke and thromboembolic events ([@lip2017]). Although men have a higher prevalence of AF, women (especially those ≥75 years old) appear to be at an increased risk for cerebrovascular events—stroke in particular (@feinberg1995). On the other hand, female patients with AF aged less than 65 have no excess risk of stroke compared to males. Cardiac risk factors, including atrial fibrillation, were associated with a greater odds ratio (OR) for stroke in women (OR 4.06; 99% CI, 3.06–5.40) than in men (OR 2.73; 99% CI, 2.21–3.37). Factors contributing to this gap may include less determined treatment initiation for women or concerns about bleeding risks. Gage and colleagues developed the CHADS2 stroke risk stratification schema (C = congestive heart failure \[1 point\], H = high blood pressure \[1 point\], A = age 75 or older \[1 point\], D = diabetes mellitus \[1 point\], and S2 = previous stroke or TIA \[2 points\]) combining two other classification schemes ([@gage2001]). However, the female sex has not consistently been included in risk stratification models but was noted to independently confer elevated risk—for example, by the SPAF Investigators (relative risk \[RR\] 1.6, p=0.01, [@hart1999]). Because of the limitations of the CHADS2 score in secondary prevention and as further development, the CHA₂DS₂-VASc index arose, refining the risk calculation by adding three more variables (V = Vascular Disease \[1 point\], A = Age \> 65 \[1 point\], and Sc = Sex Category \[female = 1\], [@lip2010a][@lip2010]). Differences in the vasculature and myocardial structure based on sex may lead to changes in blood flow, shear stress, and endothelial function. Additionally, research indicates a possible increase in systemic inflammatory and procoagulant markers, thrombogenic particles, and platelet aggregation in females, particularly after menopause, which can contribute to a prothrombotic environment (https://doi.org/10.1007/978-3-319-77932-4_17).
+Women have a higher incidence of atrial fibrillation (AF) but tend to be underdiagnosed and undertreated. AF is the predominant form of sustained cardiac arrhythmia and has a five-fold risk of stroke and thromboembolic events [@lip2017]. Although men have a higher prevalence of AF, women (especially those ≥75 years old) appear to be at an increased risk for cerebrovascular events—stroke in particular [@feinberg1995].
+
+On the other hand, female patients with AF aged less than 65 have no excess risk of stroke compared to males. Cardiac risk factors, including atrial fibrillation, were associated with a greater odds ratio (OR) for stroke in women (OR 4.06; 99% CI, 3.06–5.40) than in men (OR 2.73; 99% CI, 2.21–3.37). Factors contributing to this gap may include less determined treatment initiation for women or concerns about bleeding risks. Differences in the vasculature and myocardial structure based on sex may lead to changes in blood flow, shear stress, and endothelial function. Additionally, research indicates a possible increase in systemic inflammatory and procoagulant markers, thrombogenic particles, and platelet aggregation in females, particularly after menopause, which can contribute to a prothrombotic environment [@taqueti2018].
+
+Gage and colleagues developed the $CHADS_2$ stroke risk stratification schema (C = congestive heart failure \[1 point\], H = high blood pressure \[1 point\], A = age 75 or older \[1 point\], D = diabetes mellitus \[1 point\], and S2 = previous stroke or TIA \[2 points\]) combining two other classification schemes [@gage2001]. Biological sex has not consistently been included in risk stratification models, but was noted to independently confer elevated risk—for example, by the SPAF Investigators (female relative risk \[RR\] 1.6, p=0.01, [@hart1999]). Consequently, the $CHA₂DS₂-VASc$ index arose, refining the risk calculation by adding three more variables (V = Vascular Disease \[1 point\], A = Age \> 65 \[1 point\], and Sc = Sex Category \[female = 1\], [@lip2010a][@lip2010]).
 
 ### Diabetes Mellitus
 
-Diabetes mellitus Type 2 (T2DM) is an established risk factor for cardiovascular disease (CVD), including sex differences in risk, pathophysiology, and complications ([@kautzky-willer2016]). Especially the latter translates into a higher risk of coronary heart disease and stroke for females. The reasons are not entirely understood, but in women with T2DM, traditional risk factors, such as hypertension, dyslipidemia, and obesity, may contribute more to the increased risk than in men ([@al-salameh2019]). Diabetic women have a 3.5-fold risk of cardiovascular complications compared to non-diabetic women ([@franconi2012]); for men, the risk is slightly lower (2.1-fold). Premenopausal women usually have a lower risk of cardiovascular diseases than age-matched men and postmenopausal women, but this advantage disappears once women are afflicted with diabetes mellitus ([@ren2004]). Studies have shown that patients who previously had no incident cerebrovascular events, the presence of characteristics of the metabolic syndrome—including diabetes—was associated with a higher risk of incident stroke. Women's stroke risk was even more pronounced (hazard ratio: 2.0) than men's (hazard ratio: 1.1) when metabolic syndrome was present. T2DM is one crucial piece contributing to sex differences in cerebrovascular disease.
+Diabetes mellitus Type 2 (T2DM) is an established risk factor for cardiovascular disease (CVD), including sex differences in risk, pathophysiology, and complications [@kautzky-willer2016]. Especially the latter translates into a higher risk of coronary heart disease and stroke for females. The reasons are not entirely understood, but in women with T2DM, traditional risk factors, such as hypertension, dyslipidemia, and obesity, may contribute more to the increased risk than in men [@al-salameh2019].
 
-### Obesity and Metabolic Syndrome - *Obesity – A Weightier Risk for Women*
+Diabetic women have a 3.5-fold risk of cardiovascular complications compared to non-diabetic women [@franconi2012]; for men, the risk is slightly lower (2.1-fold). Premenopausal women usually have a lower risk of cardiovascular diseases than age-matched men and postmenopausal women, but this advantage disappears once women are afflicted with diabetes mellitus [@ren2004]. Studies have shown that patients who previously had no incident cerebrovascular events, the presence of characteristics of the metabolic syndrome—including diabetes—was associated with a higher risk of incident stroke. Women's stroke risk was even more pronounced (hazard ratio: 2.0) than men's (hazard ratio: 1.1) when metabolic syndrome was present.
 
-Obesity is a well-known risk factor in stroke, but it seems that the association between obesity and stroke risk is stronger for women. Reasons may potentially be due to sex-specific fat distribution and hormonal influences. Obesity in women is also more closely linked with type 2 diabetes, which further elevates their stroke risk. The concept of metabolic syndrome was initially introduced approximately two decades ago in 1988 by Reaven, and since then, different national and international organizations have proposed various definitions. The National Cholesterol Education Program (NCEP) Adult Treatment Panel III gained popularity for its simplicity, relying on waist circumference, blood pressure, and plasma levels of fasting glucose, triglycerides, and high-density lipoprotein cholesterol. In a substudy of the Northern Manhattan Study, having the characteristics of the metabolic syndrome was associated with a heightened risk of stroke (hazard ratio: 1.5; 95% confidence interval: 1.1–2.2) even after adjusting for sociodemographic and risk factors. Moreover, women's stroke risk was even more pronounced (hazard ratio: 2.0; 95% confidence interval: 1.3–3.1) than men's (hazard ratio: 1.1; 95% confidence interval: 0.6–1.9). In the INTERSTROKE study, abdominal obesity contributed to a higher PAR in women (25.8%) compared to men (12.7%). Interestingly, abdominal obesity and cardiac factors had comparable prevalence rates across the sexes, although they are linked to an elevated stroke risk in women.
+T2DM is one crucial piece contributing to sex differences in cerebrovascular disease. Related to diabetes is the issue of obesity and metabolic syndrome, which also show distinct patterns between women and men in relation to stroke risk.
+
+### Obesity and Metabolic Syndrome
+
+Obesity is a well-known risk factor in stroke, but it seems that the association between obesity (body mass index, ≥30 kg/m^2^, and higher waist-to-hip ratio) and stroke risk is stronger for women. [@peters2020; @kernan2013a] Reasons may potentially be due to sex-specific fat distribution and hormonal influences. Obesity in women is also more closely linked with type 2 diabetes, which further elevates their stroke risk. The concept of metabolic syndrome was initially introduced approximately two decades ago in 1988 by Reaven, and since then, different national and international organizations have proposed various definitions. [@reaven1988]
+
+The National Cholesterol Education Program (NCEP) Adult Treatment Panel III gained popularity for its simplicity, relying on waist circumference, blood pressure, and plasma levels of fasting glucose, triglycerides, and high-density lipoprotein cholesterol. In a substudy of the Northern Manhattan Study, having the characteristics of the metabolic syndrome was associated with a heightened risk of stroke (hazard ratio: 1.5; 95% confidence interval: 1.1–2.2) even after adjusting for sociodemographic and risk factors. Moreover, women's stroke risk was even more pronounced (hazard ratio: 2.0; 95% confidence interval: 1.3–3.1) than men's (hazard ratio: 1.1; 95% confidence interval: 0.6–1.9). [@boden-albala2008]
+
+In the INTERSTROKE study, abdominal obesity contributed to a higher PAR in women (25.8%) compared to men (12.7%). Interestingly, abdominal obesity and cardiac factors had comparable prevalence rates across the sexes, although they are linked to an elevated stroke risk in women. In addition to obesity, dyslipidemia plays a pivotal role in stroke risk, with lipid profiles affecting women and men differently. [@odonnell2016]
 
 ### Dyslipidemia
 
-Blood lipids play a causal role in the probability of having a stroke. The relationship between dyslipidemia and stroke risk is complex, with an increased risk for ischemic stroke with increased total cholesterol and a decreased risk for ischemic stroke with elevated high-density lipoprotein cholesterol. High levels of HDL cholesterol are associated with a lower risk of ischemic stroke, especially small vessel stroke, as opposed to high levels of low-density lipoprotein (LDL) cholesterol, which has been demonstrated to increase the risk of ischemic stroke. Furthermore, despite a possible small increase in hemorrhagic stroke, large-scale randomized clinical studies have shown that using statins lowers the incidence of ischemic and total stroke. Some hypothesized that each lipid-related component might be a unique causal player or that one characteristic, such as apoB, predominates and explains the relationships of related lipoprotein particle entities. The imprecise quantification of atherogenic lipoproteins arises from the significant variation in cholesterol and triglyceride levels among lipoprotein particles. While the levels of LDL cholesterol and triglycerides provide a measure of the circulating lipoprotein-carried lipid substances, they do not accurately reflect the number of atherogenic lipoproteins. However, every circulating atherogenic lipoprotein particle comprises a single apoB molecule. The concentration of apoB molecules in the bloodstream is directly proportional to the number of atherogenic particles present. Cholesterol-rich and triglyceride-rich apolipoprotein-B-containing remnant lipoproteins have emerged as a major driver of human atherosclerosis. As for sex differences, Kurth and colleagues investigated women participating in the Women's Health Study (n = 27,937, aged ≥45 years). Interestingly, after age adjustment, total cholesterol, low-density lipoprotein cholesterol, the total cholesterol to high-density lipoprotein cholesterol ratio, and non-high-density lipoprotein cholesterol were associated with increased risk of ischemic stroke. In the INTERSTROKE study, unfavorable lipid profiles contributed to a higher PAR in women (29.2%) against 25.1% in men.
+Blood lipids significantly impact stroke risk, with higher total cholesterol increasing the risk of ischemic stroke, while higher HDL cholesterol lowers it. Elevated HDL cholesterol is particularly protective against small vessel strokes, whereas high LDL cholesterol raises ischemic stroke risk. Statins effectively reduce both ischemic and overall strokes. ApoB has recently gained attention for its unique role in stroke risk as an individual lipid component. [@hindy2018]
+
+Measuring atherogenic lipoproteins can be difficult due to the variability in cholesterol and triglyceride levels among particles. LDL cholesterol and triglyceride levels reflect the amount of lipid substances but not the number of atherogenic particles. Since each harmful lipoprotein contains one apoB molecule, apoB levels indicate the number of these particles. Cholesterol- and triglyceride-rich remnant lipoproteins with apoB are now recognized as significant contributors to atherosclerosis. [@richardson2020]
+
+Regarding sex differences, a study by Kurth and colleagues examined women in the Women's Health Study, which included 27,937 participants aged 45 and older. After adjusting for age, they found that higher total cholesterol, LDL cholesterol, the ratio of total cholesterol to HDL cholesterol, and non-HDL cholesterol were all linked to an increased risk of ischemic stroke. [@kurth2007] The INTERSTROKE study found an increased risk of unhealthy lipid profiles in women of population-attributable risk (PAR) for stroke (29.2%) as compared to men (25.1%). Biological factors like lipid levels are essential for assessing stroke risk, while lifestyle choices, such as smoking, significantly influence this risk and may affect men and women differently. [@odonnell2016]
 
 ### Smoking
 
-Smoking – A More Potent Hazard for Women Smoking is a highly linked risk factor for cardiovascular morbidity and mortality. The risk for smoking-related disease rises proportionally to the number of cigarettes smoked. Published studies on the associative link of smoking and stroke are highly convincing. While smoking rates have traditionally been higher in men, the adverse effects of smoking on stroke risk are disproportionately greater in women. Research suggests that women smokers have a higher relative risk of stroke compared to their male counterparts. This increased vulnerability may stem from hormonal interactions, as smoking decreases estrogen levels, worsening vascular damage. Moreover, women metabolize nicotine differently, potentially causing more harm. A meta-analysis including 3,980,359 individuals from 81 cohorts and 42,401 strokes indicated that women in Western populations may be more harmed by smoking than men (relative risk ratio 1.10 \[95% confidence interval 1.02–1.18\]) as compared to the Asian population (relative risk ratio 0.97 \[95% confidence interval 0.87–1.09\]). Differences may be due to influences of sex-specific smoking prevalences in certain regions, the generally higher percentage of heavy smokers in men, and the underreporting of smoking habits in women. In the INTERSTROKE study, smoking contributed to a higher PAR in men (16.6%) compared to women (5.3%), which may be because of a greater prevalence of smoking in men (32.4%) than in women (7.7%). Anti-smoking campaigns and cessation programs should therefore focus on women to address this significant modifiable risk factor.
+Smoking is a highly linked risk factor for cardiovascular morbidity and mortality. [@gallucci2020; @ezzati2005] The risk for smoking-related disease rises proportionally to the number of cigarettes smoked. Published studies on the associative link of smoking and stroke are highly convincing. Smoking rates have historically been higher in men, but women face greater stroke risk from smoking. This vulnerability may be due to the fact that smoking lowers estrogen levels, which may increase vascular damage. Women also metabolize nicotine differently, which may also increase the harm.
+
+A meta-analysis including 3,980,359 individuals from 81 cohorts and 42,401 strokes indicated that women in Western populations may be more harmed by smoking than men (relative risk ratio 1.10 \[95% confidence interval 1.02–1.18\]) as compared to the Asian population (relative risk ratio 0.97 \[95% confidence interval 0.87–1.09\]). Differences may be due to influences of sex-specific smoking prevalences in certain regions, the generally higher percentage of heavy smokers in men, and the underreporting of smoking habits in women. [@peters2013]
+
+In the INTERSTROKE study, smoking contributed to a higher PAR in men (16.6%) compared to women (5.3%), which may be because of a greater prevalence of smoking in men (32.4%) than in women (7.7%). Alongside smoking, physical inactivity is another modifiable risk factor that should be considered. [@wang2024]
 
 ### Physical Inactivity
 
-Physical inactivity has been linked to a multitude of adverse health outcomes, including stroke. Individuals who engage in regular physical activity exhibit a decreased susceptibility to stroke and stroke-related mortality when compared to their sedentary counterparts. The correlation between physical activity and stroke may be attributed to the concomitant reduction in blood pressure, diabetes mellitus, and excess body weight. The Women's Health Study reported results from 473 ischemic strokes (in 39,315 women) regarding their ascending kcal per week of leisure-time physical activity. After adjustment for several factors, including age, body mass index, diabetes, and other risk factors, women's stroke risk tended to be lower with increased leisure-time physical activity, particularly walking. A recent systematic review looked at 17 studies that reported levels of physical activity in both women and men. Although no meta-analysis was conducted, the authors concluded a relative risk reduction between 20%–40% for women based on the majority of included studies.
+Physical inactivity has been linked to a multitude of adverse health outcomes, including stroke. [@susts2023] Individuals who engage in regular physical activity exhibit a decreased susceptibility to stroke and stroke-related mortality when compared to their sedentary counterparts. The correlation between physical activity and stroke may be attributed to the concomitant reduction in blood pressure, diabetes mellitus, and excess body weight.
+
+The Women's Health Study reported results from 473 ischemic strokes (in 39,315 women) regarding their ascending kcal per week of leisure-time physical activity. After adjustment for several factors, including age, body mass index, diabetes, and other risk factors, women's stroke risk tended to be lower with increased leisure-time physical activity, particularly walking. [@sattelmair2010] A recent systematic review looked at 17 studies that reported levels of physical activity in both women and men. Although no meta-analysis was conducted, the authors concluded a relative risk reduction between 20%–40% for women based on the majority of included studies. \[ @madsen2022\]
 
 ### Alcohol Consumption
 
-Alcohol Overuse – Gender-Specific Consequences Alcohol consumption and the risk of stroke is associated in a J-shaped fashion. Moderate consumption (≤2 drinks per day in men and ≤1 drink per day in women) seems to confer a reduced stroke risk, while excessive drinking may elevate this risk (@gill1986 @hillbom1999). Alcohol overuse is more prevalent among men, but women are more susceptible to its harmful effects even at lower consumption levels. Due to physiological differences, women have a lower tolerance for alcohol, leading to higher blood alcohol concentrations. Chronic alcohol abuse in women can result in hypertension, atrial fibrillation, and other cardiovascular issues that elevate stroke risk. Moreover, societal stigma may prevent women from seeking help for alcohol dependence, highlighting the need for gender-sensitive interventions. In the INTERSTROKE study, excessive alcohol intake contributed to a higher PAR in men compared to women, which may be because of a greater prevalence of these activities in men (excessive alcohol intake: 7.1% in men versus 2.4% in women, ). One possible mechanism of vascular damage is via hypertension and suboptimal blood pressure management in hypertensive individuals who engage in alcohol consumption (@rantakömi2012 @hillbom2011).
+Alcohol consumption and the risk of stroke is associated in a J-shaped fashion. Moderate consumption (≤2 drinks per day in men and ≤1 drink per day in women) seems to confer a reduced stroke risk, while excessive drinking may elevate this risk [@gill1986, @hillbom1999]. Alcohol overuse is more prevalent among men, but women are more susceptible to its harmful effects even at lower consumption levels. Due to physiological differences, women have a lower tolerance for alcohol, leading to higher blood alcohol concentrations.
 
-## Other Traditional Risk Factors
-
-### Migraine
-
-Migraine, particularly migraine with aura, is more prevalent in women and has been associated with an increased risk of ischemic stroke. Women with migraine with aura have a two- to three-fold higher risk of stroke compared to those without migraine. The risk is further increased in women who smoke or use oral contraceptives. The underlying mechanisms may involve cortical spreading depression, endothelial dysfunction, and a prothrombotic state (@schurks2009).
+Chronic alcohol abuse in women can result in hypertension, atrial fibrillation, and other cardiovascular issues that elevate stroke risk. Moreover, societal stigma may prevent women from seeking help for alcohol dependence, highlighting the need for sex-sensitive interventions. In the INTERSTROKE study, excessive alcohol intake contributed to a higher PAR in men compared to women, which may be because of a greater prevalence of these activities in men (excessive alcohol intake: 7.1% in men versus 2.4% in women, ). [@odonnell2016] One possible mechanism of vascular damage is via hypertension and suboptimal blood pressure management in hypertensive individuals who engage in alcohol consumption (@rantakömi2012 @hillbom2011). Beyond these well-established factors, other risk factors may also contribute to stroke risk and may be sex-dependent.
 
 ## Sex-Specific Risk Factors
 
-### Age at Menarche and Menopause
+Migraine
 
-Reproductive factors unique to women can influence stroke risk. Early menarche (before age 10) and late menarche (after age 17) have been associated with increased cardiovascular disease risk (@canoy2015a). Similarly, early menopause (before age 45) is linked to a higher risk of stroke. The duration of exposure to endogenous estrogen during a woman's reproductive lifespan may impact cardiovascular health. Shorter exposure due to early menopause or surgical removal of ovaries may increase stroke risk. Conversely, longer exposure may be protective (@muka2016).
+Migraine, particularly migraine with aura, is more prevalent in women and has been associated with an increased risk of ischemic stroke [@poorthuis2017]. Women with migraine with aura have a two- to three-fold higher risk of stroke compared to those without migraine. The risk is further increased in women who smoke or use oral contraceptives. The underlying mechanisms may involve cortical spreading depression, endothelial dysfunction, and a prothrombotic state [@schurks2009; @kurth2016].
 
-### Pregnancy and Pregnancy Complications
+Age at Menarche and Menopause
 
-Pregnancy introduces unique physiological changes that can increase stroke risk (@sharshar1995). The risk is highest during the third trimester and postpartum period. Pregnancy-related complications such as preeclampsia, eclampsia, gestational hypertension, and gestational diabetes are associated with increased stroke risk during pregnancy and later in life. Preeclampsia and eclampsia account for a significant proportion of pregnancy-related strokes. Women who experience these conditions have a two-fold increase in stroke risk later in life. The underlying mechanisms may involve long-term vascular changes and heightened inflammatory states (@wu2017).
+Reproductive factors unique to women can influence stroke risk. Early menarche (before age 10) and late menarche (after age 17) have been associated with increased cardiovascular disease risk [@canoy2015a]. Similarly, early menopause (before age 45) is linked to a higher risk of stroke. The duration of exposure to endogenous estrogen during a woman's reproductive lifespan may impact cardiovascular health. Shorter exposure due to early menopause or surgical removal of ovaries may increase stroke risk. Conversely, longer exposure may be protective [@muka2016].
+
+Pregnancy and Pregnancy Complications
+
+Pregnancy introduces unique physiological changes that can increase stroke risk [@sharshar1995]. The risk is highest during the third trimester and postpartum period. Pregnancy-related complications such as preeclampsia, eclampsia, gestational hypertension, and gestational diabetes are associated with increased stroke risk during pregnancy and later in life. Preeclampsia and eclampsia account for a significant proportion of pregnancy-related strokes. Women who experience these conditions have a two-fold increase in stroke risk later in life. The underlying mechanisms may involve long-term vascular changes and heightened inflammatory states [@wu2017].
 
 ### Exogenous Hormone Use
 
-#### Hormonal Birth Control
+Hormonal Birth Control
 
-Use of hormonal contraceptives, especially those containing estrogen, has been associated with an increased risk of stroke, particularly ischemic stroke. The risk is dose-dependent, with higher estrogen doses leading to greater risk of stroke. Women who smoke, have migraines with aura, or have hypercoagulable disorders are at higher risk when using hormonal contraceptives (@gillum2000). Progestin-only contraceptives have not been associated with increased stroke risk (@lidegaard2012).
+Use of hormonal contraceptives, especially those containing estrogen, has been associated with an increased risk of stroke, particularly ischemic stroke. The risk is dose-dependent, with higher estrogen doses leading to greater risk of stroke. Women who smoke, have migraines with aura, or have hypercoagulable disorders are at higher risk when using hormonal contraceptives [@gillum2000]. Progestin-only contraceptives have not been associated with increased stroke risk [@lidegaard2012].
 
-#### Hormone Replacement Therapy
+Hormone Replacement Therapy
 
-Hormone replacement therapy (HRT) used to alleviate menopausal symptoms has been linked to an elevated stroke risk. Large studies such as the Women's Health Initiative (WHI) and the Women's Estrogen for Stroke Trial (WEST) found increased stroke risk in women using HRT (@writinggroupforthewomenshealthinitiativeinvestigators2002, @viscoli2001). However, the "timing hypothesis" suggests that initiating HRT early after menopause may have cardiovascular protective effects, while initiating it later may not confer benefits and may increase risks. Reanalysis of studies indicates that HRT may be safe and possibly beneficial when started in early menopause (@hodis2016). However, current guidelines do not recommend HRT for primary prevention of stroke or other chronic diseases.
+Hormone replacement therapy (HRT) used to alleviate menopausal symptoms has been linked to an elevated stroke risk. Large studies such as the Women's Health Initiative (WHI) and the Women's Estrogen for Stroke Trial (WEST) found increased stroke risk in women using HRT [@writinggroupforthewomenshealthinitiativeinvestigators2002], [@viscoli2001]. However, the "timing hypothesis" suggests that initiating HRT early after menopause may have cardiovascular protective effects, while initiating it later may not confer benefits and may increase risks. Reanalysis of studies indicates that HRT may be safe and possibly beneficial when started in early menopause [@hodis2016]. However, current guidelines do not recommend HRT for primary prevention of stroke or other chronic diseases.
 
-#### Low Testosterone Levels in Men
+Low Testosterone Levels in Men
 
-In men, low testosterone levels have been associated with increased risk of stroke. Testosterone deficiency can lead to unfavorable lipid profiles, inflammation, and endothelial dysfunction, contributing to atherosclerosis (@traish2009). Men receiving androgen deprivation therapy for prostate cancer have an elevated risk of ischemic stroke (@punnen2011). Recognizing low testosterone as a sex-specific risk factor for men emphasizes the importance of hormonal evaluation and management in male patients at risk.
-
-### Sex-specific risk factors / **Female-Specific Risk Factors**
-
-**\
-MODIFY Table 1.**
-
-Summary of Current Knowledge Regarding Sex Differences in Risk Factors for Ischemic Stroke
-
-+---------------------------------------------------------------------------------------------------------------------------------------------------------------------+-----------------------+---------------------------------------------------------------------------------------------------+
-| **Risk Factor**                                                                                                                                                     | **Type**              | **Risk Magnitude and Modifiers (Reference)**                                                      |
-+:====================================================================================================================================================================+:======================+:==================================================================================================+
-| Pregnancy                                                                                                                                                           | Sex-specific (female) | Low overall (34:100,000 deliveries) ([41](javascript:;))                                          |
-+---------------------------------------------------------------------------------------------------------------------------------------------------------------------+-----------------------+---------------------------------------------------------------------------------------------------+
-| Highest risk postpartum (up to 12 wk) ([42](javascript:;))                                                                                                          |                       |                                                                                                   |
-+---------------------------------------------------------------------------------------------------------------------------------------------------------------------+-----------------------+---------------------------------------------------------------------------------------------------+
-| Elevated risk in preeclampsia and gestational hypertension ([41](javascript:;), [43](javascript:;))                                                                 |                       |                                                                                                   |
-+---------------------------------------------------------------------------------------------------------------------------------------------------------------------+-----------------------+---------------------------------------------------------------------------------------------------+
-| OCP                                                                                                                                                                 | Sex-specific (female) | Increased risk (1.4-fold to 2-fold) in women ([44](javascript:;))                                 |
-+---------------------------------------------------------------------------------------------------------------------------------------------------------------------+-----------------------+---------------------------------------------------------------------------------------------------+
-| Higher risk correlates to higher dose of estrogens ([45](javascript:;))                                                                                             |                       |                                                                                                   |
-+---------------------------------------------------------------------------------------------------------------------------------------------------------------------+-----------------------+---------------------------------------------------------------------------------------------------+
-| Synergistic risk in women who have migraines with aura ([46--48](javascript:;))                                                                                     |                       |                                                                                                   |
-+---------------------------------------------------------------------------------------------------------------------------------------------------------------------+-----------------------+---------------------------------------------------------------------------------------------------+
-| Postmenopausal HRT                                                                                                                                                  | Sex-specific (female) | Late HRT shows no benefit or increases stroke risk ([49--52](javascript:;))                       |
-+---------------------------------------------------------------------------------------------------------------------------------------------------------------------+-----------------------+---------------------------------------------------------------------------------------------------+
-| Evidence for benefit of early HRT (\<6 y from menopause onset) in cardiovascular disease, stroke risk still in follow-up ([53](javascript:;))                       |                       |                                                                                                   |
-+---------------------------------------------------------------------------------------------------------------------------------------------------------------------+-----------------------+---------------------------------------------------------------------------------------------------+
-| AF                                                                                                                                                                  | Shared                | Ischemic stroke risk conferred by AF increases with age ([54](javascript:;), [55](javascript:;))  |
-+---------------------------------------------------------------------------------------------------------------------------------------------------------------------+-----------------------+---------------------------------------------------------------------------------------------------+
-| Prevalence of AF and cardioembolic stroke higher in women; women tend to be older at onset ([56--60](javascript:;))                                                 |                       |                                                                                                   |
-+---------------------------------------------------------------------------------------------------------------------------------------------------------------------+-----------------------+---------------------------------------------------------------------------------------------------+
-| AF confers stronger stroke risk in women ([61](javascript:;))                                                                                                       |                       |                                                                                                   |
-+---------------------------------------------------------------------------------------------------------------------------------------------------------------------+-----------------------+---------------------------------------------------------------------------------------------------+
-| Metabolic syndrome                                                                                                                                                  | Shared                | Metabolic syndrome confers stronger stroke risk in women ([62](javascript:;))                     |
-+---------------------------------------------------------------------------------------------------------------------------------------------------------------------+-----------------------+---------------------------------------------------------------------------------------------------+
-| Risk factor profile of women with metabolic syndrome dominated by abdominal obesity, which is suggested to confer greater stroke risk in women ([63](javascript:;)) |                       |                                                                                                   |
-+---------------------------------------------------------------------------------------------------------------------------------------------------------------------+-----------------------+---------------------------------------------------------------------------------------------------+
-| Diabetes                                                                                                                                                            | Shared                | Type 2 diabetes confers greater risk for stroke in women ([64](javascript:;))                     |
-+---------------------------------------------------------------------------------------------------------------------------------------------------------------------+-----------------------+---------------------------------------------------------------------------------------------------+
-| Risk for fatal stroke higher in diabetic female patients than male patients ([65](javascript:;))                                                                    |                       |                                                                                                   |
-+---------------------------------------------------------------------------------------------------------------------------------------------------------------------+-----------------------+---------------------------------------------------------------------------------------------------+
-| Hypertension                                                                                                                                                        | Shared                | Hypertension is more common in women and more likely to be poorly controlled ([66](javascript:;)) |
-+---------------------------------------------------------------------------------------------------------------------------------------------------------------------+-----------------------+---------------------------------------------------------------------------------------------------+
-| Stroke risk conferred by hypertension equivalent between men and women ([67](javascript:;))                                                                         |                       |                                                                                                   |
-+---------------------------------------------------------------------------------------------------------------------------------------------------------------------+-----------------------+---------------------------------------------------------------------------------------------------+
-| Coronary artery disease                                                                                                                                             | Shared                | Coronary artery disease is more prevalent in men ([16](javascript:;), [68](javascript:;))         |
-+---------------------------------------------------------------------------------------------------------------------------------------------------------------------+-----------------------+---------------------------------------------------------------------------------------------------+
-
-@albert2014 *Sex-related differences in the vasculature and myocardial structure may predispose to alterations in blood flow, shear stress, and altered endothelial function. Further, there is evidence suggesting a potential sex-based increase (especially in the post-menopausal state) in systemic inflammatory and procoagulant markers, thrombogenic particles and platelet aggregation, all of which contribute to a prothrombotic milieu* @albert2014
-
-@albert2014 *Sex differences in haemodynamics and cardiovascular remodelling Changes in haemodynamics and structural changes in the left ventricle have been well-defined in post-menopausal women. Women who enter their seventh to eighth decade of life typically have higher blood pressures (BP) than men (59). Isolated systolic hypertension and elevated pulse pressure (systolic BP -- diastolic BP) are clinical manifestations of vascular stiffness (60). Prior to their seventh decade of life, women have a lower pulse pressure than men, but this difference reverses and pulse pressure continues to increase in women through the ninth decade. This pulse pressure pattern was reported in both the hypertensive and non-hypertensive cohorts of the Framingham Heart Study (59). Elevated pulse pressure is associated with underlying arterial stiffness, which is marked by collagen deposition, elastin degradation, and wall thickening with eventual dilatation (61). Altered pulse wave velocity, a marker of arterial stiffness, has been associated with increased risks of stroke and CVD* @albert2014
+In men, low testosterone levels have been associated with increased risk of stroke. Testosterone deficiency can lead to unfavorable lipid profiles, inflammation, and endothelial dysfunction, contributing to atherosclerosis [@traish2009]. Men receiving androgen deprivation therapy for prostate cancer have an elevated risk of ischemic stroke [@punnen2011]. Recognizing low testosterone as a sex-specific risk factor for men emphasizes the importance of hormonal evaluation and management in male patients at risk.
 
 ## Differences in stroke symptoms between men and women
 
-## Sex-specific differences in stroke severity and location
+Women, it is claimed, are more likely to have strokes missed or incorrectly diagnosed due to their tendency to show more atypical stroke symptoms than men. [@bushnell2018] This is a matter that is still under frequent discussion, especially when considering other confounding effects such as age or other conditions affecting mental and psychosomatic health. For example, women are more frequently affected by stroke mimics, particularly migraines, which is probably the most noteworthy sex-related difference in stroke-like symptoms. Interestingly, women with a stroke mimic diagnosis get the diagnosis less frequently revised than men. [@goadsby2002; @yu2021]
+
+{{< pagebreak >}}
 
 ## Delirium in stroke patients
 
 ### Incidence and Prevalence of Post-Stroke Delirium by Sex
 
 Delirium in patients suffering from acute ischemic stroke is a common yet often underdiagnosed syndrome.\
-Delirium complicates the acute phase of ischemic stroke occurs, with data suggesting incidence rates from 13% to 48% (@oldenbeuving2007, @shaw2019, @oldenbeuving2011, @zhang2024). Notably, these may be higher than the incidence rates of patients admitted to the general wards, where 10% to 25% develop delirium (@siddiqi2006). The high variance may be particularly explained by lower screening rates throughout the year within reports before 1999 (heterogeneity I2 94.6). Other factors contributing here are differences in described settings (acute hospital versus rehabilitation unit), which screening tools have been used, and whether or not specific symptoms like aphasia or psychiatric ones have been excluded upfront.
+Delirium complicates the acute phase of ischemic stroke, with data suggesting incidence rates from 13% to 48% [@oldenbeuving2007, @shaw2019, @oldenbeuving2011, @zhang2024]. Notably, these may be higher than the incidence rates of patients admitted to the general wards, where 10% to 25% develop delirium [@siddiqi2006]. The high variance may be particularly explained by lower screening rates throughout the year within reports before 1999 (heterogeneity $I_2$ 94.6).
 
-Delirium complicates the acute phase of ischemic stroke when it occurs with data suggesting incidence rates from 13% to 48% (@oldenbeuving2007, @shaw2019). These are higher than the incidence rates of patients admitted to the general wards, where 10% to 25% develope delirium (@siddiqi2006).
+Other factors contributing here are differences in described settings (acute hospital versus rehabilitation unit), which screening tools have been used, and whether or not specific symptoms like aphasia or psychiatric have been excluded upfront.
 
 ### Definition of delirium
 
 No universal definition of delirium is agreed upon, but most scientific work defines it as an acute, transient, and fluctuating disorder of consciousness, attention, and cognition.
 
-A definition of delirium by the Diagnostic and Statistical Manual of Mental Disorders is defined if the following criteria are fulfilled: „A. Disturbance in attention (i.e., reduced ability to direct, focus, sustain, and shift attention) and awareness (reduced orientation to the environment). B. The disturbance develops over a short period (usually hours to a few days), represents a change from baseline attention and awareness, and tends to fluctuate in severity during the day. C. An additional disturbance in cognition (e.g., memory deficit, disorientation, language, visuospatial ability, or perception). D. The disturbances in criteria A and C are not explained by another preexisting, established, or evolving neurocognitive disorder and do not occur in the context of a severely reduced level of arousal, such as coma. E. There is evidence from the history, physical examination, or laboratory findings that the disturbance is a direct physiologic consequence of another medical condition, substance intoxication or withdrawal (i.e. because of a drug of abuse medication), or exposure to a toxin, or is because of multiple etiologies.“ (@slooter2020)
+A definition of delirium by the Diagnostic and Statistical Manual of Mental Disorders is defined if the following criteria are fulfilled: „A. Disturbance in attention (i.e., reduced ability to direct, focus, sustain, and shift attention) and awareness (reduced orientation to the environment). B. The disturbance develops over a short period (usually hours to a few days), represents a change from baseline attention and awareness, and tends to fluctuate in severity during the day. C. An additional disturbance in cognition (e.g., memory deficit, disorientation, language, visuospatial ability, or perception). D. The disturbances in criteria A and C are not explained by another preexisting, established, or evolving neurocognitive disorder and do not occur in the context of a severely reduced level of arousal, such as coma. E. There is evidence from the history, physical examination, or laboratory findings that the disturbance is a direct physiologic consequence of another medical condition, substance intoxication or withdrawal (i.e. because of a drug of abuse medication), or exposure to a toxin, or is because of multiple etiologies.“ [@slooter2020]
 
-The critical diagnostic symptoms of delirium are acute onset, inattention, disorganized thinking, and altered level of consciousness. Usually, an underlying medical condition triggers delirium, which is then not better explained by another preexisting, evolving, or established neurocognitive disorder. In recent years, delirium subtypes have been focused on differentiating. For example, in one study, the prevalence of hyperactive delirium was lower (4% \[95% CI, 3–6\]), being surpassed by hypoactive (17% \[95% CI, 13–22\]) and mixed form(10% \[95% CI, 6–16\]) (@krewulak2018).
+The critical diagnostic symptoms of delirium are acute onset, inattention, disorganized thinking, and altered level of consciousness. Usually, an underlying medical condition triggers delirium, which is then not better explained by another preexisting, evolving, or established neurocognitive disorder. In recent years, delirium subtypes have been focused on differentiating. For example, in one study, the prevalence of hyperactive delirium was lower (4% \[95% CI, 3–6\]), being surpassed by hypoactive (17% \[95% CI, 13–22\]) and mixed form(10% \[95% CI, 6–16\]) [@krewulak2018]. Having established what constitutes delirium, it is important to identify the factors that predispose patients to this condition, particularly in the context of stroke.
 
 ### Predisposing and precipitating risk factors
 
-Risk factors for delirium in acute ischemic stroke are age and frailty (doi: 10.1016/S0140-6736(13)60688-1), stroke severity/atrial fibrillation (@lim2017)[,](https://doi.org/10.1186/s12883-017-0840-3),){.uri} premorbid diseases (@inouye1996), type of medications (@ormseth2023), acute stress, acute infections, sleep disorders or disturbed day/night rhythm (@sandberg2001), dehydration and imbalances of electrolytes, sensory deprivation, premorbid cognitive disabilities, cigarette smoking (@lim2017) and damage to brain regions (@ormseth2023) and coma (@gravante2021). The most common analyzed risk factor for delirium is age (odds ratio 1.04, 95% CI (1.02–1.07) (@zhang2024, @inouye2014). However, biological sex and gender were also identified in some studies (odds ratio 1.24, 95% CI 0.63–2.43). Interestingly, thrombectomy using general anesthesia was not associated with increased delirium risk while overall number of procedures was (@sachdev2024).
+Risk factors for delirium in acute ischemic stroke are age and frailty [@inouye2014], stroke severity/atrial fibrillation [@lim2017] premorbid diseases [@inouye1996], type of medications [@ormseth2023], acute stress, acute infections, sleep disorders or disturbed day/night rhythm [@sandberg2001], dehydration and imbalances of electrolytes, sensory deprivation, premorbid cognitive disabilities, cigarette smoking [@lim2017] and damage to brain regions [@ormseth2023] and coma [@gravante2021].
 
-The natural course of delirium associated with stroke remains largely unknown. Some available data report occurrence in the ﬁrst few days after stroke (@mcmanus2009, @oldenbeuving2011a with two thirds within 24h (@mitasova2012).
+The most common analyzed risk factor for delirium is age (odds ratio 1.04, 95% CI (1.02–1.07) [@zhang2024, @inouye2014]. However, biological sex was also identified in some studies (odds ratio 1.24, 95% CI 0.63–2.43). Interestingly, thrombectomy using general anesthesia was not associated with increased delirium risk while overall number of procedures was [@sachdev2024]. The natural course of delirium associated with stroke remains largely unknown. Some available data report occurrence in the ﬁrst few days after stroke [@mcmanus2009, @oldenbeuving2011a] with two thirds within 24h [@mitasova2012].
 
 ### Pathophysiology of delirium
 
-*Neuroinflammation and neurodegenerative* processes are likely the main causes of delirium. Acute medical conditions such as structural trauma, surgery, or sepsis can trigger these mechanisms. Activated microglia and astrocytes produce pro-inflammatory cytokines such as IL-1β and TNF and release reactive oxygen species, which can disrupt normal neuronal activity and connectivity. (@maclullich2008, @wilson2020)
+Neuroinflammation and neurodegenerative processes are likely the main causes of delirium. Acute medical conditions such as structural trauma, surgery, or sepsis can trigger these mechanisms. Activated microglia and astrocytes produce pro-inflammatory cytokines such as IL-1β and TNF and release reactive oxygen species, which can disrupt normal neuronal activity and connectivity [@maclullich2008, @wilson2020].
 
-Delirium is also strongly linked to imbalanced *brain energy metabolism*. The brain's high energy demand makes it particularly sensitive to oxygen or glucose deprivation. Conditions like a reduced cerebral blood flow with local or global hypoxia or hypoglycemia can result in cerebral metabolic insufficiency, impairing the brain's ability to maintain normal neuronal function​. Inflammatory states may exacerbate these metabolic disturbances by reducing neurovascular coupling and increasing the permeability of the blood-brain barrier​.
+Delirium is also strongly linked to imbalanced brain energy metabolism. The brain's high energy demand makes it sensitive to oxygen or glucose deprivation. Conditions like a reduced cerebral blood flow with local or global hypoxia or hypoglycemia can result in cerebral metabolic insufficiency, impairing the brain's ability to maintain normal neuronal function. Inflammatory states may exacerbate these metabolic disturbances by reducing neurovascular coupling and increasing the permeability of the blood-brain barrier​.
 
-Additional factors in the development of delirium are an *imbalance of neurotransmitters*, particularly acetylcholine, dopamine, and GABA. Delirium is associated with cholinergic deficits, and drugs that antagonize acetylcholine receptors can induce delirium-like symptoms​. Conversely, hyperdopaminergic states, such as those caused by certain medications or withdrawal states, can contribute to the psychomotor disturbances seen in delirium​. Additionally, GABAergic dysfunction, often due to sedatives or anaesthetics, is frequently implicated in delirium, particularly in critically ill patients​.
+Additional factors in the development of delirium are an imbalance of neurotransmitters, particularly acetylcholine, dopamine, and GABA. Delirium is associated with cholinergic deficits, and drugs that antagonize acetylcholine receptors can induce delirium-like symptoms​. Conversely, hyperdopaminergic states, such as those caused by certain medications or withdrawal states, can contribute to the psychomotor disturbances seen in delirium​. Additionally, GABAergic dysfunction, often due to sedatives or anaesthetics, is frequently implicated in delirium, particularly in critically ill patients​.
 
-In this context, delirium may lead to *disruptions in neuroanatomical and functional connectivity* within and between core brain networks. Several fMRI studies have shown that delirium is characterized by weakened connectivity in the default mode network and other large-scale brain networks responsible for higher cognitive functions. This loss in network connectivity is thought to underlie the cognitive and attentional deficits that are hallmark features of delirium​ (@shaw2019). Important to note, right-sided stroke may have a higher incidence of delirium after stroke (@mesulam1976, @ott2023). In this context a preexisting or acute strucutral brain damage or a clinical syndrome of dementia (accompanied by brain atrophy) may also be important factors for the occurrence of delirium (@fick2002)
+In this context, delirium may lead to disruptions in neuroanatomical and functional connectivity within and between core brain networks. Several fMRI studies have shown that delirium is characterized by weakened connectivity in the default mode network and other large-scale brain networks responsible for higher cognitive functions. This loss in network connectivity is thought to underlie the cognitive and attentional deficits that are hallmark features of delirium​ [@shaw2019]. Important to note, right-sided stroke may have a higher incidence of delirium after stroke [@mesulam1976, @ott2023]. In this context a preexisting or acute strucutral brain damage or a clinical syndrome of dementia (accompanied by brain atrophy) may also be important factors for the occurrence of delirium [@fick2002]. Understanding of the underlying hypothesized mechanisms of delirium may inform the development of bedside assessment tools.
 
 ### Bedside Delirium Instruments
 
-Manifold screening tools exist for patients admitted to the general ward or intensive care unit (@wong2010). The most commonly used and most validated tool is the Confusion Assessment Method (CAM, @inouye1990) or CAM-based tools, which were further refined. Regarding a stroke-specific delirium screening tool, Mansutti and coworkers (@mansutti2019) aimed to identify available instruments systematically. Amongst others, the 4-Assessment Test for delirium (4AT) had a sensitivity from 90.2 to 100% and a specificity from 64.5 to 86%. The 4AT finds more use in gerneral ward settings. In contrast, the Confusion Assessment Method-Intensive Care Unit (CAM-ICU) had a lower sensitivity of 76% (95% Confidence Interval \[CI\] 55–91) but with a higher specificity of 98% (95%CI 93–100) and is more prevalent in intensive and intermediate care settings. Because a universal definition of delirium is not established and there is a difficulty in diagnosing Bergeron and coworker aimed to develop the Intensive Care Delirium Screening Checklist (ICDSC, @bergeron2001). It is nowadays used as possible alternative to CAM-ICU in the intensive or intermediate care setting (@wilson2020). ISDSC mainly covers eight domains including altered level of consciousness, inattention, disorientation, hallucination, delusions, agitation , inappropriate speech, sleep-wake disturbances, and fluctuation of symptoms. Even when communication to the patient is compromised - for example when the patient is intubated - ISDSC achieved a sensitivity is 99% and specificity is 64% emphasizing an early diagnosis with a high true positive rate. More detailed information may be found in @tbl-delirium-tools (adapted from )
+Manifold screening tools exist for patients admitted to the general ward or intensive care unit [@wong2010]. The most commonly used and most validated tool is the Confusion Assessment Method (CAM, @inouye1990) or CAM-based tools, which were further refined. Regarding a stroke-specific delirium screening tool, Mansutti and coworkers [@mansutti2019] aimed to identify available instruments systematically. Amongst others, the 4-Assessment Test for delirium (4AT) had a sensitivity from 90.2 to 100% and a specificity from 64.5 to 86%. The 4AT finds more use in general ward settings.
 
-```{r tbl-delirium-tools, include=FALSE}
+In contrast, the Confusion Assessment Method-Intensive Care Unit (CAM-ICU) had a lower sensitivity of 76% (95% Confidence Interval [CI] 55–91) but with a higher specificity of 98% (95%CI 93–100) and is more prevalent in intensive and intermediate care settings. Because a universal definition of delirium is not established and there is a difficulty in diagnosing Bergeron and coworker aimed to develop the Intensive Care Delirium Screening Checklist (ICDSC, @bergeron2001). It is nowadays used as possible alternative to CAM-ICU in the intensive or intermediate care setting [@wilson2020]. ICDSC mainly covers eight domains including altered level of consciousness, inattention, disorientation, hallucination, delusions, agitation , inappropriate speech, sleep-wake disturbances, and fluctuation of symptoms. Even when communication to the patient is compromised - for example when the patient is intubated - ICDSC achieved a sensitivity is 99% and specificity is 64% emphasizing an early diagnosis with a high true positive rate. More detailed information may be found in @tbl-delirium-tools (adapted from @mansutti2019, @ringleb2021)
+
+```{r tbl-delirium-tools, eval=FALSE}
 #| label: tbl-delirium-tools
-#| tbl-cap: YYYY
+#| tbl-cap: Selected delirium instruments used in clinical practice
 #| tbl-colwidths: "auto"
 #| results: hold
 #| echo: false
@@ -272,81 +257,214 @@ Manifold screening tools exist for patients admitted to the general ward or inte
 #| tbl-pos: H
 library(tibble)
 library(knitr)
+library(kableExtra)
 
 tbl_delirium_tools <- tibble::tibble(
   Scale = c("4AT", "CAM-ICU", "AMT-10", "AMT-4", "CDT", "COG4", "GCS", 
             "ICDSC", "Nu-DESC"),
-  Sensitivity = c("90.2 (1) | 96.4 (2)", "76 (55-91) | 67", 
-                  "75 (43-95)", "83 (52-98)", "67 (22-96)", "70 (35-93)", 
-                  "17 (2-48)", "100 (89-100) | 90 (82-96)", 
-                  "93 (83-98)"),
-  Specificity = c("64.5 (1) | 76.7 (2)", "98 (93-100) | 83 (73-88)", 
-                  "61 (51-71)", "61 (51-71)", "38 (28-49)", "44 (35-55)", 
-                  "91 (71-88)", "78 (68-87) | 75 (67-82)", 
-                  "66 (56-76)"),
-  PPV = c("86 | 85.6", "91 (70-99)", "21", "28", "7", "33", "4", 
-          "64 (54-73) | 67 (60-73)", "64 (55-72)"),
-  NPV = c("100", "94 (88-98)", "95", "96", "95", "92", "88", 
-          "100 | 93 (88-96)", "94 (88-97)"),
+  Sensitivity = c("90.2", "76 (55--91)", 
+                  "75 (43--95)", "83 (52--98)", "67 (22--96)", "70 (35--93)", 
+                  "17 (2--48)", "100 (89--100), 90 (82--96)", 
+                  "93 (83--98)"),
+  Specificity = c("64.5", "98 (93--100), 83 (73--88)", 
+                  "61 (51--71)", "61 (51--71)", "38 (28--49)", "44 (35--55)", 
+                  "91 (71--88)", "78 (68--87), 75 (67--82)", 
+                  "66 (56--76)"),
+  PPV = c("86, 85.6", "91 (70--99)", "21", "28", "7", "33", "4", 
+          "64 (54--73), 67 (60--73)", "64 (55--72)"),
+  NPV = c("100", "94 (88--98)", "95", "96", "95", "92", "88", 
+          "100, 93 (88--96)", "94 (88--97)"),
   Source = c("@infante2017, @kutlubaev2016, @lees2013", "@mitasova2012, @vonhofen-hohloch2020", "@lees2013", "@lees2013", "@lees2013", "@lees2013", "@lees2013", "@boßelmann2019, @vonhofen-hohloch2020", "@fleischmann2021")
 )
 
 # Print the table using kable
 # format markdown necessary for citations to work
-kable(tbl_delirium_tools, format = "markdown")
+kable(tbl_delirium_tools, format = "markdown", escape=FALSE) %>%
+        kable_styling(position = "center", latex_options = c("scale_down")) %>%
+        row_spec(0, bold = TRUE)  
+        # column_spec(1, "1in") %>%
+        # column_spec(2, "1in") %>%
+        # column_spec(3, "1in") %>%
+        # column_spec(4, "1in") %>%
+        # column_spec(5, "1in") %>% 
+        # column_spec(6, "2in")
 
 ```
 
++----------+------------------+-----------------+----------------+------------------+-----------------------+
+| Scale    | Sensitivity      | Specificity     | PPV            | NPV              | Source                |
++:=========+:=================+:================+:===============+:=================+:======================+
+| 4AT      | 90.2             | 64.5            | 86, \          | 100              | @infante2017, \       |
+|          |                  |                 | 85.6           |                  | @kutlubaev2016, \     |
+|          |                  |                 |                |                  | @lees2013             |
++----------+------------------+-----------------+----------------+------------------+-----------------------+
+| CAM-ICU  | 76 (55--91)      | 98 (93--100), \ | 91 (70--99)    | 94 (88--98)      | @mitasova2012, \      |
+|          |                  | 83 (73--88)     |                |                  | @vonhofen-hohloch2020 |
++----------+------------------+-----------------+----------------+------------------+-----------------------+
+| AMT-10   | 75 (43--95)      | 61 (51--71)     | 21             | 95               | @lees2013             |
++----------+------------------+-----------------+----------------+------------------+-----------------------+
+| AMT-4    | 83 (52--98)      | 61 (51--71)     | 28             | 96               | @lees2013             |
++----------+------------------+-----------------+----------------+------------------+-----------------------+
+| CDT      | 67 (22--96)      | 38 (28--49)     | 7              | 95               | @lees2013             |
++----------+------------------+-----------------+----------------+------------------+-----------------------+
+| COG4     | 70 (35--93)      | 44 (35--55)     | 33             | 92               | @lees2013             |
++----------+------------------+-----------------+----------------+------------------+-----------------------+
+| GCS      | 17 (2--48)       | 91 (71--88)     | 4              | 88               | @lees2013             |
++----------+------------------+-----------------+----------------+------------------+-----------------------+
+| ICDSC    | 100 (89--100), \ | 78 (68--87), \  | 64 (54--73), \ | 100, 93 (88--96) | @boßelmann2019, \     |
+|          | 90 (82--96)      | 75 (67--82)     | 67 (60--73)    |                  | @vonhofen-hohloch2020 |
++----------+------------------+-----------------+----------------+------------------+-----------------------+
+| Nu-DESC  | 93 (83--98)      | 66 (56--76)     | 64 (55--72)    | 94 (88--97)      | @fleischmann2021      |
++----------+------------------+-----------------+----------------+------------------+-----------------------+
+
 ### Relevance of delirium detection in stroke patients
 
-Delirium has a negativ impact on the prognosis of stroke patients in the short and long term (@gjestad2024). In a meta-analysis in 2012 by Saposnik and colleagues (@shi2012), the authors recognized that delirium after stroke directly impacts essential outcomes. For example, stroke patients with delirium had longer hospital stays than those without delirium (mean difference, 9.39 days; 95% CI, 6.67–12.11). Additionally, patients with delirium were more likely to be discharged to a nursing home or any other institution than in the absence of delirium (OR, 3.39; 95% CI, 2.21–5.21). Stroke patients with delirium had higher hospital mortality (OR, 4.71; 95% CI, 1.85–11.96) but also higher mortality that persisted up to 12 months (OR, 4.91; 95% CI, 3.18–7.6) after stroke. A more recent meta-analysis from 2024 by Gong and colleagues could confirm this high mortality rate (@gong2024) and functional outcomes are also affected. Delirium patients also experienced risk for poor functional outcome at three months after stroke (RR 2.93, 95% CI: 1.86, 4.61; I2 = 73.9%, N = 4) as compared to non-delir patients. Delirium is known to influence the length of hospital stay (@ely2004)[,](https://doi.org/10.1001/jama.291.14.1753),){.uri} in-hospital mortality (@witlox2010[,](https://doi.org/10.1001/jama.2010.1013,){.uri} @seiler2021[)](https://doi.org/10.1017/S147895152000139X)){.uri} and functional assessments (@rudolph2010). For stroke patients, existing studies have limited and inconsistent results (@oldenbeuving2011a, @mcmanus2011). While the topic of delirium itself has long been underrecognized, sex differences within this topic have rarely been addressed.
+Delirium has a negativ impact on the prognosis of stroke patients in the short and long term [@gjestad2024]. In a meta-analysis in 2012 by Saposnik and colleagues [@shi2012], the authors recognized that delirium after stroke directly impacts essential outcomes. For example, stroke patients with delirium had longer hospital stays than those without delirium (mean difference, 9.39 days; 95% CI, 6.67–12.11). Additionally, patients with delirium were more likely to be discharged to a nursing home or any other institution than in the absence of delirium (OR, 3.39; 95% CI, 2.21–5.21). Stroke patients with delirium had higher hospital mortality (OR, 4.71; 95% CI, 1.85–11.96) but also higher mortality that persisted up to 12 months (OR, 4.91; 95% CI, 3.18–7.6) after stroke.
+
+A more recent meta-analysis from 2024 by Gong and colleagues could confirm this high mortality rate [@gong2024] and functional outcomes are also affected. Delirium patients also experienced risk for poor functional outcome at three months after stroke (RR 2.93, 95% CI: 1.86, 4.61; I2 = 73.9%, N = 4) as compared to non-delir patients. Delirium is known to influence the length of hospital stay [@ely2004] in-hospital mortality [@witlox2010[,](https://doi.org/10.1001/jama.2010.1013,){.uri} @seiler2021] and functional assessments [@rudolph2010]. For stroke patients, existing studies have limited and inconsistent results [@oldenbeuving2011a, @mcmanus2011]. While the topic of delirium itself has long been underrecognized, sex differences within this topic have rarely been addressed.
+
+### Sex difference in stroke patients with delirium
+
+Overall, no article directly adressing sex differences in delirium in acute or after stroke was found in a literature research. However, in an article on the role of vascular risk factors concerning delirium in stroke patients, Fleischmann and collaegues gathered data for a meta-analysis finding 36 studies involving a total of 10,672 participants (considerable heterogeneity, I2 = 28%). In their analysis, no statistically significant difference between females and males concerning post stroke delirium was found (random-effects model: OR = 0.98, 95% CI = 0.87 to 1.11, p = 0.79). The authors stated no relevant publication bias was present. [@siokas2022]
 
 ### Delirium prediction models in stroke patients
 
-Nakamizo and coworkers developed a scoring system to predict the occurrence of delirium at stroke units. (@nakamizo2020). In their Japanese cohort, 42 of 387 developed delirium as measured by ICDSC. The scoring system included prior delirium, daily consumption of more than 40 grams of alcohol, NIHSS ≥5, dementia diagnosis prior to admission, and auditory/visual impairment (PANDA). The cohort consisted of patients with a low to mild stroke severity (NIHSS was median 4 points (interquartile range 2--9).
+Nakamizo and coworkers developed a scoring system to predict the occurrence of delirium at stroke units. [@nakamizo2020]. In their Japanese cohort, 42 of 387 developed delirium as measured by ICDSC. The scoring system included prior delirium, daily consumption of more than 40 grams of alcohol, NIHSS ≥5, dementia diagnosis prior to admission, and auditory/visual impairment (PANDA). The cohort consisted of patients with a low to mild stroke severity (NIHSS was median 4 points, interquartile range 2--9).
 
-Wischmann and colleagues investigated 525 patients who were admitted to the stroke unit and intensive care unit. In their German cohort, stroke severity was also mild (patients that had delirium had a median NIHSS of 7 points (interquartile range 3–12), and patients with no delirium had a median NIHSS of 2 points (interquartile range 0-6). The analysis results in the Risk Assessment and PredIction of Delirium in acute stroke patients (RAPID) score, which consisted of Glasgow Coma Scale \<15 points at admission, Fazekas Score ≥ 1 point in non-contrast computed tomography, global brain atrophy in non-contrast computed tomography, age ≤ 68 years, National Institutes of Health Stroke Scale ≤1 point, premodified Rankin Scale 0 points. Overall, 29.7% of patients developed a delirium. The model's accuracy was 0.85, and the area under the curve was 0.89. (@wischmann2023)
+Wischmann and colleagues investigated 525 patients who were admitted to the stroke unit and intensive care unit. In their German cohort, stroke severity was also mild (patients that had delirium had a median NIHSS of 7 points (interquartile range 3–12), and patients with no delirium had a median NIHSS of 2 points (interquartile range 0-6). The analysis results in the Risk Assessment and PredIction of Delirium in acute stroke patients (RAPID) score, which consisted of Glasgow Coma Scale \<15 points at admission, Fazekas Score ≥ 1 point in non-contrast computed tomography, global brain atrophy in non-contrast computed tomography, age ≤ 68 years, National Institutes of Health Stroke Scale ≤1 point, premodified Rankin Scale 0 points. Overall, 29.7% of patients developed a delirium. The model's accuracy was 0.85, and the area under the curve was 0.89 [@wischmann2023]
 
-+---------------------------+-------------------------------------------------------+----------------------------+------------------+
-| Time                      | Condition                                             | Citation                   | Consideration    |
-|                           |                                                       |                            |                  |
-|                           |                                                       |                            | within this work |
-+===========================+=======================================================+============================+==================+
-| Premorbid                 | Age                                                   | @lindroth2018              | yes              |
-+---------------------------+-------------------------------------------------------+----------------------------+------------------+
-|                           | Dementia                                              | @davis2015                 | yes              |
-+---------------------------+-------------------------------------------------------+----------------------------+------------------+
-|                           | Microangiopathy                                       | @wischmann2023             | yes              |
-+---------------------------+-------------------------------------------------------+----------------------------+------------------+
-|                           | Frailty, visual impairment, falls                     | @persico2018               | (yes) pRS        |
-+---------------------------+-------------------------------------------------------+----------------------------+------------------+
-|                           | Alcohol abuse, withdrawl                              | @eyer2011                  | yes              |
-+---------------------------+-------------------------------------------------------+----------------------------+------------------+
-|                           | Medication                                            | @clegg2011                 | yes              |
-+---------------------------+-------------------------------------------------------+----------------------------+------------------+
-| Admission, post admission | Coma                                                  | @oldham2020                | yes              |
-+---------------------------+-------------------------------------------------------+----------------------------+------------------+
-|                           | Dehydration, electrolyte imbalance, blood transfusion | @delirium2018              | no               |
-+---------------------------+-------------------------------------------------------+----------------------------+------------------+
-|                           | Infection, sepsis                                     | @sonneville2017, @fan2024  | yes              |
-+---------------------------+-------------------------------------------------------+----------------------------+------------------+
-|                           | Seizures                                              | @frei2024                  | no               |
-+---------------------------+-------------------------------------------------------+----------------------------+------------------+
-|                           | Surgery, invasive procedures                          | @fisher1995                | yes              |
-+---------------------------+-------------------------------------------------------+----------------------------+------------------+
-|                           | Acute kidney failure                                  | @jäckel2021                | no               |
-+---------------------------+-------------------------------------------------------+----------------------------+------------------+
-|                           | Ventilation length                                    | @krewulak2020              | yes              |
-+---------------------------+-------------------------------------------------------+----------------------------+------------------+
-|                           | Heart failure                                         | @niu2023                   | no               |
-+---------------------------+-------------------------------------------------------+----------------------------+------------------+
+```{r tbl-delirium-factors, eval=FALSE}
+#| label: tbl-delirium-factors
+#| tbl-cap: Conditions Contirbuting to the Development of Delirium
+#| tbl-colwidths: "auto"
+#| echo: false
+#| warning: false
+library(tibble)
+library(knitr)
+library(kableExtra)
+
+tbl_delirium_factors <- tibble(
+  Time = c("Premorbid",
+    rep("", 6), "Admission/post admission",
+    rep("", 8)
+  ),
+  Condition = c(
+    "*Age*",
+    "*Dementia*",
+    "*Vascular risk factors*",
+    "*Microangiopathy*",
+    "*Frailty, visual impairment, falls*",
+    "*Alcohol abuse, withdrawl*",
+    "*Medication*",
+    "*Coma*",
+    "*Stroke location*",
+    "*Dehydration, electrolyte imbalance, blood transfusion*",
+    "*Infection, sepsis*",
+    "*Seizures*",
+    "*Surgery, invasive procedures*",
+    "*Acute kidney failure*",
+    "*Ventilation length*",
+    "*Heart failure*"
+  ),
+  Citation = c(
+    "[@lindroth2018]",
+    "@davis2015",
+    "@siokas2022",
+    "@wischmann2023",
+    "@persico2018",
+    "@eyer2011",
+    "@clegg2011",
+    "@oldham2020",
+    "@rhee2021",
+    "@delirium2018",
+    "@sonneville2017, @fan2024",
+    "@frei2024",
+    "@fisher1995",
+    "@jäckel2021",
+    "@krewulak2020",
+    "@niu2023"
+  ),
+  Consideration = c(
+    "yes",
+    "yes",
+    "yes",
+    "yes",
+    "(yes) pRS",
+    "yes",
+    "yes",
+    "yes",
+    "yes",
+    "no",
+    "yes",
+    "no",
+    "yes",
+    "no",
+    "yes",
+    "no"
+  )
+)
+
+
+# Print the table using kable
+# format markdown necessary for citations to work
+kable(tbl_delirium_factors, format = "markdown", booktabs = TRUE, escape=TRUE) %>%
+    kable_styling(full_width = FALSE, position = "center", latex_options = "hold_position") %>%
+    row_spec(0, bold = TRUE) %>% 
+        column_spec(1, "0.6 in") %>% 
+        column_spec(2, "1.3 in") %>%
+        column_spec(3, "2 in") %>%
+        column_spec(4, "0.6in") 
+
+```
+
++----------------+---------------------------------------------------------+-------------------------+---------------+
+| Time           | Condition                                               | Citation                | Consideration |
++:===============+:========================================================+:========================+:==============+
+| Premorbid      | *Age*                                                   | @lindroth2018           | yes           |
++----------------+---------------------------------------------------------+-------------------------+---------------+
+|                | *Dementia*                                              | @davis2015              | yes           |
++----------------+---------------------------------------------------------+-------------------------+---------------+
+|                | *Vascular risk factors*                                 | @siokas2022             | yes           |
++----------------+---------------------------------------------------------+-------------------------+---------------+
+|                | *Microangiopathy*                                       | @wischmann2023          | yes           |
++----------------+---------------------------------------------------------+-------------------------+---------------+
+|                | *Frailty, visual impairment, falls*                     | @persico2018            | (yes) pRS     |
++----------------+---------------------------------------------------------+-------------------------+---------------+
+|                | *Alcohol abuse, withdrawl*                              | @eyer2011               | yes           |
++----------------+---------------------------------------------------------+-------------------------+---------------+
+|                | *Medication*                                            | @clegg2011              | yes           |
++----------------+---------------------------------------------------------+-------------------------+---------------+
+| Admission/\    | *Coma*                                                  | @oldham2020             | yes           |
+| post admission |                                                         |                         |               |
++----------------+---------------------------------------------------------+-------------------------+---------------+
+|                | *Stroke location*                                       | @rhee2021               | yes           |
++----------------+---------------------------------------------------------+-------------------------+---------------+
+|                | *Dehydration, electrolyte imbalance, blood transfusion* | @delirium2018           | no            |
++----------------+---------------------------------------------------------+-------------------------+---------------+
+|                | *Infection, \                                           | @sonneville2017, \      | yes           |
+|                | sepsis*                                                 | @fan2024                |               |
++----------------+---------------------------------------------------------+-------------------------+---------------+
+|                | *Seizures*                                              | @frei2024               | no            |
++----------------+---------------------------------------------------------+-------------------------+---------------+
+|                | *Surgery, invasive procedures*                          | @fisher1995             | yes           |
++----------------+---------------------------------------------------------+-------------------------+---------------+
+|                | *Acute kidney failure*                                  | @jäckel2021             | no            |
++----------------+---------------------------------------------------------+-------------------------+---------------+
+|                | *Ventilation length*                                    | @krewulak2020           | yes           |
++----------------+---------------------------------------------------------+-------------------------+---------------+
+|                | *Heart failure*                                         | @niu2023                | no            |
++----------------+---------------------------------------------------------+-------------------------+---------------+
+
+{{< pagebreak >}}
 
 ## Aim of this work
 
-This introduction may give the reader an understanding of the current knowledge of differences in biological sex, establishing the need for more research on this topic. In addition, delirium - as discussed - is an underrecognized entity despite its impact on the prognosis of stroke patients. Available literature on sex-based differences and its influence on delirium is limited. The aim of this work is to adress this gap by
+This introduction may give the reader an understanding of the current knowledge of differences in biological sex, establishing the need for more research on this topic. In addition, delirium - as discussed - is an underrecognized entity despite its impact on the prognosis of stroke patients. Available literature on sex-based differences and its influence on delirium is rather limited. The aim of this work is to address this gap by (@fig-res-hypoth):
 
--   investigating the difference between the sexes of delirium in acute ischemic stroke patients during the hospital stay
+-   investigating the *difference between the sexes* in acute ischemic stroke patients during the hospital stay with a *special emphasis on delirium,*
 
--   identify influencal factors of delirium occurence and their relationship between females and males
+-   identifying influential *factors of delirium occurrence* and their *relationship between females and males,*
 
--   evaluate the impact of delirium and its possible relationship to biological sex on the short and long-term prognosis of stroke patients
+-   evaluating the *impact of delirium* and its possible relationship to biological sex on the short and long-term *prognosis of stroke* patients.
+
+![Pictogramm of research hypothesis. (1) Evaluation of sex differences at admission (2) Identification of influencal factors contributing to delirium during course of disease (3) Impact of delirium on outcome. mRS indicates modified Rankin Scale, pRS indications premorbid Rankin scale.](output/pic/research_hypothesis_pictogramm.pdf){#fig-res-hypoth}

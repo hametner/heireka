@@ -1,0 +1,183 @@
+```{r Delirium-smoking, include=FALSE}
+# getResDelAphasia <- function(df_adm_f = df_adm_f, data_dic = data_dic){
+        df <- df_adm_f
+        df$risk_factor_smoking <- relevel(df$risk_factor_smoking, ref = "no")
+        dd <- datadist(df)
+        options(datadist = 'dd')
+        options(contrasts=c("contr.treatment", "contr.treatment"))
+        
+        #Variables ? include smoking?
+        dv = "outcome_delir"
+        iv0 = "risk_factor_smoking + sex"
+        ia = "risk_factor_smoking * sex"
+        #Model
+        # bm_delirium_risk_factor_smoking <- getModel(dv, iv0, file_name = "output/models/bm_delirium_risk_factor_smoking", data = df, force_overwrite = FALSE)
+        bm_delirium_risk_factor_smoking <- getModel(dv, iv0, file_name = "output/models/bm_delirium_risk_factor_smoking", data = df, force_overwrite = FALSE)
+
+        #Table
+        bm_delirium_risk_factor_smoking_tbl <- getLatexTableCH(bm_delirium_risk_factor_smoking, font_size=8)
+        #interaction model
+        # bm_delirium_risk_factor_smoking_ia <- getModel(dv, ia, file_name = "output/models/bm_delirium_risk_factor_smoking_ia", data = df, force_overwrite = FALSE)
+        bm_delirium_risk_factor_smoking_ia <- getModel(dv, ia, file_name = "output/models/bm_delirium_risk_factor_smoking_ia", data = df, cores = 8, iter = 4000, thin = 5, control = list(adapt_delta = 0.99, max_treedepth = 15), force_overwrite = FALSE)
+        
+         # Bivar - INSTABLE
+        # iv1 = paste(ia, "+ rcs(nihss_d0, 3)")
+        # bm_delirium_risk_factor_smoking_iv1 <- getModel(dv, iv1, file_name = "output/models/bm_delirium_risk_factor_smoking_iv1", data = df, force_overwrite = FALSE)
+        # iv2 = paste(ia, "+ rcs(age, 3)")
+        # bm_delirium_risk_factor_smoking_iv2 <- getModel(dv, iv2, file_name = "output/models/bm_delirium_risk_factor_smoking_iv2", data = df, force_overwrite = FALSE)
+        # 
+        
+        # Interaction Table
+        bm_delirium_risk_factor_smoking_tbl_ia <- getLatexTableCH(bm_delirium_risk_factor_smoking_ia, font_size=8, interactions_only = TRUE)
+        # bm_delirium_risk_factor_smoking_ia <- getModel(dv, ia, file_name = "output/models/bm_delirium_risk_factor_smoking_ia", data = df, force_overwrite = FALSE, imputation = TRUE)
+
+        #Prediction
+#         
+#         bm_delirium_risk_factor_smoking_p <- Predict(bm_delirium_risk_factor_smoking_ia, risk_factor_smoking,  sex, funint=FALSE, fun=plogis, conf.int = TRUE)
+#         bm_delirium_risk_factor_smoking_footnote <- getFootnote(bm_delirium_risk_factor_smoking_p)
+#         # Probability difference
+#         bm_delirium_risk_factor_smoking_contrast <- contrast(bm_delirium_risk_factor_smoking_ia, 
+#                                              list(sex="male", risk_factor_smoking=c(bm_delirium_risk_factor_smoking_p$risk_factor_smoking)),
+#                                              list(sex="female", risk_factor_smoking=c(bm_delirium_risk_factor_smoking_p$risk_factor_smoking)))
+#         
+#         bm_delirium_risk_factor_smoking_contrast_df <- data.frame(risk_factor_smoking=bm_delirium_risk_factor_smoking_contrast$risk_factor_smoking, probability=bm_delirium_risk_factor_smoking_contrast$PP)
+#         
+#         # Plots
+#         
+#         # lollipop
+#         bm_delirium_risk_factor_smoking_p0 <- plot_grouped_bar_chart(df, "risk_factor_smoking", "sex", chart_type = "lollipop") 
+#         
+#         # jitter
+#           bm_delirium_risk_factor_smoking_p1 <- ggplot(bm_delirium_risk_factor_smoking_p %>% as_tibble(), aes(x = risk_factor_smoking, y = yhat, color = sex, group = sex)) +
+#     geom_jitter(position = position_dodge(width = 0.5), size = 3) +  
+#     geom_errorbar(aes(ymin = lower, ymax = upper), width = 0.2, position = position_dodge(width = 0.5)) +  # Adding error bars with the same jitter
+#     geom_line(position = position_dodge(width = 0.5)) + 
+#     theme_ch() +  scale_color_colorblind()  +
+#     # labs(x = "Neglect Grade", y = "Predicted Value (yhat)", color = "Sex") +  # Adding labels + coor_flip()
+# ylab(expression(P(Delirium ~ "|" ~ Data, x)))  +
+#                 theme(
+#                         # legend.position = c(0.95, 0.05),
+#                         # legend.justification = c(1, 0),
+#                         legend.position = "none",
+#                         legend.title = element_blank(),
+#                         # plot.title = element_text(hjust = 0.5),
+#                         panel.grid.major.x = element_blank(),
+#                         panel.grid.minor.x = element_blank(),
+#                         axis.ticks = element_line(),
+#                         axis.text.x = element_text(angle = 0),
+#                         text = element_text(size = 10)
+#                 )
+#         
+#         bm_delirium_risk_factor_smoking_p_diff <-
+#                 plotSexDiffGradient(
+#                         df,
+#                         bm_delirium_risk_factor_smoking_ia,
+#                         var = "risk_factor_smoking",
+#                         xlab = expression(P(Delta ~ "|" ~ data, x) == P(theta[F] ~ "|" ~ data, x) - P(theta[M] ~ "|" ~ data, x))) +
+#                 coord_cartesian(expand = TRUE, ylim = c(0, 50)) + 
+#                 coord_flip()
+#         
+# 
+#         bm_delirium_risk_factor_smoking_p2_footnote <- paste0(expression(P(Delta ~ "|" ~ data, x)), " is the posterior probability density of the contrast between females and males of developing a delirium at a given level of smoking x.")
+#         
+#         library(gridExtra)
+#         library(ormPlot)
+#         library(cowplot)
+#         # bm_delirium_risk_factor_smoking_p1 <- ggplot(Predict(bm_delirium_risk_factor_smoking_ia, risk_factor_smoking)) + theme_ch() + scale_color_viridis(discrete = TRUE, option = "D") + theme(plot.margin = unit(c(0.5,0,0,0.5), "cm"))
+#         bm_delirium_risk_factor_smoking_p2 <- ggplot(Predict(bm_delirium_risk_factor_smoking_ia, sex)) + theme_ch() + scale_color_viridis(discrete = TRUE, option = "D") + coord_cartesian(expand = TRUE, ylim = c(-4, 0)) + theme(plot.margin = unit(c(0.5,0,0,0.5), "cm"))
+#         
+#         bm_delirium_risk_factor_smoking_p3 <- ggplot(Predict(bm_delirium_risk_factor_smoking_ia, risk_factor_smoking, sex, conf.int = FALSE)) + theme_ch() + scale_color_viridis(discrete = TRUE, option = "D")+ theme(plot.margin = unit(c(0.5,0,0,0.5), "cm")) 
+#         bm_delirium_risk_factor_smoking_p4 <- plot(bm_delirium_risk_factor_smoking_ia) + theme_ch() + scale_color_viridis(discrete = TRUE, option = "D") + coord_cartesian(expand = TRUE, xlim = c(-3, 3)) + theme(plot.margin = unit(c(0.5,0,0,0.5), "cm"))
+#         # bm_delirium_risk_factor_smoking_p5 <- pp_check.blrm(bm_delirium_risk_factor_smoking_ia, type = "violin_grouped", group = "sex", df=df) + coord_cartesian(expand = TRUE) + theme(legend.position = "top", plot.margin = unit(c(0.5,0,0,1), "cm"))
+#         #forest plot
+#         # p6_temp <- forestplot(summary(bm_delirium_risk_factor_smoking_ia), return_ggplots = TRUE)
+#         bm_delirium_risk_factor_smoking_p6 <- forestplot(summary(bm_delirium_risk_factor_smoking), return_ggplots = TRUE)
+#         bm_delirium_risk_factor_smoking_p7 <- stanDxplot(bm_delirium_risk_factor_smoking_ia, which="sex=male") + theme_ch() + coord_cartesian(expand = TRUE, xlim=c(0,1400), ylim=c(-10,25)) + coord_flip() + theme(plot.margin = unit(c(0.5,0,0,0.5), "cm"))
+#         
+#         
+#         res_del_smoking <-
+#                 list(
+#                         dv = dv,
+#                         iv0 = iv0,
+#                         ia = ia,
+#                         model = bm_delirium_risk_factor_smoking,
+#                         tbl = bm_delirium_risk_factor_smoking_tbl,
+#                         model_ia = bm_delirium_risk_factor_smoking_ia,
+#                         tbl_ia = bm_delirium_risk_factor_smoking_tbl_ia,
+#                         pred = bm_delirium_risk_factor_smoking_p,
+#                         pred_fn = bm_delirium_risk_factor_smoking_footnote,
+#                         p0 = bm_delirium_risk_factor_smoking_p0,
+#                         p1 = bm_delirium_risk_factor_smoking_p1,
+#                         p2 = bm_delirium_risk_factor_smoking_p2,
+#                         p3 = bm_delirium_risk_factor_smoking_p3,
+#                         p4 = bm_delirium_risk_factor_smoking_p4,
+#                         # p5 = bm_delirium_risk_factor_smoking_p5,
+#                         p6 = bm_delirium_risk_factor_smoking_p6,
+#                         p7 = bm_delirium_risk_factor_smoking_p7,
+#                         p_diff = bm_delirium_risk_factor_smoking_p_diff
+#                 )
+#         # return(res_del_risk_factor_smoking)
+#         
+# # }
+        
+            
+
+```
+### Smoking status, Sex and Delirium
+This analysis investigates the frequency and differences in patients who have either stopped smoking or were still smoking at hospital presentation. 
+Frequencies of non-smokers, previous and current smokers are presented. (@tbl-delirium-smoking) 
+Sex difference in ever-smokers can be observed where males were more likely to be smoking (`r round((df %>% filter(risk_factor_smoking!="no") %>% filter(sex=="male") %>% nrow())/nrow(df)*100,1)`%) compares to females (`r round((df %>% filter(risk_factor_smoking!="no") %>% filter(sex=="female") %>% nrow())/nrow(df)*100,1)`). The overall number of patients who had smoked in the past but stopped was rather low.
+```{r tbl-delirium-smoking}
+#| label: tbl-delirium-smoking
+#| tbl-cap: Relationship between _Smoking_ and occurrence of *_New Delirium_*
+#| tbl-colwidths: "auto"
+#| results: hold
+#| echo: false
+#| tbl-pos: H
+library(gt)
+library(kableExtra)
+# t <- getLatexTableCH(bm_delirium_age, font_size=8)
+sel <- c("sex", "risk_factor_smoking")
+var <- setdiff(sel, "sex")
+# file storage
+file <- "output/models/bm_delirium_risk_factor_smoking_uni.rds"
+# Run Bayesian Univariate calculations
+if (file.exists(file)) {
+        models <- readRDS(file)
+} else {
+        models <- run_models(df, var)
+        saveRDS(models,
+                file,
+                compress = "xz")
+}
+stat <- extract_bayes_stat(models, var)
+plot_tbl(
+    data = df,
+    selected_columns = c("risk_factor_smoking","sex"),
+    by = "sex",
+    stat_descr_loc = "bottom",
+    pkg = "kableExtra",
+    kable_option = "latex",
+    pvalue = FALSE,
+    bayes = TRUE,
+    missing="ifany",
+    stat # adding 'stat# to add bayesian stats
+) %>% 
+    kable_styling(latex_options = c("scale_down"))  
+
+```
+
+In the regression model to predict delirium, current smokers (compared to non-smokers) showed no clear association (`r getMedCI(summary(bm_delirium_risk_factor_smoking), var="current")`, @tbl-delirium-smoking2). Previous smokers (compared to non-smokers) showed some trend towards a lower probability of developing a delirium (`r getMedCI(summary(bm_delirium_risk_factor_smoking), var="previous")`, probability `r getP(getRsmb(bm_delirium_risk_factor_smoking), var="risk_factor_smoking=previous", text=FALSE)`). A trend for a moderation by sex was observed for previous smokers, but credible intervals were wide and the model after adjustment unstable because of low numbers.
+```{r tbl-delirium-smoking2}
+#| label: tbl-delirium-smoking2
+#| tbl-cap: Relationship between _Smoking_ and occurrence of _New Delirium_
+#| tbl-colwidths: "auto"
+#| results: hold
+#| echo: false
+#| tbl-pos: H
+library(gt)
+library(kableExtra)
+replace_H_with(bm_delirium_risk_factor_smoking_tbl)
+```
+
+

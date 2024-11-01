@@ -1,0 +1,266 @@
+```{r delirium-prep, include=FALSE}
+df <- df_adm_f
+df <- df %>% rename(Adrenergics_excl_anticholinergics = Adrenergics_in_combination_with_corticosteroids_or_other_drugs_excl_anticholinergics)
+# df <- df_adm_s
+
+library(rms)
+        dd <- datadist(df)
+        options(datadist = 'dd')
+        options(contrasts=c("contr.treatment", "contr.treatment"))
+        
+tar_load("df_meds_prior")
+df_meds_prior$GROUP <- df_meds_prior$GROUP %>% rename(Adrenergics_excl_anticholinergics = Adrenergics_in_combination_with_corticosteroids_or_other_drugs_excl_anticholinergics)
+
+var <-
+        sapply(df_meds_prior$GROUP, function(x) {
+                sum(x, na.rm = TRUE)
+        }) %>% 
+        as_tibble() %>% 
+        mutate(names = df_meds_prior$GROUP %>% 
+                       names()) %>% 
+        arrange(desc(value)) %>% 
+        filter(value > 70) %>% 
+        filter(names != "case_id") %>% 
+        mutate(new = substr(names, 1, 20))
+
+
+# BASIC MODEL
+dv <- "outcome_delir"
+iv_mdx <- var %>% pull(names) %>% paste(collapse = " + ")
+iv_mdx <- paste("sex +", iv_mdx)
+
+bm_delirium_mdx <- getModel(dv, iv_mdx, file_name = "output/models/bm_delirium_mdx_", data = df, force_overwrite = FALSE)
+bm_delirium_var_mdx_tbl <- getLatexTableCH(bm_delirium_mdx, font_size=10, output_format="latex")
+ 
+var$lowcount <- 0
+
+# Determine which variables have very low count in outcome category
+for (i in seq_along(var$names)) {
+  name <- var$names[i]
+  
+  # Filter the dataframe for the current drug name
+  
+  df_filtered <- df %>% select(outcome_delir, sex, !!name)
+                               
+  # Count the occurrences of outcome_delir for each gender
+  count_females <- sum(df_filtered$sex == "female" & df_filtered$outcome_delir==1 & df_filtered[name]==1, na.rm = TRUE)
+  count_males <- sum(df_filtered$sex == "male" & df_filtered$outcome_delir==1 & df_filtered[name]==1, na.rm = TRUE)
+  
+  # Check if either count is less than 2
+  if (count_females < 2 || count_males < 2) {
+    var$lowcount[i] <- 1
+  }
+}
+
+#select
+var_sel <- var %>% filter(lowcount == 0) %>% pull(names)
+iv2_mdx <- paste0(paste(var_sel, collapse = " + "), "+ sex + rcs(nihss_d0, 3) + rcs(age, 3)")
+bm_delirium_mdx_iv2 <- getModel(dv, iv2_mdx, file_name = "output/models/bm_delirium_mdx_iv2", data = df, force_overwrite = FALSE, loo=FALSE, sampling.args = list(control=list(adapt_delta=0.99,max_treedepth=12)))
+
+
+file <- "output/models/bm_delirium_mdx_bivar.rds"
+# run bivariate models with sex interaction
+if (file.exists(file)) {
+        bm_delirium_mdx_bivar <- readRDS(file)
+} else {
+        bm_delirium_mdx_bivar <- run_bimodels(
+                df,
+                outcome = "outcome_delir",
+                var = var_sel,
+                group_var = "sex",
+                interaction = TRUE
+        )
+        saveRDS(bm_delirium_mdx_bivar, file, compress = "xz")
+        }
+
+# Run Bayesian Univariate calculations
+file <- "output/models/bm-delirium-mdx-select.rds"
+if (file.exists(file)) {
+        bm_delirium_mdx_select <- readRDS(file)
+} else {
+        bm_delirium_mdx_select <-
+                run_bimodels(
+                        df,
+                        outcome = "outcome_delir",
+                        var = var_sel,
+                        group_var = "sex",
+                        interaction = TRUE
+                )
+        saveRDS(bm_delirium_mdx_select, file, compress = "xz")
+}
+
+#INTERACTION Model with selected medications 
+
+ia_mdx <- var_sel %>% paste(collapse = " *sex + ")
+ia_mdx <- paste0(ia_mdx, "*sex")
+bm_delirium_mdx_ia <- getModel(dv, ia_mdx, file_name = "output/models/bm_delirium_mdx_ia", data = df, force_overwrite = FALSE, loo=FALSE, sampling.args = list(control=list(adapt_delta=0.99,max_treedepth=12)))
+
+# Risk under Pyrazolones
+risk_pyr <- Predict(bm_delirium_mdx_ia, sex, Pyrazolones, funint=FALSE, fun=plogis) %>% select(Pyrazolones, sex, yhat)
+
+
+ia2_mdx <- paste0(paste(var_sel, collapse = "*sex +"), "* sex + rcs(nihss_d0, 3) + rcs(age, 3)")
+bm_delirium_mdx_ia2 <- getModel(dv, ia2_mdx, file_name = "output/models/bm_delirium_mdx_ia2", data = df, force_overwrite = FALSE, loo=FALSE, sampling.args = list(control=list(adapt_delta=0.99,max_treedepth=12)))
+
+
+
+# iv_mdx <- paste0(ia_mdx, " + rcs(nihss_d0, 3) + rcs(age, 3)")
+# bm_delirium_mdx_iv <- getModel(dv, iv_mdx, file_name = "output/models/bm_delirium_mdx_iv", data = df, force_overwrite = FALSE, loo=FALSE, sampling.args = list(control=list(adapt_delta=0.99,max_treedepth=12)))
+
+
+# plot
+# bm_delirium_mdx_p0 <- plot_grouped_bar_chart(df, "bm_delirium_mdx", "sex", chart_type = "lollipop") 
+# plot_grouped_bar_chart(df, "Sulfonylureas", "sex", chart_type = "lollipop")        
+
+
+# bm_delirium_mdx_ia_pred <- Predict(bm_delirium_mdx_ia2, Pyrazolones,  sex, funint=FALSE, fun=plogis, conf.int = TRUE)
+# bm_delirium_mdx_ia_p1 <- plotInteraction(bm_delirium_mdx_ia2,
+#                                                                bm_delirium_mdx_ia_pred,
+#                                                                var_of_interest = "Pyrazolones",
+#                                                                group_var = "sex",
+#                                                                display_annotations = FALSE)
+# 
+# #         
+
+
+
+
+```
+
+### Prior Medications - Groups
+
+Descriptive analysis of prior medication usage at admission is presented, comparing the entire cohort and the subgroups of biological sex (male and female, @tbl-delirium-mdx). As notable differences between the sexes with a preponderance in females, *selective beta-blocking agents* (51.6% female versus 40.9% male patients) and *angiotensin II receptor blockers (ARBs)* (18.2% females versus 16.0% males) could be identified. Others showed an opposite trend toward males - among them *platelet aggregation inhibitors*, excluding heparin (38.7% females versus 43.8% males), and for example *HMG-CoA reductase inhibitors* (28.0% females versus 34.4% males).
+
+```{r tbl-delirium-mdx}
+#| label: tbl-delirium-mdx
+#| tbl-cap: Descriptive analysis of _Prior medication (groups)_ at admission in the whole cohort and subgroups of biological sex
+#| tbl-colwidths: "auto"
+#| echo: false
+#| warning: false
+#| error: false
+library(gt)
+library(kableExtra)
+sel <- c("sex", var[["names"]])
+var <- setdiff(sel, "sex")
+
+# file storage
+file <- "output/models/tbl-delirium-mdx-models_uni.rds"
+
+if (file.exists(file)) {
+        models <- readRDS(file)
+} else {
+        models <- run_models(df, var[["names"]])
+        saveRDS(models,
+                file,
+                compress = "xz")
+}
+#extract bayesian stats c
+stat <- extract_bayes_stat(models, var)
+# stat <- extract_bayes_stat(models[1], var$names)
+# stat <- getRsmb(bm_delirium_mdx, col_var=TRUE) %>% as_tibble() %>% rename(`P(β>0)`=P)
+
+# Bayes stats with multiple not working yet
+
+if (knitr::is_latex_output()) {
+        
+        plot_tbl(
+                data = df,
+                selected_columns = c(var, "sex"),
+                by = "sex",
+                stat_descr_loc = "bottom",
+                pkg = "kableExtra",
+                kable_option = "latex",
+                pvalue = FALSE,
+                bayes = TRUE,
+                stat,
+                missing="no"
+        ) %>% 
+                kable_styling(latex_options = c("scale_down"))  
+                # column_spec(1, width = "4.5cm") %>%
+                # column_spec(3, width = "2.5cm") %>%
+                # column_spec(4, width = "2.5cm") %>%
+                # column_spec(5, width = "2.5cm") %>%
+                # column_spec(6, width = "2cm")
+        
+} else {
+        
+        plot_tbl(
+                data = df,
+                selected_columns = c(var, "sex"),
+                by = "sex",
+                stat_descr_loc = "bottom",
+                pkg = "kableExtra",
+                kable_option = "html",
+                pvalue = FALSE,
+                bayes = TRUE,
+                stat,
+                missing = "no"
+        ) %>% kable_classic(full_width = TRUE)
+        
+}
+
+```
+
+Thyroid hormones showed a significant sex difference, with 19.4% of females using them compared to only 6.5% of males. Sulfonamides had also a higher usage among females (27.3%) (versus 19.6% males) as well as pyrazolones, used by 10.8% of females and 5.2% of males. Another interesting difference was observed with vitamin D and analogues, used by 8.0% of females compared to 3.2% of males. Further differences included a higher usage of alpha adrenoreceptor antagonists among males (8.9%) compared to females (1.7%). Digitalis glycosides were used by 6.3% of females and 2.9% of males, indicating a higher prevalence among females. Other antidepressants were more commonly used by females (5.7%) than males (2.9%). Non-selective monoamine reuptake inhibitors had a higher usage among females (4.1%) than males (2.2%). Other opioids were used by 4.3% of females compared to 1.8% of males.
+
+```{r fig-delirium-mdx-forest, fig.width=7, fig.asp=1.2, out.width="100%"}
+#| label: fig-delirium-mdx-forest
+#| echo: false
+#| warning: false
+#| error: false
+#| fig-cap: !expr 'paste0("Forest Plot of Medication Groups associated with Delirium")'
+#| cache: TRUE
+plotForest(bm_delirium_mdx)
+# plotForest(bm_delirium_mdx_iv2)
+```
+
+```{r tbl-delirium-mdx-regr, eval=FALSE}
+#| label: tbl-delirium-mdx-regr
+#| tbl-cap: Relationship between _Prior medications_ at admission and occurrence of New Delirium
+#| tbl-colwidths: "auto"
+#| echo: false
+replace_H_with(bm_delirium_var_mdx_tbl)
+```
+
+```{r tbl-delirium-mdx-regr2, include=FALSE}
+#| label: tbl-delirium-mdx-regr2
+#| tbl-cap: Relationship between _Prior medications_ at admission and occurrence of New Delirium
+#| tbl-colwidths: "auto"
+#| echo: false
+getLatexTableCH(bm_delirium_mdx, font_size=8.5, output_format="latex", option="longtable") %>%  
+         column_spec(1, "1.9in") %>% 
+        column_spec(2, "0.3in") %>%
+        column_spec(3, "0.3in") %>%
+        column_spec(4, "0.3in") %>%
+        column_spec(5, "0.3in") %>%
+        column_spec(6, "0.3in") %>% 
+        column_spec(7, "0.3in")
+```
+
+#### Relationship of Medications, Sex and Delirium
+
+Presented bayesian regression model describes distinct groups of medications and their relationship to developing new delirium. A specific considerations of biological sex differences is taken by a second model that includes multiplicative interaction terms.
+
+Medications Associated with Increased Delirium Risk
+
+Several medications are associated with an increased risk of developing delirium during hospital stay. Angiotensin II receptor blockers (ARBs, plain) are linked to delirium with high probability of `r getP(getRsmb(bm_delirium_mdx_ia), var="Angiotensin_II_receptor_blockers_ARBs_plain", text=FALSE)`, and an effect size of `r getMedCI(summary(bm_delirium_mdx),var="Angiotensin_II_receptor_blockers_ARBs_plain")`. This means that patients with ARBs prior to stroke have an increased risk of delirium. Pyrazolones with their main representative metamizole `r getMedCI(summary(bm_delirium_mdx),var="Pyrazolones")` and Other antiepileptics ATC code N03AX `r getMedCI(summary(bm_delirium_mdx),var="Other_antiepileptics")` which include, for example, lamotrigine, pregabalin, levetiracetam, and lacosamid, amongst others, had strong associations with elevated risk of delirium.
+
+Heparin group medications show a positive effect, though with some uncertainty (`r getMedCI(summary(bm_delirium_mdx),var="Heparin_group")`, `r getP(getRsmb(bm_delirium_mdx), var="Heparin_group", text = TRUE)`). Other antidepressants also suggested an increased risk, with a median effect size of (`r getMedCI(summary(bm_delirium_mdx),var="Other_antidepressants")`, `r getP(getRsmb(bm_delirium_mdx), var="Other_antidepressants", text = TRUE)`).
+
+Adjusting for potential confounders such as age and stroke severity confirmed the relevance of these associations of medications with delirium, with odds ratios for Angiotensin_II_receptor_blockers_ARBs_plain `r getMedCI(summary(bm_delirium_mdx_iv2), var="Angiotensin_II_receptor_blockers_ARBs_plain")`, Pyrazolones `r getMedCI(summary(bm_delirium_mdx_iv2), var="Pyrazolones")`, Other_antiepileptics_ATC_code_N03AX `r getMedCI(summary(bm_delirium_mdx_iv2), var="Other_antiepileptics")`, Heparin_group `r getMedCI(summary(bm_delirium_mdx_iv2), var="Heparin_group")`, and Other_antidepressants `r getMedCI(summary(bm_delirium_mdx_iv2), var="Other_antidepressants")`.
+
+Medications with Potential Protective Effects Against Delirium
+
+In contrast, when taking glucocorticoids prior to stroke, an association in a protective direction was found (`r getMedCI(summary(bm_delirium_mdx_iv2), var="Glucocorticoids")`).
+
+The second Bayesian logistic regression model, which incorporates interaction terms between sex and various medications, provides deeper insights into how biological sex moderates the effects of these medications on the likelihood of developing delirium. The Bayesian model suggested an interaction of biological sex with Pyrazolones (`r getP(getRsmb(bm_delirium_mdx_ia), var="sex=male * Pyrazolones", text=TRUE)` ). In relative risk for individual groups this translates as follows: Compared to taking no Pyrazolones, females increased their risk from a predicted probability of `r round(risk_pyr %>% filter(sex=="female" & Pyrazolones==0) %>% pull(yhat),3)` to `r round(risk_pyr %>% filter(sex=="female" & Pyrazolones==1) %>% pull(yhat),3)` (relativ increase: `r round((risk_pyr %>% filter(sex=="female" & Pyrazolones==0) %>% pull(yhat) / risk_pyr %>% filter(sex=="female" & Pyrazolones==1) %>% pull(yhat))*100, 1)`%) when having Pyrazolones in their pre-stroke medication, whereas males changed insignificantly (predicted probability without Pyrazonolones: `r round(risk_pyr %>% filter(sex=="male" & Pyrazolones==0) %>% pull(yhat),3)` vs. with Pyrazonolones: `r round(risk_pyr %>% filter(sex=="male" & Pyrazolones==1) %>% pull(yhat),3)`).
+
+```{r fig-delirium-mdx-ia, fig.width=7, fig.asp=1.2, out.width="100%", include=FALSE}
+#| label: fig-delirium-mdx-ia
+#| echo: false
+#| warning: false
+#| error: false
+#| fig-cap: !expr 'paste0("Probability of Interactions of biological sex with preadmission medication (groups)")'
+#| cache: TRUE
+plotForest(bm_delirium_mdx_ia, interactions_only = TRUE, sig_color = "black", nonsig_color = "black")
+```

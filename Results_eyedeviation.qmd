@@ -1,0 +1,213 @@
+```{r Delirium-eyedeviation, include=FALSE}
+# getResDelAphasia <- function(df_adm_f = df_adm_f, data_dic = data_dic){
+        df <- df_adm_f
+        df$var_eyedev <- ordered(df$var_eyedev, levels=c("none", "non-forced", "forced"))
+        dd <- datadist(df)
+        options(datadist = 'dd')
+        options(contrasts=c("contr.treatment", "contr.treatment"))
+        
+        #Variables ? include eyedeviation?
+        dv = "outcome_delir"
+        iv0 = "var_eyedev + sex"
+        ia = "var_eyedev * sex"
+        #Model
+        # bm_delirium_var_eyedev <- getModel(dv, iv0, file_name = "output/models/bm_delirium_var_eyedev", data = df, force_overwrite = FALSE)
+        bm_delirium_var_eyedev <- getModel(dv, iv0, file_name = "output/models/bm_delirium_var_eyedev", data = df, force_overwrite = FALSE)
+
+        
+        #interaction model
+        # bm_delirium_var_eyedev_ia <- getModel(dv, ia, file_name = "output/models/bm_delirium_var_eyedev_ia", data = df, force_overwrite = FALSE)
+        bm_delirium_var_eyedev_ia <- getModel(dv, ia, file_name = "output/models/bm_delirium_var_eyedev_ia", data = df, force_overwrite = FALSE)
+        #Table
+        bm_delirium_var_eyedev_tbl <- getLatexTableCH(bm_delirium_var_eyedev, font_size=8)
+        # Interaction Table
+        bm_delirium_var_eyedev_tbl_ia <- getLatexTableCH(bm_delirium_var_eyedev_ia, font_size=8, interactions_only = TRUE)
+        # bm_delirium_var_eyedev_ia <- getModel(dv, ia, file_name = "output/models/bm_delirium_var_eyedev_ia", data = df, force_overwrite = FALSE, imputation = TRUE)
+
+        # bivar
+        iv1 = paste(ia, "+ rcs(nihss_d0, 3)")
+        bm_delirium_var_eyedev_iv1 <- getModel(dv, iv1, file_name = "output/models/bm_delirium_var_eyedev_iv1", data = df, force_overwrite = FALSE)
+        iv2 = paste(ia, "+ rcs(age, 3)")
+        bm_delirium_var_eyedev_iv2 <- getModel(dv, iv2, file_name = "output/models/bm_delirium_var_eyedev_iv2", data = df, force_overwrite = FALSE)
+        
+        
+        #Prediction
+        
+        bm_delirium_var_eyedev_p <- Predict(bm_delirium_var_eyedev_ia, var_eyedev,  sex, funint=FALSE, fun=plogis, conf.int = TRUE)
+        bm_delirium_var_eyedev_footnote <- getFootnote(bm_delirium_var_eyedev_p)
+        # Probability difference
+        bm_delirium_var_eyedev_contrast <- contrast(bm_delirium_var_eyedev_ia, 
+                                             list(sex="male", var_eyedev=c(bm_delirium_var_eyedev_p$var_eyedev)),
+                                             list(sex="female", var_eyedev=c(bm_delirium_var_eyedev_p$var_eyedev)))
+        
+        bm_delirium_var_eyedev_contrast_df <- data.frame(var_eyedev=bm_delirium_var_eyedev_contrast$var_eyedev, probability=bm_delirium_var_eyedev_contrast$PP)
+        
+        # Plots
+        
+        # lollipop
+        bm_delirium_var_eyedev_p0 <- plot_grouped_bar_chart(df, "var_eyedev", "sex", chart_type = "lollipop")  
+        # coord_cartesian(expand=TRUE, ylim=c(0,1800))
+        
+        # jitter
+          bm_delirium_var_eyedev_p1 <- ggplot(bm_delirium_var_eyedev_p %>% as_tibble(), aes(x = var_eyedev, y = yhat, color = sex, group = sex)) +
+    geom_jitter(position = position_dodge(width = 0.5), size = 3) +  
+    geom_errorbar(aes(ymin = lower, ymax = upper), width = 0.2, position = position_dodge(width = 0.5)) +  # Adding error bars with the same jitter
+    geom_line(position = position_dodge(width = 0.5)) + 
+    theme_ch() +  scale_color_colorblind()  +
+    # labs(x = "Neglect Grade", y = "Predicted Value (yhat)", color = "Sex") +  # Adding labels + coor_flip()
+ylab(expression(P(Delirium ~ "|" ~ Data, x)))  +
+                theme(
+                        # legend.position = c(0.95, 0.05),
+                        # legend.justification = c(1, 0),
+                        legend.position = "none",
+                        legend.title = element_blank(),
+                        # plot.title = element_text(hjust = 0.5),
+                        panel.grid.major.x = element_blank(),
+                        panel.grid.minor.x = element_blank(),
+                        axis.ticks = element_line(),
+                        axis.text.x = element_text(angle = 0),
+                        text = element_text(size = 10)
+                )
+        
+        bm_delirium_var_eyedev_p_diff <-
+                plotSexDiffGradient(
+                        df,
+                        bm_delirium_var_eyedev_ia,
+                        var = "var_eyedev",
+                        xlab = expression(P(Delta ~ "|" ~ data, x) == P(theta[F]-theta[M]))) +
+                coord_cartesian(expand = TRUE, ylim = c(0, 50)) +
+                coord_flip()
+        
+
+        # bm_delirium_var_eyedev_p2_footnote <- paste0(expression(P(Delta ~ "|" ~ data, x)), " is the posterior probability density of the contrast between females and males of developing a delirium at a given level of eyedeviation x.")
+        # 
+        library(gridExtra)
+        library(ormPlot)
+        library(cowplot)
+        # bm_delirium_var_eyedev_p1 <- ggplot(Predict(bm_delirium_var_eyedev_ia, var_eyedev)) + theme_ch() + scale_color_viridis(discrete = TRUE, option = "D") + theme(plot.margin = unit(c(0.5,0,0,0.5), "cm"))
+        bm_delirium_var_eyedev_p2 <- ggplot(Predict(bm_delirium_var_eyedev_ia, sex)) + theme_ch() + scale_color_viridis(discrete = TRUE, option = "D") + coord_cartesian(expand = TRUE, ylim = c(-4, 0)) + theme(plot.margin = unit(c(0.5,0,0,0.5), "cm"))
+        
+        bm_delirium_var_eyedev_p3 <- ggplot(Predict(bm_delirium_var_eyedev_ia, var_eyedev, sex, conf.int = FALSE)) + theme_ch() + scale_color_viridis(discrete = TRUE, option = "D")+ theme(plot.margin = unit(c(0.5,0,0,0.5), "cm")) 
+        bm_delirium_var_eyedev_p4 <- plot(bm_delirium_var_eyedev_ia) + theme_ch() + scale_color_viridis(discrete = TRUE, option = "D") + coord_cartesian(expand = TRUE, xlim = c(-3, 3)) + theme(plot.margin = unit(c(0.5,0,0,0.5), "cm"))
+        
+        # bm_delirium_var_eyedev_p5 <-
+        #         pp_check.blrm(
+        #                 bm_delirium_var_eyedev_ia,
+        #                 type = "violin_grouped",
+        #                 group = "sex",
+        #                 df = df
+        #         ) + coord_cartesian(expand = TRUE) + theme(legend.position = "top", plot.margin = unit(c(0.5, 0, 0, 1), "cm"))
+        # #forest plot
+        # p6_temp <- forestplot(summary(bm_delirium_var_eyedev_ia), return_ggplots = TRUE)
+        bm_delirium_var_eyedev_p6 <- forestplot(summary(bm_delirium_var_eyedev), return_ggplots = TRUE)
+        bm_delirium_var_eyedev_p7 <- stanDxplot(bm_delirium_var_eyedev_ia, which="sex=male") + theme_ch() + coord_cartesian(expand = TRUE, xlim=c(0,1400), ylim=c(-10,25)) + coord_flip() + theme(plot.margin = unit(c(0.5,0,0,0.5), "cm"))
+        
+        
+        res_del_eyedeviation <-
+                list(
+                        dv = dv,
+                        iv0 = iv0,
+                        ia = ia,
+                        model = bm_delirium_var_eyedev,
+                        tbl = bm_delirium_var_eyedev_tbl,
+                        model_ia = bm_delirium_var_eyedev_ia,
+                        tbl_ia = bm_delirium_var_eyedev_tbl_ia,
+                        pred = bm_delirium_var_eyedev_p,
+                        pred_fn = bm_delirium_var_eyedev_footnote,
+                        p0 = bm_delirium_var_eyedev_p0,
+                        p1 = bm_delirium_var_eyedev_p1,
+                        p2 = bm_delirium_var_eyedev_p2,
+                        p3 = bm_delirium_var_eyedev_p3,
+                        p4 = bm_delirium_var_eyedev_p4,
+                        # p5 = bm_delirium_var_eyedev_p5,
+                        p6 = bm_delirium_var_eyedev_p6,
+                        p7 = bm_delirium_var_eyedev_p7,
+                        p_diff = bm_delirium_var_eyedev_p_diff
+                )
+        # return(res_del_var_eyedev)
+        
+# }
+        
+            
+
+```
+
+### Eye deviation
+
+The frequency and relationship with new onset delirium is investigated when patients present with any form of eye deviation at the initial clinical examination at hospital admission. @fig-delirium-eyedeviation The overall frequency of presenting with eye deviation was 35.6%, with females experiencing a higher frequency (39.4%) as compared to males (32.0%). [^results_eyedeviation-1]
+
+[^results_eyedeviation-1]: *Comment:* This was higher than the author would have suspected. For this reason the character extraction strings for the variable generation were rechecked and results manually revisited, keeping the false positive rate as low as possible.
+
+```{r tbl-delirium-eyedeviation}
+#| label: tbl-delirium-eyedeviation
+#| tbl-cap: Descriptive analysis of levels of ***eye deviation*** in subgroups of sex
+#| tbl-colwidths: "auto"
+#| echo: false
+library(gt)
+library(kableExtra)
+# t <- getLatexTableCH(bm_delirium_age, font_size=8)
+# bm <- blrm(var_eyedev~sex, data = df)
+# stat <- getRsmb(bm, col_var=TRUE) %>% as_tibble() %>% rename(`P(β>0)`=P)
+sel <- c("sex", "var_eyedev")
+var <- setdiff(sel, "sex")
+# file storage
+file <- "output/models/bm_delirium_var_eyedev_uni.rds"
+# Run Bayesian Univariate calculations
+if (file.exists(file)) {
+        models <- readRDS(file)
+} else {
+        models <- run_models(df, var)
+        saveRDS(models,
+                file,
+                compress = "xz")
+}
+stat <- extract_bayes_stat(models, var)
+
+plot_tbl(
+    data = df,
+    selected_columns = c("var_eyedev","sex"),
+    by = "sex",
+    stat_descr_loc = "bottom",
+    pkg = "kableExtra",
+    kable_option = "latex",
+    pvalue = FALSE,
+    bayes = TRUE,
+    missing="ifany",
+    stat # adding 'stat# to add bayesian stats
+) %>%
+    kable_styling(latex_options = c("scale_down"))
+
+# res_del_eyedeviation$tbl
+```
+
+Presence of eye deviation at admission is significantly associated with the occurrence of new delirium. The probability of this differences was \>99.9%. The regression model suggested an independent association of *non-forced eye deviation* with the in-hospital occurence of delirium (odds ratio 1.30, 95% credible interval 1.04--1.64, probability 98.6%, @tbl-delirium-eyedeviation2). The interaction model with sex showed no relevant new aspects, meaning that sex did not mediate the independent association of non-forced eye deviation (probability of interaction 78.1%). Inclusion of potential confounders such as NIHSS or age did not alter these findings. The posterior probability density of the contrast between females and males of developing a delirium at a given level of eye deviation is given. (@fig-delirium-eyedeviation)
+
+```{r tbl-delirium-eyedeviation2}
+#| label: tbl-delirium-eyedeviation2
+#| tbl-cap: Relationship between _Eye deviation_ and occurrence of *_New Delirium_*
+#| tbl-colwidths: "auto"
+#| echo: false
+replace_H_with(res_del_eyedeviation$tbl)
+```
+
+```{r fig-delirium-eyedeviation, fig.width=6, fig.asp=0.5, out.width="100%"}
+#| label: fig-delirium-eyedeviation
+#| echo: false
+#| warning: false
+#| error: false
+#| fig-cap: !expr 'paste0("**(A)** Descriptive Analysis of _Levels of Eye Deviation (no, non-forced, forced)_ stratified by biological sex. **(B)** Probability of Occurrence of a New Delirium given the different levels of Eye Deviation comparing females and males, **(C)** Differences in posterior probability of females - males in each level of Eye Deviation")'
+#| cache: TRUE
+p <-       plot_grid(
+        res_del_eyedeviation$p0 + ylim(0, 2500) + theme(legend.position = c(0.83,0.95), 
+                                   axis.text.x = element_text(angle = 45, hjust = 1),
+                                   legend.background = element_rect(fill = NA),
+                                   legend.key.size = unit(0.2, "cm")),
+        res_del_eyedeviation$p1 + ylim(0,0.3) + theme(legend.position = "", axis.text.x = element_text(angle = 45, hjust = 1)),
+        res_del_eyedeviation$p_diff + theme(legend.position = "", axis.text.x = element_text(angle = 45, hjust = 1)),
+        nrow = 1,
+        labels = c("A", "B", "C")
+)
+
+p
+
+```

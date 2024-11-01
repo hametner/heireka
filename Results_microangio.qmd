@@ -1,0 +1,219 @@
+```{r Delirium-microangio, include=FALSE}
+# getResDelAphasia <- function(df_adm_f = df_adm_f, data_dic = data_dic){
+        df <- df_adm_f
+        dd <- datadist(df)
+        options(datadist = 'dd')
+        options(contrasts=c("contr.treatment", "contr.treatment"))
+        
+        #Variables ? include microangio?
+        dv = "outcome_delir"
+        iv0 = "var_microangio + sex"
+        ia = "var_microangio * sex"
+        #Model
+        
+        
+        # bm_delirium_var_microangio <- getModel(dv, iv0, file_name = "output/models/bm_delirium_var_microangio", data = df, force_overwrite = FALSE)
+        bm_delirium_var_microangio <- getModel(dv, iv0, file_name = "output/models/bm_delirium_var_microangio", data = df, force_overwrite = FALSE)
+
+        #Table
+        bm_delirium_var_microangio_tbl <- getLatexTableCH(bm_delirium_var_microangio, font_size=8)
+        #interaction model
+        # bm_delirium_var_microangio_ia <- getModel(dv, ia, file_name = "output/models/bm_delirium_var_microangio_ia", data = df, force_overwrite = FALSE)
+        bm_delirium_var_microangio_ia <- getModel(dv, ia, file_name = "output/models/bm_delirium_var_microangio_ia", data = df, force_overwrite = FALSE)
+
+        # Interaction Table
+        bm_delirium_var_microangio_tbl_ia <- getLatexTableCH(bm_delirium_var_microangio_ia, font_size=8, interactions_only = TRUE)
+        # bm_delirium_var_microangio_ia <- getModel(dv, ia, file_name = "output/models/bm_delirium_var_microangio_ia", data = df, force_overwrite = FALSE, imputation = TRUE)
+        
+        # bivar
+        iv1 = paste(ia, "+ rcs(nihss_d0, 3)")
+        bm_delirium_var_microangio_iv1 <- getModel(dv, iv1, file_name = "output/models/bm_delirium_var_microangio_iv1", data = df, force_overwrite = FALSE)
+        iv2 = paste(ia, "+ rcs(age, 3)")
+        bm_delirium_var_microangio_iv2 <- getModel(dv, iv2, file_name = "output/models/bm_delirium_var_microangio_iv2", data = df, force_overwrite = FALSE)
+        
+
+        #Prediction
+        
+        bm_delirium_var_microangio_p <- Predict(bm_delirium_var_microangio_ia, var_microangio,  sex, funint=FALSE, fun=plogis, conf.int = TRUE)
+        bm_delirium_var_microangio_footnote <- getFootnote(bm_delirium_var_microangio_p)
+        # Probability difference
+        bm_delirium_var_microangio_contrast <- contrast(bm_delirium_var_microangio_ia, 
+                                             list(sex="male", var_microangio=c(bm_delirium_var_microangio_p$var_microangio)),
+                                             list(sex="female", var_microangio=c(bm_delirium_var_microangio_p$var_microangio)))
+        
+        bm_delirium_var_microangio_contrast_df <- data.frame(var_microangio=bm_delirium_var_microangio_contrast$var_microangio, probability=bm_delirium_var_microangio_contrast$PP)
+        
+        # Plots
+        
+        # lollipop
+        bm_delirium_var_microangio_p0 <- plot_grouped_bar_chart(df, "var_microangio", "sex", chart_type = "lollipop") + coord_cartesian(expand=TRUE, ylim=c(0,1900))
+        
+        # jitter
+          bm_delirium_var_microangio_p1 <- ggplot(bm_delirium_var_microangio_p %>% as_tibble(), aes(x = var_microangio, y = yhat, color = sex, group = sex)) +
+    geom_jitter(position = position_dodge(width = 0.5), size = 3) +  
+    geom_errorbar(aes(ymin = lower, ymax = upper), width = 0.2, position = position_dodge(width = 0.5)) +  # Adding error bars with the same jitter
+    geom_line(position = position_dodge(width = 0.5)) + 
+    theme_ch() +  scale_color_colorblind()  +
+    # labs(x = "Neglect Grade", y = "Predicted Value (yhat)", color = "Sex") +  # Adding labels + coor_flip()
+ylab(expression(P(Delirium ~ "|" ~ Data, x)))  +
+                theme(
+                        # legend.position = c(0.95, 0.05),
+                        # legend.justification = c(1, 0),
+                        legend.position = "none",
+                        legend.title = element_blank(),
+                        # plot.title = element_text(hjust = 0.5),
+                        panel.grid.major.x = element_blank(),
+                        panel.grid.minor.x = element_blank(),
+                        axis.ticks = element_line(),
+                        axis.text.x = element_text(angle = 0),
+                        text = element_text(size = 10)
+                )
+        
+        bm_delirium_var_microangio_p_diff <-
+                plotSexDiffGradient(
+                        df,
+                        bm_delirium_var_microangio_ia,
+                        var = "var_microangio",
+                        xlab = expression(P(Delta ~ "|" ~ data, x) == P(theta[F]-theta[M]))) +
+                # coord_cartesian(expand = TRUE, ylim = c(0, 50)) + 
+                coord_flip()
+        
+
+        bm_delirium_var_microangio_p2_footnote <- paste0(expression(P(Delta ~ "|" ~ data, x)), " is the posterior probability density of the contrast between females and males of developing a delirium at a given level of microangio x.")
+        
+        library(gridExtra)
+        library(ormPlot)
+        library(cowplot)
+        # bm_delirium_var_microangio_p1 <- ggplot(Predict(bm_delirium_var_microangio_ia, var_microangio)) + theme_ch() + scale_color_viridis(discrete = TRUE, option = "D") + theme(plot.margin = unit(c(0.5,0,0,0.5), "cm"))
+        bm_delirium_var_microangio_p2 <- ggplot(Predict(bm_delirium_var_microangio_ia, sex)) + theme_ch() + scale_color_viridis(discrete = TRUE, option = "D") + coord_cartesian(expand = TRUE, ylim = c(-4, 0)) + theme(plot.margin = unit(c(0.5,0,0,0.5), "cm"))
+        
+        bm_delirium_var_microangio_p3 <- ggplot(Predict(bm_delirium_var_microangio_ia, var_microangio, sex, conf.int = FALSE)) + theme_ch() + scale_color_viridis(discrete = TRUE, option = "D")+ theme(plot.margin = unit(c(0.5,0,0,0.5), "cm")) 
+        bm_delirium_var_microangio_p4 <- plot(bm_delirium_var_microangio_ia) + theme_ch() + scale_color_viridis(discrete = TRUE, option = "D") + coord_cartesian(expand = TRUE, xlim = c(-3, 3)) + theme(plot.margin = unit(c(0.5,0,0,0.5), "cm"))
+        # bm_delirium_var_microangio_p5 <- pp_check.blrm(bm_delirium_var_microangio_ia, type = "violin_grouped", group = "sex", df=df) + coord_cartesian(expand = TRUE) + theme(legend.position = "top", plot.margin = unit(c(0.5,0,0,1), "cm"))
+        #forest plot
+        # p6_temp <- forestplot(summary(bm_delirium_var_microangio_ia), return_ggplots = TRUE)
+        bm_delirium_var_microangio_p6 <- forestplot(summary(bm_delirium_var_microangio), return_ggplots = TRUE)
+        bm_delirium_var_microangio_p7 <- stanDxplot(bm_delirium_var_microangio_ia, which="sex=male") +
+  theme_ch() +
+  coord_cartesian(expand = TRUE, xlim=c(0,1400), ylim=c(-10,25)) +
+  coord_flip() +
+  theme(
+    plot.margin = unit(c(0.5,0,0,0.5), "cm"),
+    axis.title.x = element_blank(),       # Remove x-axis title
+    axis.text.x = element_blank(),        # Remove x-axis text
+    axis.ticks.x = element_blank()        # Remove x-axis ticks
+  )
+        res_del_microangio <-
+                list(
+                        dv = dv,
+                        iv0 = iv0,
+                        ia = ia,
+                        model = bm_delirium_var_microangio,
+                        tbl = bm_delirium_var_microangio_tbl,
+                        model_ia = bm_delirium_var_microangio_ia,
+                        tbl_ia = bm_delirium_var_microangio_tbl_ia,
+                        pred = bm_delirium_var_microangio_p,
+                        pred_fn = bm_delirium_var_microangio_footnote,
+                        p0 = bm_delirium_var_microangio_p0,
+                        p1 = bm_delirium_var_microangio_p1,
+                        p2 = bm_delirium_var_microangio_p2,
+                        p3 = bm_delirium_var_microangio_p3,
+                        p4 = bm_delirium_var_microangio_p4,
+                        # p5 = bm_delirium_var_microangio_p5,
+                        p6 = bm_delirium_var_microangio_p6,
+                        p7 = bm_delirium_var_microangio_p7,
+                        p_diff = bm_delirium_var_microangio_p_diff
+                )
+        # return(res_del_var_microangio)
+        
+# }
+        
+            
+
+```
+### Small vessel Disease
+
+The variable for this analysis is presence of small vessel disease, which is categorized into five levels: no, minor, moderate, severe, and Unknown. Out of `r nrow(df)` total observations, `r 100-round(sum(!is.na(df$var_microangio))/nrow(df)*100,1) `% (n = `r nrow(df)-sum(!is.na(df$var_microangio))`) were not available for information on the degree of small vessel disease
+In available data, 31.1% of patients had some degree of cerebral small vessel disease A higher frequency of minor small vessel disease was observed in males (17.4% versus 15.9% in female), whereas females exhibited a higher frequency of severe small vessel disease (10.8% versus 7.5% in males). The probability of this difference was 98.9%. 
+```{r tbl-delirium-microangio}
+#| label: tbl-delirium-microangio
+#| tbl-cap: Descriptive analysis of _Small Vessel disease_ in subgroups of sex
+#| tbl-colwidths: "auto"
+#| echo: false
+library(gt)
+library(kableExtra)
+# t <- getLatexTableCH(bm_delirium_age, font_size=8)
+# bm <- blrm(var_microangio~sex, data = df)
+# stat <- getRsmb(bm, col_var=TRUE) %>% as_tibble() %>% rename(`P(β>0)`=P)
+sel <- c("sex", "var_microangio")
+var <- setdiff(sel, "sex")
+# file storage
+file <- "output/models/bm_delirium_var_microangio_uni.rds"
+# Run Bayesian Univariate calculations
+if (file.exists(file)) {
+        models <- readRDS(file)
+} else {
+        models <- run_models(df, var)
+        saveRDS(models,
+                file,
+                compress = "xz")
+}
+stat <- extract_bayes_stat(models, var)
+
+plot_tbl(
+    data = df,
+    selected_columns = c("var_microangio","sex"),
+    by = "sex",
+    stat_descr_loc = "bottom",
+    pkg = "kableExtra",
+    kable_option = "latex",
+    pvalue = FALSE,
+    bayes = TRUE,
+    missing="ifany",
+    stat # adding 'stat# to add bayesian stats
+) %>% 
+    kable_styling(latex_options = c("scale_down"))  
+```
+The relationship between small vessel disease and delirium was assessed using a Bayesian logistic regression model. Compared to having no small vessel disease, the odds of developing delirium were higher in patients with moderate (`r getMedCI(summary(bm_delirium_var_microangio), var="moderate")`, `r getP(getRsmb(res_del_microangio$model, dec=3), var="var_microangio=moderate")` and severe small vessel disease (`r getMedCI(summary(bm_delirium_var_microangio), var="severe")`, `r getP(getRsmb(res_del_microangio$model, dec=3), var="var_microangio=severe")`. @tbl-delirium-microangio, @fig-delirium-microangio2
+Investigating the interaction of sex on multiplicative scale revealed that some tendency for severe small vessel disease, but overall not so strong associations with delirium. An influence of NIHSS and age was also considered, but no significant associations were found. @tbl-delirium-microangio @fig-delirium-microangio2
+```{r fig-delirium-microangio2, fig.width=7, fig.asp=0.3, out.width="100%"}
+#| label: fig-delirium-microangio2
+#| echo: false
+#| warning: false
+#| error: false
+#| fig-cap: !expr 'paste0("Forest plot of Bayesian regression model including Degree of Microangiopathy, and sex explaining the probability of New-Onset Delirium. ", getFootnote(res_del_microangio$model, double_escape=FALSE))'
+#| cache: TRUE
+# names <- c("Year of birth", "Height", "Number of children", "Cranial volume", "Sex" )
+header <- c("OR", "Lower", "Upper" )
+forestplot(summary(res_del_microangio$model), header=header)
+```
+
+```{r fig-delirium-microangio, fig.width=10.5, fig.asp=0.4, out.width="100%", eval=FALSE}
+#| label: fig-delirium-microangio
+#| echo: false
+#| warning: false
+#| error: false
+#| fig-cap: !expr 'paste0("TODO. Model microangio: ", res_del_microangio$fn)'
+#| cache: TRUE
+p <-       plot_grid(
+        res_del_microangio$p0 + theme(legend.position = c(0.85,0.95)),
+        res_del_microangio$p1 + theme(legend.position = ""),
+        res_del_microangio$p_diff,
+        nrow = 1,
+        labels = c("A", "B", "C")
+)
+
+p
+```
+```{r tbl-delirium-microangio2, eval=FALSE}
+#| label: tbl-delirium-microangio2
+#| tbl-cap: Relationship between _lateralization of microangio_ and occurrence of *_New Delirium_*
+#| tbl-colwidths: "auto"
+#| results: hold
+#| echo: false
+#| tbl-pos: H
+library(gt)
+library(kableExtra)
+res_del_microangio$tbl
+```
+

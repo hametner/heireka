@@ -1,0 +1,411 @@
+### Aphasia, Sex and Delirium 
+```{r Delirium-Aphasia, include=FALSE}
+# getResDelAphasia <- function(df_adm_f = df_adm_f, data_dic = data_dic){
+       
+        
+        df <- df_adm_f
+        dd <- datadist(df)
+        options(datadist = 'dd')
+        options(contrasts=c("contr.treatment", "contr.treatment"))
+        
+        #Variables ? include handedness?
+        dv = "outcome_delir"
+        iv0 = "var_aphasia_grade2 + sex"
+        ia = "var_aphasia_grade2 * sex"
+        
+        # MODEL
+        bm_delirium_var_aphasia_grade2 <- getModel(dv, iv0, file_name = "output/models/bm_delirium_var_aphasia_grade2", data = df, force_overwrite = FALSE)
+        #Table
+        bm_delirium_var_aphasia_grade2_tbl <- getLatexTableCH(bm_delirium_var_aphasia_grade2, font_size=8, output_format="latex")
+        
+        #interaction model
+        bm_delirium_var_aphasia_grade2_ia <- getModel(dv, ia, file_name = "output/models/bm_delirium_var_aphasia_grade2_ia", data = df, force_overwrite = FALSE)
+        # Interaction Table
+        bm_delirium_var_aphasia_grade2_tbl_ia <- getLatexTableCH(bm_delirium_var_aphasia_grade2_ia, font_size=8, interactions_only = TRUE)
+        
+        #Prediction
+        bm_delirium_var_aphasia_grade2_p <- Predict(bm_delirium_var_aphasia_grade2_ia, var_aphasia_grade2,  sex, funint=FALSE, fun=plogis, conf.int = TRUE)
+        bm_delirium_var_aphasia_grade2_footnote <- getFootnote(bm_delirium_var_aphasia_grade2_p)
+        
+        # Probability difference
+        bm_delirium_var_aphasia_grade2_contrast <- contrast(bm_delirium_var_aphasia_grade2_ia, 
+                                             list(sex="male", var_aphasia_grade2=c(bm_delirium_var_aphasia_grade2_p$var_aphasia_grade2)),
+                                             list(sex="female", var_aphasia_grade2=c(bm_delirium_var_aphasia_grade2_p$var_aphasia_grade2)))
+        
+        bm_delirium_var_aphasia_grade2_contrast_df <- 
+                data.frame(var_aphasia_grade2=bm_delirium_var_aphasia_grade2_contrast$var_aphasia_grade2, probability=bm_delirium_var_aphasia_grade2_contrast$PP)
+        
+        # BIVARIABLE
+        iv1 = paste0(ia, "+rcs(nihss_d0, 3)")
+        bm_delirium_var_aphasia_grade2_iv1 <- getModel(dv, iv1, file_name = "output/models/bm_delirium_var_aphasia_grade2_iv1", data = df, force_overwrite = FALSE)
+        
+        # bm_delirium_var_aphasia_grade2_p2 <- Predict(bm_delirium_var_aphasia_grade2_iv1, nihss_d0, var_aphasia_grade2,  sex, funint=FALSE, fun=plogis, conf.int = TRUE)
+        bm_delirium_var_aphasia_grade2_iv1_pred2 <- Predict(bm_delirium_var_aphasia_grade2_iv1, nihss_d0=12, var_aphasia_grade2,  sex, funint=FALSE, fun=plogis, conf.int = TRUE)
+        
+        bm_delirium_var_aphasia_grade2_footnote2 <- getFootnote(bm_delirium_var_aphasia_grade2_iv1_pred2)
+        
+        
+        
+        # PLOTS 
+        # lollipop
+        bm_delirium_var_aphasia_grade2_p0 <- plot_grouped_bar_chart(df, "var_aphasia_grade2", "sex", chart_type = "lollipop") 
+        
+          bm_delirium_var_aphasia_grade2_p1 <- plotInteraction(bm_delirium_var_aphasia_grade2_iv1,
+                                                               bm_delirium_var_aphasia_grade2_iv1_pred2,
+                                                               var_of_interest = "var_aphasia_grade2",
+                                                               group_var = "sex",
+                                                               display_annotations = FALSE,
+                                                               display_sign = TRUE)
+          
+        
+        bm_delirium_var_aphasia_grade2_p_diff <-
+                plotSexDiffGradient(
+                        df,
+                        bm_delirium_var_aphasia_grade2_iv1,
+                        var = "var_aphasia_grade2",
+                        xlab = expression(P(Delta ~ "|" ~ data, x) == P(theta[F]-theta[M]))) +
+                coord_flip()
+        
+
+        bm_delirium_var_aphasia_grade2_p2_footnote <- paste0(expression(P(Delta ~ "|" ~ data, x)), " is the posterior probability density of the contrast between females and males of developing a delirium at a given level of aphasia x.")
+        
+        library(gridExtra)
+        library(ormPlot)
+        library(cowplot)
+        # bm_delirium_var_aphasia_grade2_p1 <- ggplot(Predict(bm_delirium_var_aphasia_grade2_ia, var_aphasia_grade2)) + theme_ch() + scale_color_viridis(discrete = TRUE, option = "D") + theme(plot.margin = unit(c(0.5,0,0,0.5), "cm"))
+        
+        bm_delirium_var_aphasia_grade2_p2 <- 
+                ggplot(Predict(bm_delirium_var_aphasia_grade2_ia, sex)) + 
+                theme_ch() + 
+                scale_color_viridis(discrete = TRUE, option = "D") + 
+                coord_cartesian(expand = TRUE, ylim = c(-4, 0)) + 
+                theme(plot.margin = unit(c(0.5,0,0,0.5), "cm"))
+        
+        bm_delirium_var_aphasia_grade2_p3 <- 
+                ggplot(Predict(bm_delirium_var_aphasia_grade2_ia, var_aphasia_grade2, sex, conf.int = FALSE)) + 
+                theme_ch() + scale_color_viridis(discrete = TRUE, option = "D") + theme(plot.margin = unit(c(0.5,0,0,0.5), "cm")) 
+        
+        bm_delirium_var_aphasia_grade2_p4 <-
+                plot(bm_delirium_var_aphasia_grade2_ia) + 
+                theme_ch() + scale_color_viridis(discrete = TRUE, option = "D") + 
+                coord_cartesian(expand = TRUE, xlim = c(-3, 3)) + 
+                theme(plot.margin = unit(c(0.5, 0, 0, 0.5), "cm"))
+        
+        bm_delirium_var_aphasia_grade2_p5 <- 
+                pp_check.blrm(bm_delirium_var_aphasia_grade2_ia, type = "violin_grouped", group = "sex", df=df) + 
+                coord_cartesian(expand = TRUE) + 
+                theme(legend.position = "top", plot.margin = unit(c(0.5,0,0,1), "cm"))
+       
+         #forest plot
+        # p6_temp <- forestplot(summary(bm_delirium_var_aphasia_grade2_ia), return_ggplots = TRUE)
+        bm_delirium_var_aphasia_grade2_p6 <- forestplot(summary(bm_delirium_var_aphasia_grade2_ia), return_ggplots = TRUE)
+        bm_delirium_var_aphasia_grade2_p7 <- 
+                stanDxplot(bm_delirium_var_aphasia_grade2_ia, which="sex=male") + 
+                theme_ch() + coord_cartesian(expand = TRUE, xlim=c(0,1400), ylim=c(-10,25)) + 
+                coord_flip() + theme(plot.margin = unit(c(0.5,0,0,0.5), "cm"))
+        
+        
+        res_del_aphasia <-
+                list(
+                        dv = dv,
+                        iv0 = iv0,
+                        ia = ia,
+                        model = bm_delirium_var_aphasia_grade2,
+                        tbl = bm_delirium_var_aphasia_grade2_tbl,
+                        model_ia = bm_delirium_var_aphasia_grade2_ia,
+                        tbl_ia = bm_delirium_var_aphasia_grade2_tbl_ia,
+                        pred = bm_delirium_var_aphasia_grade2_iv1_pred2,
+                        pred_fn = bm_delirium_var_aphasia_grade2_footnote,
+                        p0 = bm_delirium_var_aphasia_grade2_p0,
+                        p1 = bm_delirium_var_aphasia_grade2_p1,
+                        p2 = bm_delirium_var_aphasia_grade2_p2,
+                        p3 = bm_delirium_var_aphasia_grade2_p3,
+                        p4 = bm_delirium_var_aphasia_grade2_p4,
+                        p5 = bm_delirium_var_aphasia_grade2_p5,
+                        p6 = bm_delirium_var_aphasia_grade2_p6,
+                        p7 = bm_delirium_var_aphasia_grade2_p7,
+                        p_diff = bm_delirium_var_aphasia_grade2_p_diff
+                )
+        # return(res_del_var_aphasia_grade2)
+        
+# }
+        
+        most_category_aphasia <- df %>%
+                filter(var_aphasia_grade2 != "no aphasia") %>%
+                group_by(var_aphasia_grade2) %>%
+                count() %>% ungroup() %>%
+                filter(n == max(n))
+        
+        moderate_P = getP(getRsmb(bm_delirium_var_aphasia_grade2_ia), var = "var_aphasia_grade2=moderate * sex=male")
+
+```
+Symptoms of aphasia of any severity grade were found in n = `r nrow(df[df$var_aphasia_grade2 != "no aphasia", ])` (`r round(nrow(df[df$var_aphasia_grade2 != "no aphasia", ])/nrow(df)*100,1)`%) patient with available data (missing n = `r nrow(df[is.na(df$var_aphasia_grade2), ])`). More female patients than males presented with symptoms of aphasia. Aphasia with the grade `r most_category_aphasia[[1]]` was the most frequently occurring, affecting 29.9% of the patients, with a slightly higher occurrence in females (31.5%) compared to males (28.4%). @tbl-delir-aphasia
+```{r tbl-Delirium-Aphasia}
+#| label: tbl-delir-aphasia
+#| tbl-cap: Descriptive analysis of the *degree of aphasic symptoms* in the whole cohort and subgroups of biological sex
+#| tbl-colwidths: "auto"
+#| echo: false
+library(gt)
+library(kableExtra)
+# t <- getLatexTableCH(bm_delirium_age, font_size=8)
+bm <- blrm(var_aphasia_grade2~sex, data = df)
+stat <- getRsmb(bm, col_var=TRUE) %>% as_tibble() %>% rename(`P(β>0)`=P)
+
+plot_tbl(
+    data = df,
+    selected_columns = c("var_aphasia_grade2","sex"),
+    by = "sex",
+    stat_descr_loc = "bottom",
+    pkg = "kableExtra",
+    kable_option = "latex",
+    pvalue = FALSE,
+    bayes = TRUE,
+    missing = "ifany",
+    stat # adding 'stat# to add bayesian stats
+) %>% 
+    kable_styling(latex_options = c("scale_down"))  
+
+
+
+
+```
+The bayesian regression analysis investigates sex differences in the relationship between _levels of aphasia_ and the _risk of delirium_. While aphasia severity alone (main effect) shows variable and uncertain effects on delirium, the relevance of an interaction between aphasia severity and sex was evident. Males with moderate ($P_{interaction}(\beta>0):$ `r moderate_P`) to severe aphasia ($P_{interaction} (\beta>0):$ `r getP(getRsmb(bm_delirium_var_aphasia_grade2_ia), var = "var_aphasia_grade2=severe * sex=male")` are significantly more likely to develop delirium compared to females with the same level of aphasia. (@fig-delirium-aphasia A)
+Inclusion of NIHSS (as a potential confounder of this interaction) demonstrated further strength of these findings. This suggests that males with moderate to severe aphasia are particularly vulnerable to delirium.
+```{r tbl2-Delirium-Aphasia}
+#| label: tbl2-delir-aphasia
+#| tbl-cap: Relationship between _degree of aphasic symptoms_ and occurrence of *_New Delirium_*
+#| tbl-colwidths: "auto"
+#| results: hold
+#| echo: false
+#| tbl-pos: H
+library(gt)
+library(kableExtra)
+res_del_aphasia$tbl
+```
+```{r fig-Delirium-Aphasia, fig.width=6, fig.asp=0.5, out.width="100%"}
+#| label: fig-delirium-aphasia
+#| echo: false
+#| warning: false
+#| error: false
+#| fig-cap: !expr 'paste0("**(A)** Descriptive Analysis of Levels of Aphasia (no, minor, moderate, severe, global) stratified by biological sex. **(B)** Probability of Occurrence of a New Delirium given the different levels of aphasia comparing females and males, **(C)** Differences in posterior probability of females - males in each level of aphasia.")'
+#| cache: TRUE
+p <-       plot_grid(
+        res_del_aphasia$p0 + ylim(0, 2500) + theme(legend.position = c(0.83,0.95), 
+                                   axis.text.x = element_text(angle = 45, hjust = 1),
+                                   legend.background = element_rect(fill = NA),
+                                   legend.key.size = unit(0.2, "cm")),
+        res_del_aphasia$p1 + ylim(0,0.3) + theme(legend.position = "", axis.text.x = element_text(angle = 45, hjust = 1)),
+        res_del_aphasia$p_diff +  theme(axis.text.x = element_text(angle = 45, hjust = 1)),
+        nrow = 1,
+        labels = c("A", "B", "C")
+)
+p
+```
+
+### Neglect, Sex and Delirum
+```{r Delirium-Neglect, include=FALSE}
+# getResDelNeglect <- function(df_adm_f = df_adm_f, data_dic = data_dic){
+       
+        
+        df <- df_adm_f
+        dd <- datadist(df)
+        options(datadist = 'dd')
+        options(contrasts=c("contr.treatment", "contr.treatment"))
+        
+        #Variables ? include handedness?
+        dv = "outcome_delir"
+        iv0 = "var_neglect_grade + sex"
+        ia = "var_neglect_grade * sex"
+        
+        #Model
+        bm_delirium_var_neglect_grade <- getModel(dv, iv0, file_name = "output/models/bm_delirium_var_neglect_grade", data = df, force_overwrite = FALSE)
+        #Table
+        bm_delirium_var_neglect_grade_tbl <- getLatexTableCH(bm_delirium_var_neglect_grade, font_size=8)
+        #interaction model
+        bm_delirium_var_neglect_grade_ia <- getModel(dv, ia, file_name = "output/models/bm_delirium_var_neglect_grade_ia", data = df, force_overwrite = FALSE)
+        # Interaction Table
+        bm_delirium_var_neglect_grade_tbl_ia <- getLatexTableCH(bm_delirium_var_neglect_grade_ia, font_size=8, interactions_only = TRUE)
+        
+         # BIVARIABLE
+        iv1 = paste0(ia, "+rcs(nihss_d0, 3)")
+        bm_delirium_var_neglect_grade_iv1 <- getModel(dv, iv1, file_name = "output/models/bm_delirium_var_neglect_grade_iv1", data = df, force_overwrite = FALSE)
+       bm_delirium_var_neglect_grade_iv1_pred2 <- Predict(bm_delirium_var_neglect_grade_iv1, nihss_d0=12, var_neglect_grade,  sex, funint=FALSE, fun=plogis, conf.int = TRUE)
+        #Prediction
+        
+        bm_delirium_var_neglect_grade_p <- Predict(bm_delirium_var_neglect_grade_ia, var_neglect_grade,  sex, funint=FALSE, fun=plogis, conf.int = TRUE)
+        bm_delirium_var_neglect_grade_footnote <- getFootnote(bm_delirium_var_neglect_grade_p)
+        # Probability difference
+        bm_delirium_var_neglect_grade_contrast <- contrast(bm_delirium_var_neglect_grade_ia, 
+                                             list(sex="male", var_neglect_grade=c(bm_delirium_var_neglect_grade_p$var_neglect_grade)),
+                                             list(sex="female", var_neglect_grade=c(bm_delirium_var_neglect_grade_p$var_neglect_grade)))
+        
+        bm_delirium_var_neglect_grade_contrast_df <- data.frame(var_neglect_grade=bm_delirium_var_neglect_grade_contrast$var_neglect_grade, probability=bm_delirium_var_neglect_grade_contrast$PP)
+        
+        # Plots
+        #TODO  implement jitter
+        # bm_delirium_var_neglect_grade_p1 <- ggplot(bm_delirium_var_neglect_grade_p,
+        #                              adj.subtitle = 0) + 
+        #         geom_jitter(width = 0.2, height = 0, size = 5) + 
+        #         theme_minimal() + scale_color_colorblind()  +
+        #         ylab(expression(P(Delirium ~ "|" ~ Data, x)))  +
+        #         theme(
+        #                 # legend.position = c(0.95, 0.05),
+        #                 # legend.justification = c(1, 0),
+        #                 legend.position = "bottom",
+        #                 legend.title = element_blank(),
+        #                 # plot.title = element_text(hjust = 0.5),
+        #                 panel.grid.major.x = element_blank(),
+        #                 panel.grid.minor.x = element_blank(),
+        #                 axis.ticks = element_line(),
+        #                 axis.text.x = element_text(angle = 0),
+        #                 text = element_text(size = 10)
+        #         )
+        # ) +
+        # scale_x_continuous(sec.axis = sec_axis(~ . , name = "", breaks = NULL, labels = NULL))
+        
+        # jitter
+        
+#         bm_delirium_var_neglect_grade_p1 <- ggplot(bm_delirium_var_neglect_grade_p %>% as_tibble(), aes(x = var_neglect_grade, y = yhat, color = sex, group = sex)) +
+#     geom_jitter(position = position_dodge(width = 0.5), size = 3) +  # Adding jittered points
+#     geom_errorbar(aes(ymin = lower, ymax = upper), width = 0.2, position = position_dodge(width = 0.5)) +  # Adding error bars with the same jitter
+#     geom_line(position = position_dodge(width = 0.5)) +  # Adding a line connecting the points
+#     theme_ch() +  scale_color_colorblind()  +
+#     labs(x = "Neglect Grade", y = "Predicted Value (yhat)", color = "Sex") +  # Adding labels + coor_flip()
+# ylab(expression(P(Delirium ~ "|" ~ Data, x)))  +
+#                 theme(
+#                         # legend.position = c(0.95, 0.05),
+#                         # legend.justification = c(1, 0),
+#                         legend.position = "bottom",
+#                         legend.title = element_blank(),
+#                         # plot.title = element_text(hjust = 0.5),
+#                         panel.grid.major.x = element_blank(),
+#                         panel.grid.minor.x = element_blank(),
+#                         axis.ticks = element_line(),
+#                         axis.text.x = element_text(angle = 0),
+#                         text = element_text(size = 10)
+#                 )
+        
+          bm_delirium_var_neglect_grade_p0 <- plot_grouped_bar_chart(df, "var_neglect_grade", "sex", chart_type = "lollipop") 
+       
+        bm_delirium_var_neglect_grade_p1 <- plotInteraction(bm_delirium_var_neglect_grade_iv1,
+                                                               bm_delirium_var_neglect_grade_iv1_pred2,
+                                                               var_of_interest = "var_neglect_grade",
+                                                               group_var = "sex",
+                                                               display_annotations = TRUE, display_sign=FALSE)
+        
+        
+        
+        bm_delirium_var_neglect_grade_p_diff <-
+                plotSexDiffGradient(
+                        df,
+                        bm_delirium_var_neglect_grade_ia,
+                        var = "var_neglect_grade",
+                        xlab = expression(P(Delta ~ "|" ~ data, x) == P(theta[F]-theta[M]))) +
+                coord_flip()
+        
+        bm_delirium_var_neglect_grade_p2_footnote <- paste0(expression(P(Delta ~ "|" ~ data, x)), " is the posterior probability density of the contrast between females and males of developing a delirium at a given level of neglect x.")
+        
+        library(gridExtra)
+        library(ormPlot)
+        library(cowplot)
+        # bm_delirium_var_neglect_grade_p1 <- ggplot(Predict(bm_delirium_var_neglect_grade_ia, var_neglect_grade)) + theme_ch() + scale_color_viridis(discrete = TRUE, option = "D") + theme(plot.margin = unit(c(0.5,0,0,0.5), "cm"))
+        bm_delirium_var_neglect_grade_p2 <- ggplot(Predict(bm_delirium_var_neglect_grade_ia, sex)) + theme_ch() + scale_color_viridis(discrete = TRUE, option = "D") + coord_cartesian(expand = TRUE, ylim = c(-4, 0)) + theme(plot.margin = unit(c(0.5,0,0,0.5), "cm"))
+        
+        bm_delirium_var_neglect_grade_p3 <- ggplot(Predict(bm_delirium_var_neglect_grade_ia, var_neglect_grade, sex, conf.int = FALSE)) + theme_ch() + scale_color_viridis(discrete = TRUE, option = "D")+ theme(plot.margin = unit(c(0.5,0,0,0.5), "cm")) 
+        bm_delirium_var_neglect_grade_p4 <- plot(bm_delirium_var_neglect_grade_ia) + theme_ch() + scale_color_viridis(discrete = TRUE, option = "D") + coord_cartesian(expand = TRUE, xlim = c(-3, 3)) + theme(plot.margin = unit(c(0.5,0,0,0.5), "cm"))
+        bm_delirium_var_neglect_grade_p5 <- pp_check.blrm(bm_delirium_var_neglect_grade_ia, type = "violin_grouped", group = "sex", df=df) + coord_cartesian(expand = TRUE) + theme(legend.position = "top", plot.margin = unit(c(0.5,0,0,1), "cm"))
+        #forest plot
+        # p6_temp <- forestplot(summary(bm_delirium_var_neglect_grade_ia), return_ggplots = TRUE)
+        bm_delirium_var_neglect_grade_p6 <- forestplot(summary(bm_delirium_var_neglect_grade), return_ggplots = TRUE)
+        bm_delirium_var_neglect_grade_p7 <- stanDxplot(bm_delirium_var_neglect_grade_ia, which="sex=male") + theme_ch() + coord_cartesian(expand = TRUE, xlim=c(0,1400), ylim=c(-10,25)) + coord_flip() + theme(plot.margin = unit(c(0.5,0,0,0.5), "cm"))
+        
+        res_del_neglect <-
+                list(
+                        dv = dv,
+                        iv0 = iv0,
+                        ia = ia,
+                        model = bm_delirium_var_neglect_grade,
+                        tbl = bm_delirium_var_neglect_grade_tbl,
+                        model_ia = bm_delirium_var_neglect_grade_ia,
+                        tbl_ia = bm_delirium_var_neglect_grade_tbl_ia,
+                        pred = bm_delirium_var_neglect_grade_p,
+                        pred_fn = bm_delirium_var_neglect_grade_footnote,
+                        p0 = bm_delirium_var_neglect_grade_p0,
+                        p1 = bm_delirium_var_neglect_grade_p1,
+                        p2 = bm_delirium_var_neglect_grade_p2,
+                        p3 = bm_delirium_var_neglect_grade_p3,
+                        p4 = bm_delirium_var_neglect_grade_p4,
+                        p5 = bm_delirium_var_neglect_grade_p5,
+                        p6 = bm_delirium_var_neglect_grade_p6,
+                        p7 = bm_delirium_var_neglect_grade_p7,
+                        p_diff = bm_delirium_var_neglect_grade_p_diff
+                )
+        # return(res_del_var_neglect_grade)
+        
+# }
+        
+        most_category_neglect <- df %>%
+                filter(var_neglect_grade != "no neglect") %>%
+                group_by(var_neglect_grade) %>%
+                count() %>% ungroup() %>%
+                filter(n == max(n))
+        
+        
+
+```
+Symptoms of neglect of several severity grades were found in n = `r nrow(df[df$var_neglect_grade != "no aphasia", ])` (`r round(nrow(df[df$var_neglect_grade != "no neglect", ])/nrow(df)*100,1)`%) patient (missing n = `r nrow(df[is.na(df$var_neglect_grade), ])`). The frequencies in the different levels of neglect syndroms were quite balanced betwenn females and males. (@tbl-delir-neglect) Neglect with the grade `r most_category_neglect[[1]]` was the most frequently occurring among those with neglect, affecting 16.0% of the patients, with a slightly higher occurrence in females (16.9%) compared to males (15.1%). @tbl-delir-neglect
+```{r tbl-Delirium-Neglect}
+#| label: tbl-delir-neglect
+#| tbl-cap: Descriptive Analsis of _Neglect-Syndromes_ in the whole cohort and subgroups of biological sex 
+#| tbl-colwidths: "auto"
+#| echo: false
+library(gt)
+library(kableExtra)
+# t <- getLatexTableCH(bm_delirium_age, font_size=8)
+bm <- blrm(var_neglect_grade~sex, data = df)
+stat <- getRsmb(bm, col_var=TRUE) %>% as_tibble() %>% rename(`P(β>0)`=P)
+
+plot_tbl(
+    data = df,
+    selected_columns = c("var_neglect_grade","sex"),
+    by = "sex",
+    stat_descr_loc = "bottom",
+    pkg = "kableExtra",
+    kable_option = "latex",
+    pvalue = FALSE,
+    bayes = TRUE,
+    missing = "ifany",
+    stat # adding 'stat# to add bayesian stats
+) %>% 
+    kable_styling(latex_options = c("scale_down"))
+```
+The bayesian regression analysis investigates sex differences in the relationship between levels of neglect and the _risk of delirium. Compared to having no neglect, minor, visual, tactile, and multimodal neglect showed high probability of an positive association with occurrence of new delirium with  $P(\beta > 0)$ of >99%, 98.0%, 89.7%, and 99.9%, respectively. (@tbl-delir-neglect2) 
+```{r fig-Delirium-Neglect, fig.width=6, fig.asp=0.5, out.width="100%"}
+#| label: fig-delirium-neglect
+#| echo: false
+#| warning: false
+#| error: false
+#| fig-cap: !expr 'paste0("**(A)** Descriptive Analysis of Levels of Neglect (no neglect < minor/unspecified < visual < sensible/tactile < multimodal) stratified by biological sex. **(B)** Probability of Occurrence of a New Delirium given the different levels of neglect comparing females and males, **(C)** Differences in posterior probability of females - males in each level of aphasia.")'
+#| cache: TRUE
+p <-       plot_grid(
+        res_del_neglect$p0 + ylim(0, 2500) + theme(legend.position = c(0.83,0.95), 
+                                   axis.text.x = element_text(angle = 45, hjust = 1),
+                                   legend.background = element_rect(fill = NA),
+                                   legend.key.size = unit(0.2, "cm")),
+        res_del_neglect$p1 + theme(legend.position = "", axis.text.x = element_text(angle = 45, hjust = 1)),
+        res_del_neglect$p_diff + theme(legend.position = "", axis.text.x = element_text(angle = 45, hjust = 1)),
+        nrow = 1,
+        labels = c("A", "B", "C")
+)
+p
+```
+Visual neglect showed a moderation effect by sex ($P_{interaction}(\beta>0)$: 0.013). That is, males showed a reduced likelihood of a new delirium compared to females in this context. Allowing for stroke severity to enter the model, the interaction of visual neglect with sex was confirmative, with a female association for increased risk of new delirium; in all other categories, males were at increased delirium risk. @fig-delirium-neglect
+```{r tbl-Delirium-Neglect2}
+#| label: tbl-delir-neglect2
+#| tbl-cap: Relationship between _Neglect_ syndromes and occurrence of *_New Delirium_* in groups of biological sex
+#| tbl-colwidths: "auto"
+#| echo: false
+replace_H_with(res_del_neglect$tbl)
+```
+
+

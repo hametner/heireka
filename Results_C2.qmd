@@ -1,0 +1,205 @@
+```{r Delirium-c2, include=FALSE}
+        df <- df_adm_f
+        dd <- datadist(df)
+        options(datadist = 'dd')
+        options(contrasts=c("contr.treatment", "contr.treatment"))
+        
+        #Variables ? include c2?
+        dv = "outcome_delir"
+        iv0 = "risk_factor_alc_adm + sex"
+        ia = "risk_factor_alc_adm * sex"
+        #Model
+        # bm_delirium_risk_factor_alc_adm <- getModel(dv, iv0, file_name = "output/models/bm_delirium_risk_factor_alc_adm", data = df, force_overwrite = FALSE)
+        bm_delirium_risk_factor_alc_adm <- getModel(dv, iv0, file_name = "output/models/bm_delirium_risk_factor_alc_adm", data = df, force_overwrite = FALSE)
+
+        #Table
+        bm_delirium_risk_factor_alc_adm_tbl <- getLatexTableCH(bm_delirium_risk_factor_alc_adm, font_size=8)
+        #interaction model
+        # bm_delirium_risk_factor_alc_adm_ia <- getModel(dv, ia, file_name = "output/models/bm_delirium_risk_factor_alc_adm_ia", data = df, force_overwrite = FALSE)
+        bm_delirium_risk_factor_alc_adm_ia <- getModel(dv, ia, file_name = "output/models/bm_delirium_risk_factor_alc_adm_ia", data = df, force_overwrite = FALSE)
+
+         # bivar
+        # iv1 = paste(ia, "+ rcs(nihss_d0, 3)")
+        # bm_delirium_risk_factor_alc_adm_iv1 <- getModel(dv, iv1, file_name = "output/models/bm_delirium_risk_factor_alc_adm_iv1", data = df, force_overwrite = FALSE)
+        # iv2 = paste(ia, "+ rcs(age, 3)")
+        # bm_delirium_risk_factor_alc_adm_iv2 <- getModel(dv, iv2, file_name = "output/models/bm_delirium_risk_factor_alc_admo_iv2", data = df, force_overwrite = FALSE)
+        
+        
+        
+        # Interaction Table
+        bm_delirium_risk_factor_alc_adm_tbl_ia <- getLatexTableCH(bm_delirium_risk_factor_alc_adm_ia, font_size=8, interactions_only = TRUE)
+        # bm_delirium_risk_factor_alc_adm_ia <- getModel(dv, ia, file_name = "output/models/bm_delirium_risk_factor_alc_adm_ia", data = df, force_overwrite = FALSE, imputation = TRUE)
+
+        #Prediction
+        
+        bm_delirium_risk_factor_alc_adm_p <- Predict(bm_delirium_risk_factor_alc_adm_ia, risk_factor_alc_adm,  sex, funint=FALSE, fun=plogis, conf.int = TRUE)
+        bm_delirium_risk_factor_alc_adm_footnote <- getFootnote(bm_delirium_risk_factor_alc_adm_p)
+        # Probability difference
+        bm_delirium_risk_factor_alc_adm_contrast <- contrast(bm_delirium_risk_factor_alc_adm_ia, 
+                                             list(sex="male", risk_factor_alc_adm=c(bm_delirium_risk_factor_alc_adm_p$risk_factor_alc_adm)),
+                                             list(sex="female", risk_factor_alc_adm=c(bm_delirium_risk_factor_alc_adm_p$risk_factor_alc_adm)))
+        
+        bm_delirium_risk_factor_alc_adm_contrast_df <- data.frame(risk_factor_alc_adm=bm_delirium_risk_factor_alc_adm_contrast$risk_factor_alc_adm, probability=bm_delirium_risk_factor_alc_adm_contrast$PP)
+        
+        # Plots
+        
+        # lollipop
+        bm_delirium_risk_factor_alc_adm_p0 <- plot_grouped_bar_chart(df, "risk_factor_alc_adm", "sex", chart_type = "lollipop") + coord_cartesian(expand=TRUE, ylim=c(0,1800))
+        
+        # jitter
+          bm_delirium_risk_factor_alc_adm_p1 <- ggplot(bm_delirium_risk_factor_alc_adm_p %>% as_tibble(), aes(x = risk_factor_alc_adm, y = yhat, color = sex, group = sex)) +
+    geom_jitter(position = position_dodge(width = 0.5), size = 3) +  
+    geom_errorbar(aes(ymin = lower, ymax = upper), width = 0.2, position = position_dodge(width = 0.5)) +  # Adding error bars with the same jitter
+    geom_line(position = position_dodge(width = 0.5)) + 
+    theme_ch() +  scale_color_colorblind()  +
+    # labs(x = "Neglect Grade", y = "Predicted Value (yhat)", color = "Sex") +  # Adding labels + coor_flip()
+ylab(expression(P(Delirium ~ "|" ~ Data, x)))  +
+                theme(
+                        # legend.position = c(0.95, 0.05),
+                        # legend.justification = c(1, 0),
+                        legend.position = "none",
+                        legend.title = element_blank(),
+                        # plot.title = element_text(hjust = 0.5),
+                        panel.grid.major.x = element_blank(),
+                        panel.grid.minor.x = element_blank(),
+                        axis.ticks = element_line(),
+                        axis.text.x = element_text(angle = 0),
+                        text = element_text(size = 10)
+                )
+        
+        bm_delirium_risk_factor_alc_adm_p_diff <-
+                plotSexDiffGradient(
+                        df,
+                        bm_delirium_risk_factor_alc_adm_ia,
+                        var = "risk_factor_alc_adm",
+                        xlab = expression(P(Delta ~ "|" ~ data, x) == P(theta[F] ~ "|" ~ data, x) - P(theta[M] ~ "|" ~ data, x))) +
+                coord_cartesian(expand = TRUE, ylim = c(0, 50)) + 
+                coord_flip()
+        
+
+        bm_delirium_risk_factor_alc_adm_p2_footnote <- paste0(expression(P(Delta ~ "|" ~ data, x)), " is the posterior probability density of the contrast between females and males of developing a delirium at a given level of c2 x.")
+        
+        library(gridExtra)
+        library(ormPlot)
+        library(cowplot)
+        # bm_delirium_risk_factor_alc_adm_p1 <- ggplot(Predict(bm_delirium_risk_factor_alc_adm_ia, risk_factor_alc_adm)) + theme_ch() + scale_color_viridis(discrete = TRUE, option = "D") + theme(plot.margin = unit(c(0.5,0,0,0.5), "cm"))
+        bm_delirium_risk_factor_alc_adm_p2 <- ggplot(Predict(bm_delirium_risk_factor_alc_adm_ia, sex)) + theme_ch() + scale_color_viridis(discrete = TRUE, option = "D") + coord_cartesian(expand = TRUE, ylim = c(-4, 0)) + theme(plot.margin = unit(c(0.5,0,0,0.5), "cm"))
+        
+        bm_delirium_risk_factor_alc_adm_p3 <- ggplot(Predict(bm_delirium_risk_factor_alc_adm_ia, risk_factor_alc_adm, sex, conf.int = FALSE)) + theme_ch() + scale_color_viridis(discrete = TRUE, option = "D")+ theme(plot.margin = unit(c(0.5,0,0,0.5), "cm")) 
+        bm_delirium_risk_factor_alc_adm_p4 <- plot(bm_delirium_risk_factor_alc_adm_ia) + theme_ch() + scale_color_viridis(discrete = TRUE, option = "D") + coord_cartesian(expand = TRUE, xlim = c(-3, 3)) + theme(plot.margin = unit(c(0.5,0,0,0.5), "cm"))
+        # bm_delirium_risk_factor_alc_adm_p5 <- pp_check.blrm(bm_delirium_risk_factor_alc_adm_ia, type = "violin_grouped", group = "sex", df=df) + coord_cartesian(expand = TRUE) + theme(legend.position = "top", plot.margin = unit(c(0.5,0,0,1), "cm"))
+        # #forest plot
+        # p6_temp <- forestplot(summary(bm_delirium_risk_factor_alc_adm_ia), return_ggplots = TRUE)
+        bm_delirium_risk_factor_alc_adm_p6 <- forestplot(summary(bm_delirium_risk_factor_alc_adm), return_ggplots = TRUE)
+        bm_delirium_risk_factor_alc_adm_p7 <- stanDxplot(bm_delirium_risk_factor_alc_adm_ia, which="sex=male") + theme_ch() + coord_cartesian(expand = TRUE, xlim=c(0,1400), ylim=c(-10,25)) + coord_flip() + theme(plot.margin = unit(c(0.5,0,0,0.5), "cm"))
+        
+        
+        res_del_c2 <-
+                list(
+                        dv = dv,
+                        iv0 = iv0,
+                        ia = ia,
+                        model = bm_delirium_risk_factor_alc_adm,
+                        tbl = bm_delirium_risk_factor_alc_adm_tbl,
+                        model_ia = bm_delirium_risk_factor_alc_adm_ia,
+                        tbl_ia = bm_delirium_risk_factor_alc_adm_tbl_ia,
+                        pred = bm_delirium_risk_factor_alc_adm_p,
+                        pred_fn = bm_delirium_risk_factor_alc_adm_footnote,
+                        p0 = bm_delirium_risk_factor_alc_adm_p0,
+                        p1 = bm_delirium_risk_factor_alc_adm_p1,
+                        p2 = bm_delirium_risk_factor_alc_adm_p2,
+                        p3 = bm_delirium_risk_factor_alc_adm_p3,
+                        p4 = bm_delirium_risk_factor_alc_adm_p4,
+                        # p5 = bm_delirium_risk_factor_alc_adm_p5,
+                        p6 = bm_delirium_risk_factor_alc_adm_p6,
+                        p7 = bm_delirium_risk_factor_alc_adm_p7
+                        # p_diff = bm_delirium_risk_factor_alc_adm_p_diff
+                )
+        # return(res_del_risk_factor_alc_adm)
+        
+# }
+        
+            
+
+```
+### Alcohol 
+
+This analysis investigates habits of alcohol consumption in the patient population analysed by sex. Data on self reported alcohol consumption were available in 68.8% of patients. Males were more likely to report a moderate to severe level of alcohol consumption at 22.2% compared to females with 6.5% (odds ratio 3.48, 95% credible interval 2.86--4.18; probability of difference: >99.9%, @tbl-delirium-c2) 
+```{r tbl-delirium-c2}
+#| label: tbl-delirium-c2
+#| tbl-cap: Descriptive analysis of _Levels of Alcohol consumption habits_ prior to stroke within subgroups of sex
+#| tbl-colwidths: "auto"
+#| echo: false
+library(gt)
+library(kableExtra)
+sel <- c("sex", "risk_factor_alc_adm")
+var <- setdiff(sel, "sex")
+# file storage
+file <- "output/models/bm_delirium_risk_factor_alc_adm_uni.rds"
+# Run Bayesian Univariate calculations
+if (file.exists(file)) {
+        models <- readRDS(file)
+} else {
+        models <- run_models(df, var)
+        saveRDS(models,
+                file,
+                compress = "xz")
+}
+stat <- extract_bayes_stat(models, var)
+
+plot_tbl(
+    data = df,
+    selected_columns = c("risk_factor_alc_adm","sex"),
+    by = "sex",
+    stat_descr_loc = "bottom",
+    pkg = "kableExtra",
+    kable_option = "latex",
+    pvalue = FALSE,
+    bayes = TRUE,
+    stat, # adding 'stat# to add bayesian stats
+    missing = "ifany"
+) %>% 
+    kable_styling(latex_options = c("scale_down"))  
+```
+The bayesian regression model to investigate the relationship between alcohol consumption and delirium occurrence is shown as forest plot in @fig-delirium-c2 and @fig-delirium-c2. Neither moderate/severe alcohol consumption showed a positive associations nor did no/mild alcohol consumption show a negative association, nor was there a meaningful moderation by sex. 
+```{r fig-delirium-c2, fig.width=7, fig.asp=0.3, out.width="80%"}
+#| label: fig-delirium-c2
+#| echo: false
+#| warning: false
+#| error: false
+#| fig-cap: !expr 'paste0("Forest plot of Bayesian regression model including Habits of Alcohol Consumption before stroke, and sex explaining the probability of New-Onset Delirium. ", getFootnote(res_del_c2$model, double_escape=FALSE))'
+#| cache: TRUE
+# names <- c("Year of birth", "Height", "Number of children", "Cranial volume", "Sex" )
+header <- c("OR", "Lower", "Upper" )
+forestplot(summary(res_del_c2$model), header=header)
+```
+
+```{r tbl2-delirium-c22, eval = FALSE}
+#| label: tbl2-delirium-c2
+#| tbl-cap: Relationship between _c2_ and occurrence of _New Delirium_
+#| tbl-colwidths: "auto"
+#| echo: false
+library(gt)
+library(kableExtra)
+# t <- getLatexTableCH(bm_delirium_age, font_size=8)
+res_del_c2$tbl 
+```
+```{r fig-delirium-c22, fig.width=10.5, fig.asp=0.5, out.width="100%", eval = FALSE}
+#| label: fig-delirium-c22
+#| fig-pos: H
+#| echo: false
+#| warning: false
+#| error: false
+#| fig-cap: !expr 'paste0("TODO. Model c2: ", res_del_c2$fn)'
+#| cache: TRUE
+p <-       plot_grid(
+        res_del_c2$p0 + theme(legend.position = c(0.85,0.95)),
+        res_del_c2$p1 + theme(legend.position = ""),
+        res_del_c2$p_diff,
+        nrow = 1,
+        labels = c("A", "B", "C")
+)
+p
+```
+
+

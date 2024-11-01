@@ -1,0 +1,247 @@
+```{r Delir, include=FALSE}
+# STEP 1 - VARIABLE AVAILABLE AT HOSPITAL ADMISSION TO PREDICT DELIRIUM
+tar_load(df_adm_s)
+# tar_load(df_adm_c)
+df <- df_adm_s
+df$pRS02 <- as.factor(df$pRS<3)
+dd <- datadist(df)
+        options(datadist = 'dd')
+        options(contrasts=c("contr.treatment", "contr.treatment"))
+
+dv = "outcome_delir"
+# independent variables
+terms = "age + sex + pRS02 + date_therapy_year + nihss_d0"
+iv0 = "rcs(age, 4) + sex + pRS02 + date_therapy_year + rcs(nihss_d0, 3) + therapy"
+# add classical risk factors
+rf = "risk_factor_current_smoker + risk_factor_htn + risk_factor_khd + risk_factor_dm + risk_factor_hchol + risk_factor_pavk + rf_prev_mi +  risk_factor_prev_smoker + risk_factor_prev_stroke + risk_factor_af_known + var_thyr"
+iv1 = paste0(iv0, " + ", rf)
+# add new variables
+rf2 = "var_aphasia_adm + var_neglect_grade + var_prev_dementia + var_microangio + var_vigil + var_eyedev + risk_factor_alc_adm"
+iv2 = paste0(iv1, "+", rf2)
+# add medications
+rf3 = "valsartan + candesartan + metamizole_sodium + pregabalin + gabapentin + spironolactone + citalopram + chlortalidone + pantoprazole + moxonidine + diclofenac + macrogol_combinations"
+iv3 = paste0(iv2, "+", rf3)
+
+
+# Models
+bm.delir <- getModel(dv, iv3, file_name = "output/models/bm.delir_iv3", data = df, force_overwrite = FALSE)
+ia <- addInteractions(iv3, ia = "sex", all = TRUE)
+bm_delir_ia <- getModel(dv, ia, file_name = "output/models/bm.delir_iv3_ia", data = df, force_overwrite = FALSE)
+# Simplified Model
+rem <- c("pRS","risk_factor_current_smoker","risk_factor_htn","risk_factor_hchol","risk_factor_prev_smoker","risk_factor_prev_stroke","risk_factor_af_know")
+iv4 <- "rcs(age, 4) + sex + date_therapy_year + rcs(nihss_d0, 3) + var_aphasia_adm + var_neglect_grade + var_vigil + risk_factor_khd + risk_factor_dm + rf_prev_mi + var_prev_dementia + var_microangio"
+
+iv5 <- "rcs(age, 4) + sex + date_therapy_year + rcs(nihss_d0, 3) + var_aphasia_adm*sex + var_neglect_grade + var_vigil*sex + risk_factor_khd + risk_factor_dm + rf_prev_mi + var_prev_dementia + var_microangio"
+bm.delir_iv5 <- getModel(dv, iv5, file_name = "output/models/bm.delir_iv5", data = df, force_overwrite = FALSE)
+
+# iv_med <- "valsartan + candesartan + metamizole_sodium + pregabalin + gabapentin + spironolactone + citalopram + chlortalidone + pantoprazole + moxonidine + diclofenac + macrogol_combinations"
+
+# Model 1
+bm.delir_1 <- getModel(dv, iv4, file_name = "output/models/bm.delir_1", data = df, force_overwrite = FALSE)
+iv4_ia = addInteractions(iv4, ia = "sex", all = TRUE)
+bm.delir_1_ia <- getModel(dv, iv4_ia, file_name = "output/models/bm.delir_1_ia", data = df, force_overwrite = FALSE)
+
+# Aphasia Predicitons
+bm.delir_1_ia_pred <- Predict(bm.delir_1_ia , var_aphasia_adm,  sex, funint=FALSE, fun=plogis, conf.int = TRUE)
+bm.delir_1_ia_footnote <- getFootnote(bm.delir_1_ia_pred)
+# Plots
+bm.delir_1_p1 <- plotInteraction(bm.delir_1_ia,
+                bm.delir_1_ia_pred,
+                var_of_interest = "var_aphasia_adm",
+                group_var = "sex", display_annotations=FALSE) + coord_cartesian(ylim = c(0, 0.7))       
+
+# LOC Predictions
+bm.delir_1_ia_loc_pred <- Predict(bm.delir_1_ia , var_vigil,  sex, funint=FALSE, fun=plogis, conf.int = TRUE)
+bm.delir_1_ia_loc_footnote <- getFootnote(bm.delir_1_ia_pred)
+
+bm.delir_1_p2 <-
+        plotInteraction(
+                bm.delir_1_ia,
+                bm.delir_1_ia_loc_pred,
+                var_of_interest = "var_vigil",
+                group_var = "sex",
+                display_annotations = FALSE
+        ) + coord_cartesian(ylim = c(0, 0.7))
+
+# Coronary heart disease
+bm.delir_1_ia_khd_pred <- Predict(bm.delir_1_ia , risk_factor_khd,  sex, funint=FALSE, fun=plogis, conf.int = TRUE)
+bm.delir_1_ia_khd_footnote <- getFootnote(bm.delir_1_ia_pred)
+
+bm.delir_1_p3 <-
+        plotInteraction(
+                bm.delir_1_ia,
+                bm.delir_1_ia_khd_pred ,
+                var_of_interest = "risk_factor_khd",
+                group_var = "sex",
+                display_annotations = FALSE
+        ) + coord_cartesian(ylim = c(0, 0.7))
+
+
+
+# Model 2
+
+
+
+# # selected interactions
+# iv = addInteractions(iv3, ia = "sex", all = FALSE, "rcs(age, 4) + date_therapy_year + var_aphasia_adm + var_neglect_grade + var_prev_dementia + var_microangio + var_vigil")
+
+
+# bm.delir.0   <- getModel(dv, iv0, file_name = "output/models/bm.delir.0", data = df, force_overwrite = FALSE)
+# [1] add risk factors 
+# bm.delir.1 <- getModel(dv, iv1, file_name = "output/models/bm.delir.1", data = df, force_overwrite = FALSE)
+# [2] add  variables 
+# bm.delir.2 <- getModel(dv, iv2, file_name = "output/models/bm.delir.2", data = df, force_overwrite = FALSE)
+# [3] -interactions
+# bm.delir.3 <- getModel(dv, iv3, file_name = "output/models/bm.delir.3", data = df, force_overwrite = FALSE)
+# final delir
+# bm.delir <- getModel(dv, iv, file_name = "output/models/bm.delir", data = df, force_overwrite = FALSE)
+```
+
+#### Prediction models
+After establishing the relationships between the individual variables and the occurrence of delirium, a single prediction model was built with the emphasis on an early clinical stage (information availability at admission or within the first hours thereafter).
+
+Biological sex as independent variable in the presense of all covariates persisted and constantly indicated an increased risk of delirium for males compared to females (`r getMedCI(summary(bm.delir), var="sex")`. Interestingly, influence of premorbid Rankin Scale was rather weak `r getMedCI(summary(bm.delir), var="pRS02")`. Even more surprising was the fact that moderate/severe alcohol consumption compared to no/moderate consumption barely predicted a new delirium in this cohort in the presence of other variables `r getMedCI(summary(bm.delir), var="risk_factor_alc_adm")`. Classical cerebrovascular risk factors were also not predictive for delirium, despite diabetes mellitus, which was surprisingly associated with a decreased risk of delirium `r getMedCI(summary(bm.delir), var="risk_factor_dm")`.
+```{r tbl-delir-model1, include=FALSE}
+#| label: tbl-delir-model1
+#| tbl-cap: !expr 'paste0("Bayesian regression model (dependent variable *_New Delirium_*)")'
+#| tbl-colwidths: "auto"
+#| results: hold
+#| echo: false
+library(gt)
+library(kableExtra)
+
+tbl_delir_model <- getLatexTableCH(bm.delir_1, font_size=10)  
+        # pack_rows("Characteristics (at admission)", 1,15) %>%
+        # pack_rows("Stroke severity", 16,18) %>%
+        # pack_rows("Risk factors (preexisting)", 19,28) %>%
+        # pack_rows("Specific risk factors (at admission)", 29, 50)
+        # pack_rows("Interaction terms", 51, 77) %>% 
+replace_H_with(tbl_delir_model)
+```
+As a substantial number of readings were missing for alcohol (n=`r nrow(df)-sum(!is.na(df$risk_factor_alc_adm))`) and an interaction model failed to converge, which is why one simpler model was built emphasizing a high number of outcome events (>300) to be available and one exploration model including available medication and early lab results (<120 minutes after hospital admission). 
+
+##### Early prediction model 
+Again, biological sex was an independent strong predictor emphasizing decreased likelihood for delirium in females. Other strong influences were being comatose as compared to being awake at initial clinical examination. Coma at admission raised odds 2.5 fold to develop delirium during hospital stay (`r getMedCI(summary(bm.delir_1), var="coma")`). Not surprisingly, another predictor was age with higher ages favouring delirium. For example, an 82 year old patient has a 2-fold increase in delirium as compared to a 65 year old patient (`r getMedCI(summary(bm.delir_1), var="age")`). The presence of aphasia at admission found only low prediction ability in this model (no versus minor aphasia: `r getMedCI(summary(bm.delir_1), var="minor.aphasia")`, no versus moderate/severe aphasia: `r getMedCI(summary(bm.delir_1), var="severe.aphasia")`, no versus global aphasia: `r getMedCI(summary(bm.delir_1), var="global.aphasia")`). Interestingly, global aphasia compared to no aphasia had even a tendency of a decreased likelhood in developing delirium.
+Inattention and neglect on the other hand showed some tendency of a nearly 1.5 fold increase in delirium risk when being present `r getMedCI(summary(bm.delir_1), var="multimodal")`, although with some uncertainty in probability values ($P(\beta>0)$: `r getP(getRsmb(bm.delir_1), var = "var_neglect_grade=multimodal", text=FALSE)`) 
+Less influence than expected had stroke severity in the presence of all other variables (`r getMedCI(summary(bm.delir_1), var="nihss_d0")`). Comparing a patient presenting with an NIHSS of 6 to a patient with an NIHSS of 19, odds are moderately increased (`r getMedCI(summary(bm.delir_1), var="nihss_d0")`) for the latter to develop delirium ($P(\beta>0)$: `r getP(getRsmb(bm.delir_1), var = "nihss_d0", text=FALSE)`)
+
+As for the interaction model, interesting aspects arose finding meaningful sex difference in aphasia, level of consciousness and coronary heart disease in predicting delirium. 
+($P_{interaction} (\beta>0)$ global aphasia: `r getP(getRsmb(bm.delir_1_ia), var = "sex=male * var_aphasia_adm=global aphasia")`, somnolence: `r getP(getRsmb(bm.delir_1_ia), var = "sex=male * var_vigil=somnolence")`, coronary heart disease: `r getP(getRsmb(bm.delir_1_ia), var = "sex=male * risk_factor_khd=1")`). @fig-delirium-interaction depicts the interactions effects of females and males. As seen @fig-delirium-interaction A, also under adjustment of several other variables, biological sex moderates the effect of aphasia in developing delirium. This favours females, who have a lower risk of delirium at any given level of aphasia, whereas the effect is already pronounced in minor and moderate, but also in global aphasia.
+This a good example of how mean global effects and seemingly inexisting meaningful associations (see previous paragraph) may lead to false conclusions, when sex differences are not considered. Likewise, being somnolent at admission in males lead to significant more delirium in this cohort than in females.  
+```{r fig-delirium-interaction, fig.width=7, fig.asp=0.5, out.width="100%"}
+#| label: fig-delirium-interaction
+#| fig-pos: H
+#| echo: false
+#| warning: false
+#| error: false
+#| fig-cap: !expr 'paste0("Interaction Model to predict Delirium during hospital stay in patients with **(A)** Symptoms of Aphasia, **(B)** Impairment of Level of Consciousness, **(C)** Previously known Coronary Heart Disease")'
+#| cache: TRUE
+p <- plot_grid(
+       bm.delir_1_p1 + theme(axis.text.x = element_text(angle = 45, hjust = 1)), 
+       bm.delir_1_p2 + theme(axis.text.x = element_text(angle = 45, hjust = 1)), 
+       bm.delir_1_p3 + theme(axis.text.x = element_text(angle = 45, hjust = 1)), 
+       nrow = 1,
+       labels = c("A", "B", "C"),
+       align = "v",         # Align vertically, ensuring x-axis is aligned
+       axis = "tb"          # Apply axis alignment to both top and bottom
+)
+p
+```
+
+```{r fig-delirium-forest, fig.width=7, fig.asp=1, out.width="100%"}
+#| label: fig-delirium-forest
+#| fig-pos: H
+#| echo: false
+#| warning: false
+#| error: false
+#| fig-cap: !expr 'paste0("Forest Plot of variables positively and negatively associated with _Occurrence of delirium_")'
+#| cache: TRUE
+p <- plotForest(bm.delir_1)
+p
+
+```
+
+
+```{r tbl-delir-interaction, include=FALSE}
+#| label: tbl-delir-interaction
+#| tbl-cap: Interaction bayesian regression model (dependent variable *_New Delirium_*)
+#| tbl-colwidths: "auto"
+#| results: hold
+#| echo: false
+#| tbl-pos: H
+library(gt)
+library(kableExtra)
+getLatexTableCH(bm.delir_1_ia, interactions_only=TRUE) 
+```
+
+```{r delir-nomogram, include=FALSE}
+tar_load(data_dic)
+d <- data.frame(var = bm.delir_1$Design$label)
+bm.delir_1$Design$label <- updateLabels(d, data_dic, rows=TRUE, update_rows_of_col = "var") %>% pull(var)
+n <- nomogram(bm.delir_1, fun=plogis, fun.at=c(.001,.01,.05,seq(.1,.9,by=.1),.95,.99,.999), lp=FALSE)
+```
+
+```{r fig-delirium-nomogram, fig.width=10.5, fig.asp=1, out.width="100%"}
+#| label: fig-delirium-nomogram
+#| fig-pos: H
+#| echo: false
+#| warning: false
+#| error: false
+#| fig-cap: !expr 'paste0("Nomogram predicting the risk of delirium. _Draw a vertical line for each individual patient characteristic to the Points scale (at the top) to assign the score for each characteristic, respectively. Sum the total points. To determine the risk of delirium (predicted probability scale) draw a vertical line from the Total Points scale to the Predicted Value scale._")'
+#| cache: TRUE
+plot(n, label.every=1, varname.label=TRUE)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
