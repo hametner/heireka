@@ -117,7 +117,7 @@ ylab(expression(P(Delirium ~ "|" ~ Data, x)))  +
                         iv0 = iv0,
                         ia = ia,
                         model = bm_delirium_var_prev_dementia,
-                        modelajd = bm_delirium_var_prev_dementia_iv3,
+                        modeladj = bm_delirium_var_prev_dementia_iv3,
                         tbl = bm_delirium_var_prev_dementia_tbl,
                         model_ia = bm_delirium_var_prev_dementia_ia,
                         tbl_ia = bm_delirium_var_prev_dementia_tbl_ia,
@@ -142,7 +142,7 @@ ylab(expression(P(Delirium ~ "|" ~ Data, x)))  +
 ```
 ### Dementia
 
-This analysis investigate frequency of a known dementia at hospital presentation between the sexes and their relationship with occureence of delirium. Data completeness for dementia status was 89%. Overall 4.2% of the patients had a known dementia with a female preponderance of 5.5% as compared to males with 2.8% (odds ratio 2.05, 95% credible interval 1.54--2.72, probability of difference >99.9%, see @tbl-delir-dementia. Having a previous diagnosis of dementia increased the likelihood of developing a delirium during hospital stay (odds ratio 1.92, 95% credible interval 1.23-- 2.96, Pr(\Beta > 0) = 0.9962). However, when adjusting for potential confounders such as age, NIHSS, and pRS with an `r getMedCI(summary(res_del_dementia$model), var="var_prev_dementia")`,  `r getP(getRsmb(res_del_dementia$model, dec=3), var="var_prev_dementia")` - this association was attenuated, mostly mediated by age.
+This analysis investigate frequency of a known dementia at hospital presentation between the sexes and their relationship with occureence of delirium. Data completeness for dementia status was 89%. Overall 4.2% of the patients had a known dementia with a female preponderance of 5.5% as compared to males with 2.8% (odds ratio 2.05, 95% credible interval 1.54--2.72, probability of difference >99.9%, see @tbl-delir-dementia. Having a previous diagnosis of dementia increased the likelihood of developing a delirium during hospital stay (`r getMedCI(summary(res_del_dementia$model), var="var_prev_dementia")`, $P(\beta>0)$ = `r getP(getRsmb(res_del_dementia$model, dec=3), var="var_prev_dementia")`). However, when adjusting for potential confounders such as age, NIHSS, and pRS with an odds ratio 1.364, 95% credible interval 0.845--2.169, low: 1 vs. high: 2),  `r getP(getRsmb(res_del_dementia$modeladj, dec=3), var="var_prev_dementia=1")` - this association was attenuated, mostly mediated by age.
 ```{r tbl-Delirium-dementia}
 #| label: tbl-delir-dementia
 #| tbl-cap: Descriptive analysis of _Previously Known Dementia_ in the whole cohort and subgroups of biological sex
@@ -202,7 +202,7 @@ p
 ```
 ```{r tbl2-delirium-dementia}
 #| label: tbl2-delir-dementia
-#| tbl-cap: Relationship between _previously known dementia_ and occurrence of *_New Delirium_*
+#| tbl-cap: Relationship between _Previously Known Dementia_ and occurrence of *_New Delirium_*
 #| tbl-colwidths: "auto"
 #| results: hold
 #| echo: false

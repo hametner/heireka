@@ -1,1 +1,31 @@
 # Abstract
+
+Background and Purpose: Delirium often remains undetected in patients with acute ischemic stroke, which can adversely affect recovery and prognosis. The influence of biological sex on the occurrence of delirium and its risk factors has been insufficiently investigated. This study aims to examine the frequency of diagnosis, risk factors, surrogates, as well as short- and long-term functional outcomes associated with delirium occurrence among ischemic stroke patients.
+Setting: Data from the Heidelberg Recanalisation Therapy Registry, encompassing over two decades (1998–2022), were analysed.
+Methods: A retrospective study of n=5,799 ischemic stroke cases (2,854 females, 2,918 males) was conducted using Bayesian ordinal and logistic regression (full code available in a Github repository). The analysis included demographic data, early clinical factors (stroke severity, aphasia, neglect, eye deviation, level of consciousness), pre-admission medical history (cerebral small vessel disease, dementia), and pharmacological data. Delirium occurrence was measured per standard operating procedure using clinimetric instruments such as the Intensive Care Delirium Screening Checklist, alongside adverse events including pneumonia, sepsis, myocardial infarction, deep vein thrombosis, and pulmonary embolism.
+Results: Delirium of any cause occurred in 6.3% (n=364) of cases, with a markedly higher risk in males compared to females (7.3% vs. 4.8%, probability of difference >0.999; adjusted odds ratio for females 0.45, 95% credible interval 0.33–0.64). This was particularly evident in cases of severe stroke, aphasia, impaired consciousness, and specific pre-stroke medications like pregabalin. These findings were confirmed in multivariable analysis. Delirium consistently demonstrated a significant impact on extended hospital stays, in-hospital mortality, short-term clinical surrogates such as the Barthel Index or NIH Stroke Scale score at discharge, as well as long-term functional outcomes assessed by the modified Rankin Scale 90 days after stroke.
+Conclusion: This work emphasizes the importance of recognizing sex-specific risk and risk factors associated with delirium in stroke patients. Future research should further investigate the mechanisms underlying sex differences in delirium and adverse outcomes, supporting the development of individualized stroke care.
+\newpage
+# Zusammenfassung
+
+Hintergrund:
+Ein Delir bleibt bei Patienten und Patientinnen mit akutem ischämischem Schlaganfall häufig unerkannt. Dies kann sich nachteilig auf die Genesung und somit die Prognose auswirken. Aspekte des biologischen Geschlechts für Auftreten eines Delirs sowie deren Einflussfaktoren sind bislang unzureichend untersucht.
+Diese Studie untersucht die Häufigkeit des Diagnosestellung, Risikofaktoren, Surrogatparameter sowie kurz- und langfristige funktionelle Outcomeergebnisse im Zusammenhang mit dem Auftreten von Delirium bei Patienten mit ischämischem Schlaganfall.
+
+Studiensetting:
+Daten aus dem Heidelberg Recanalisation Therapy Registry, die über mehr als zwei Jahrzehnte (1998–2022) gesammelt wurden, wurden analysiert.
+
+Methoden:
+Es wurde eine retrospektive Studie mit n=5.799 Fällen (Frauen n=2854, Männer n=2918) von ischämischem Schlaganfall durchgeführt, unter Verwendung von bayesianischer ordinaler und logistischer Regression (vollständiger Code ist in einem Github-Repositorium verfügbar). Die Analyse bezog sowohl demografische Daten, frühe klinische Faktoren (Schlaganfallschweregrad, Aphasie, Neglekt, Augendeviation, Bewusstseinslage), anamnestische Vorerkrankungen (Zerebrale Mikroangiopathie, Demenz) als auch pharmakologische Daten mit ein. Das Auftreten eines Delir wurde anhand von standardisierter Betriebsverfahren gemessen (unter Verwendung klinimetrischer Instrumente wie der Intensive Care Delirium Screening Checklist). Des Weiteren wurden unerwünschte Ereignisse, einschließlich Pneumonie, Sepsis, Myokardinfarkt, tiefe Beinvenenthrombose und arterielle Lungenembolie erfaßt.
+
+Ergebnisse:
+Ein Delir jeglicher Ursache trat in 6.3% (n=364) der Fälle auf, wobei Männer ein deutlich höheres Risiko hatten als Frauen (7.3% vs. 4.8%, probablility of difference >0.999, adjustierte odds ratio für Frauen 0.45, 95% credible intervall 0.33--0.64). Dies zeigte sich insbesondere bei denen sehr schweren Schlaganfällen, Beteiligung von Aphasie, beeinträchtigtem Bewusstseinszustand und spezifischen präklinischen Medikamenten wie zum Beispiel Pregabalin. Die Ergebnisse wurden in multivariablen Analyse bestätigt. Delirium zeigte konsequent einen signifikanten Einfluss auf verlängerte Krankenhausaufenthalte, Krankenhaussterblichkeit, kurzfristige klinische Surrogate wie den Barthel-Index oder den National Institutes of Health Stroke Scale Score bei der Entlassung sowie auf das langfristige funktionelle Outcome anhand der modifizierten Rankin-Skala 90 Tage nach dem Schlaganfall.
+
+Schlussfolgerung:
+Diese Studie unterstreicht die Nützlichkeit der Erkennung geschlechtsspezifischer Risikofaktoren im Zusammenhang mit Delirium bei Schlaganfall. Zukünftige Forschungen sollten die zugrunde liegenden Mechanismen der Geschlechterunterschiede bei Delirium und unerwünschten Ergebnissen weiter untersuchen, um die Entwicklung einer individualisierten Schlaganfallversorgung zu unterstützen.
+
+
+
+
+
+

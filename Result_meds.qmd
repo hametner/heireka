@@ -135,6 +135,7 @@ Descriptive analysis of prior medication usage at admission is presented, compar
 #| label: tbl-delirium-mdx
 #| tbl-cap: Descriptive analysis of _Prior medication (groups)_ at admission in the whole cohort and subgroups of biological sex
 #| tbl-colwidths: "auto"
+#| tbl-pos: H
 #| echo: false
 #| warning: false
 #| error: false
@@ -201,15 +202,18 @@ if (knitr::is_latex_output()) {
 
 ```
 
-Thyroid hormones showed a significant sex difference, with 19.4% of females using them compared to only 6.5% of males. Sulfonamides had also a higher usage among females (27.3%) (versus 19.6% males) as well as pyrazolones, used by 10.8% of females and 5.2% of males. Another interesting difference was observed with vitamin D and analogues, used by 8.0% of females compared to 3.2% of males. Further differences included a higher usage of alpha adrenoreceptor antagonists among males (8.9%) compared to females (1.7%). Digitalis glycosides were used by 6.3% of females and 2.9% of males, indicating a higher prevalence among females. Other antidepressants were more commonly used by females (5.7%) than males (2.9%). Non-selective monoamine reuptake inhibitors had a higher usage among females (4.1%) than males (2.2%). Other opioids were used by 4.3% of females compared to 1.8% of males.
+Thyroid hormones showed a significant sex difference, with 19.4% of females using them compared to only 6.5% of males. Sulfonamides had also a higher usage among females (27.3% versus 19.6% males) as well as pyrazolones, used by 10.8% of females and 5.2% of males. Another interesting difference was observed with vitamin D and analogues, used by 8.0% of females compared to 3.2% of males. Further differences included a higher usage of alpha adrenoreceptor antagonists among males (8.9%) compared to females (1.7%). Digitalis glycosides were used by 6.3% of females and 2.9% of males, indicating a higher prevalence among females. Other antidepressants were more commonly used by females (5.7%) than males (2.9%). Non-selective monoamine reuptake inhibitors had a higher usage among females (4.1%) than males (2.2%). Other opioids were used by 4.3% of females compared to 1.8% of males.
 
-```{r fig-delirium-mdx-forest, fig.width=7, fig.asp=1.2, out.width="100%"}
+```{r fig-delirium-mdx-forest, fig.width=7, fig.asp=1.1, out.width="100%"}
 #| label: fig-delirium-mdx-forest
 #| echo: false
 #| warning: false
 #| error: false
-#| fig-cap: !expr 'paste0("Forest Plot of Medication Groups associated with Delirium")'
+#| fig-cap: !expr 'paste0("Forest Plot of *pre-stroke Medication (groups)* associated with *Delirium*.")'
 #| cache: TRUE
+
+# !expr 'paste0("Forest Plot of *pre-stroke Medication (groups)* associated with *Delirium*. ", getFootnote(bm_delirium_mdx, add_modelstats=TRUE, double_escape=FALSE))'
+
 plotForest(bm_delirium_mdx)
 # plotForest(bm_delirium_mdx_iv2)
 ```
@@ -222,11 +226,13 @@ plotForest(bm_delirium_mdx)
 replace_H_with(bm_delirium_var_mdx_tbl)
 ```
 
-```{r tbl-delirium-mdx-regr2, include=FALSE}
+```{r tbl-delirium-mdx-regr2, eval=FALSE}
 #| label: tbl-delirium-mdx-regr2
 #| tbl-cap: Relationship between _Prior medications_ at admission and occurrence of New Delirium
 #| tbl-colwidths: "auto"
 #| echo: false
+#| warning: false
+#| error: false
 getLatexTableCH(bm_delirium_mdx, font_size=8.5, output_format="latex", option="longtable") %>%  
          column_spec(1, "1.9in") %>% 
         column_spec(2, "0.3in") %>%
@@ -253,9 +259,9 @@ Medications with Potential Protective Effects Against Delirium
 
 In contrast, when taking glucocorticoids prior to stroke, an association in a protective direction was found (`r getMedCI(summary(bm_delirium_mdx_iv2), var="Glucocorticoids")`).
 
-The second Bayesian logistic regression model, which incorporates interaction terms between sex and various medications, provides deeper insights into how biological sex moderates the effects of these medications on the likelihood of developing delirium. The Bayesian model suggested an interaction of biological sex with Pyrazolones (`r getP(getRsmb(bm_delirium_mdx_ia), var="sex=male * Pyrazolones", text=TRUE)` ). In relative risk for individual groups this translates as follows: Compared to taking no Pyrazolones, females increased their risk from a predicted probability of `r round(risk_pyr %>% filter(sex=="female" & Pyrazolones==0) %>% pull(yhat),3)` to `r round(risk_pyr %>% filter(sex=="female" & Pyrazolones==1) %>% pull(yhat),3)` (relativ increase: `r round((risk_pyr %>% filter(sex=="female" & Pyrazolones==0) %>% pull(yhat) / risk_pyr %>% filter(sex=="female" & Pyrazolones==1) %>% pull(yhat))*100, 1)`%) when having Pyrazolones in their pre-stroke medication, whereas males changed insignificantly (predicted probability without Pyrazonolones: `r round(risk_pyr %>% filter(sex=="male" & Pyrazolones==0) %>% pull(yhat),3)` vs. with Pyrazonolones: `r round(risk_pyr %>% filter(sex=="male" & Pyrazolones==1) %>% pull(yhat),3)`).
+The second Bayesian logistic regression model, which incorporates interaction terms between sex and various medications, provides deeper insights into how biological sex moderates the effects of these medications on the likelihood of developing delirium. The Bayesian model suggested an interaction of biological sex with Pyrazolones (`r getP(getRsmb(bm_delirium_mdx_ia), var="sex=male * Pyrazolones", text=TRUE)`). In relative risk for individual groups this translates as follows: Compared to taking no Pyrazolones, females increased their risk from a predicted probability of `r round(risk_pyr %>% filter(sex=="female" & Pyrazolones==0) %>% pull(yhat),3)` to `r round(risk_pyr %>% filter(sex=="female" & Pyrazolones==1) %>% pull(yhat),3)` (relativ increase: `r round((risk_pyr %>% filter(sex=="female" & Pyrazolones==0) %>% pull(yhat) / risk_pyr %>% filter(sex=="female" & Pyrazolones==1) %>% pull(yhat))*100, 1)`%) when having Pyrazolones in their pre-stroke medication, whereas males changed insignificantly (predicted probability without Pyrazonolones: `r round(risk_pyr %>% filter(sex=="male" & Pyrazolones==0) %>% pull(yhat),3)` vs. with Pyrazonolones: `r round(risk_pyr %>% filter(sex=="male" & Pyrazolones==1) %>% pull(yhat),3)`).
 
-```{r fig-delirium-mdx-ia, fig.width=7, fig.asp=1.2, out.width="100%", include=FALSE}
+```{r fig-delirium-mdx-ia, fig.width=7, fig.asp=1.2, out.width="100%", eval=FALSE}
 #| label: fig-delirium-mdx-ia
 #| echo: false
 #| warning: false

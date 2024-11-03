@@ -250,7 +250,7 @@ df <- df %>%
 
 As demonstrated in the general description of the cohort, the year of therapy and the variability of biological sex within the years is not negligible. Looking at this relationship in terms of delirium occurrence, the mode of therapy is further added to the model. The number of patients treated with intravenous thrombolysis alone increased from 0.7% in early 2000 to 2.9% in 2009. Thereafter, a undulating pattern can be observed with peaks in 2010 and 2018 and bottoms in 2015 and 2020. Patients treated with mechanical thrombectomy (with or without intravenous thrombolysis) showed a steep number increase since 2011 [^results_delir-3]. (@fig-delirium-year A)
 
-[^results_delir-3]: *Comment*: 2022 covers only data until March)
+[^results_delir-3]: *Comment*: 2022 covers only data until March
 
 ```{r fig-delirium-year, fig.width=7, fig.asp=1, out.width="100%"}
 #| label: fig-delirium-year

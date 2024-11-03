@@ -90,7 +90,8 @@ plotSexDiffGradient <- function(df, model, var, dist=NULL, xlab="", ylab="", bas
         }
                 
         if (variable_assume=="category"){
-                c_df <- c_df %>% mutate(y = factor(y))
+                c_df <- c_df %>% mutate(y = factor(y)) %>% 
+                        mutate(y = factor(y, levels = unique(y[order(parse_number(as.character(y)))])))
         }
         
         ggplot(c_df, aes(x = value, y = y, fill = factor(after_stat(quantile)))) +
@@ -127,7 +128,7 @@ plot_grouped_bar_chart <- function(df, var, group_var, chart_type = "bar"){
         # Convert the variable names to symbols for use in dplyr
         var_sym <- sym(var)
         group_var_sym <- sym(group_var)
-
+        
         # Create a new factor level order with "Missing" at the end
         original_levels <- df %>%
                 pull(!!var_sym) %>%
@@ -140,13 +141,6 @@ plot_grouped_bar_chart <- function(df, var, group_var, chart_type = "bar"){
         new_levels <- c(original_levels, "Missing")
         
         # Treat NA as a category and count occurrences by group_var and var
-        # count_data <- df %>%
-        #         mutate(!!var_sym := ifelse(is.na(!!var_sym), "Missing", as.character(!!var_sym))) %>%
-        #         mutate(!!var_sym := factor(!!var_sym, levels = new_levels)) %>%
-        #         group_by(!!group_var_sym, !!var_sym) %>%
-        #         summarize(count = n(), .groups = 'drop') %>%
-        #         mutate(percentage = count / sum(count) * 100) # Calculate percentage
-        # 
         count_data <- df %>%
                 # Convert NA values to "Missing" and treat the variable as a factor with updated levels
                 mutate(!!var_sym := ifelse(is.na(!!var_sym), "Missing", as.character(!!var_sym))) %>%
@@ -163,10 +157,9 @@ plot_grouped_bar_chart <- function(df, var, group_var, chart_type = "bar"){
         
         # Determine the maximum count value to adjust the y-axis limit
         max_count <- max(count_data$count)
-        #updateLabels from data_dic
+        # Update labels from data_dic (assuming updateLabels function and data_dic are defined)
         data_dic <- read_delim("data_dic.csv", delim = ";", escape_double = FALSE, trim_ws = TRUE)
         count_data <- updateLabels(count_data, data_dic)
-        
         
         # Create the plot based on the chart_type argument
         if (chart_type == "bar") {
@@ -190,8 +183,13 @@ plot_grouped_bar_chart <- function(df, var, group_var, chart_type = "bar"){
                         geom_linerange(aes(ymin = 0, ymax = count), 
                                        position = position_dodge(width = 0.9), linewidth = 0.3) +
                         geom_point(position = position_dodge(width = 0.9), size = 3) +
-                        geom_text(aes(label = paste0(round(percentage, 1), "%")), 
-                                  position = position_dodge(width = 0.9), vjust = -1, size = 3) +
+                        geom_text(aes(label = paste0(round(percentage, 1), "%"),
+                                      y = count + 0.1 * max_count),
+                                  position = position_dodge(width = 0.9),
+                                  size = 2,
+                                  angle = 90,
+                                  vjust = +0.5,
+                                  hjust = 0) +
                         labs(title = "",
                              x = attr(count_data[[var]], which = "label"),
                              y = "Count",
@@ -200,7 +198,7 @@ plot_grouped_bar_chart <- function(df, var, group_var, chart_type = "bar"){
                         scale_color_colorblind() +
                         scale_alpha_manual(values = c("Missing" = 0.5, "Other" = 1), guide = 'none') +
                         theme(legend.position = "bottom") +
-                        ylim(0, max_count * 1.1) # Add some space above the highest bar
+                        ylim(0, max_count * 1.2) # Slightly increase the y-axis limit
         } else {
                 stop("Invalid chart type. Please choose 'bar' or 'lollipop'.")
         }
@@ -208,10 +206,9 @@ plot_grouped_bar_chart <- function(df, var, group_var, chart_type = "bar"){
         # Add a vertical line to separate the "Missing" category (only for bar chart)
         p <- p + geom_vline(xintercept = length(new_levels) - 0.5, linetype = "dashed", color = "lightgrey")
         
-        # Print the plot
+        # Return the plot
         return(p)
 }
-
 
 
 
@@ -373,6 +370,7 @@ getFootnote <- function(m, adapt=c("kable","other"), add_modelstats=TRUE, double
                 if (!double_escape) {
                         footnote <- gsub("\\\\\\\\", "\\\\", footnote)
                 }
+             
         }
         
         # t <- blrmStats(bm.delir.3)$stats %>% t()
@@ -483,7 +481,7 @@ getMedCI <- function(df, var=NULL, exp=TRUE, via_summary_rms=TRUE, dec=3){
                         df <- df %>% filter(., row_number() == (grepl_match + 1))
                 }
                         
-                return(paste0("odds ratio ", round(df$Effect, dec), ", 95% credible interval ", round(df$`Lower 0.95`,dec),"--",round(df$`Upper 0.95`,dec),", low: ", df$Low," vs. high: ", df$High,")"))
+                return(paste0("odds ratio ", round(df$Effect, dec), ", 95% credible interval ", round(df$`Lower 0.95`,dec),"--",round(df$`Upper 0.95`,dec),", low: ", df$Low," vs. high: ", df$High))
         }
         
         
@@ -501,7 +499,7 @@ getP <- function(df_getRmsb, var, text=FALSE){
         sel <- df[rownames(df)==var,]
         p <- transform_P_value(sel$P)
         if (text) {
-                return(paste0("probability $$(\\beta>0)$$: ", p))                
+                return(paste0("probability $(\\beta>0)$: ", p))                
         } else {
                 return(p)
         }
@@ -1214,7 +1212,7 @@ replace_H_with <- function(text, replacement = "") {
 }
 
 # plot summary table (aka Table 1)
-plot_tbl <- function(data, selected_columns, by = "sex", stat_descr_loc = "bottom", pkg = "kableExtra", kable_option = "latex", pvalue = FALSE, bayes = TRUE, missing = "ifany", ...) {
+plot_tbl <- function(data, selected_columns, by = "sex", stat_descr_loc = "bottom", pkg = "kableExtra", kable_option = "latex", pvalue = FALSE, bayes = TRUE, missing = "ifany", ...){
         library(tidyverse)
         library(gtsummary)
         library(gt)
@@ -1227,6 +1225,11 @@ plot_tbl <- function(data, selected_columns, by = "sex", stat_descr_loc = "botto
         )
         # Set theme
         set_gtsummary_theme(my_theme)
+        
+        # catch longtable if supplied
+        args <- list(...)
+        longtable <- if ("longtable" %in% names(args)) args$longtable else FALSE
+        # font_size <- if ("font_size" %in% names(args)) args$font_size else "10"
         
         # Select specified columns
         df <- data %>% select(all_of(selected_columns))
@@ -1367,17 +1370,30 @@ plot_tbl <- function(data, selected_columns, by = "sex", stat_descr_loc = "botto
                 require(kableExtra)
                 
                 if (kable_option == "latex"){
+                        if (longtable==TRUE){
+                                tbl <- tbl %>%
+                                        as_kable_extra(
+                                                booktabs = TRUE,
+                                                format = "latex",
+                                                longtable = longtable,
+                                                linesep = "",
+                                                align = c('l', 'l', 'r', 'r', 'r', 'r')
+                                        ) %>%
+                                        kable_styling(full_width = F)
+                                        }              # latex_options = c("hold_position"))
+                        else {
+                                
+                                tbl <- tbl %>%
+                                        as_kable_extra(
+                                                booktabs = TRUE,
+                                                format = "latex",
+                                                linesep = "",
+                                                align = c('l', 'l', 'r', 'r', 'r', 'r')
+                                        ) %>%
+                                        kable_styling(full_width = F)
+                                                      # latex_options = c("hold_position"))
                         
-                        tbl <- tbl %>%
-                                as_kable_extra(
-                                        booktabs = TRUE,
-                                        format = "latex",
-                                        linesep = "",
-                                        align = c('l', 'l', 'r', 'r', 'r', 'r')
-                                ) %>%
-                                kable_styling(full_width = F
-                                              # latex_options = c("hold_position")
-                                              )
+                        }
                 } else {
                         tbl <- tbl %>%
                                 as_kable_extra(
@@ -2128,7 +2144,7 @@ theme_ch <- function(...){
 
 
 # plot interactions from rmsb-model and annotate
-plotInteraction <- function(model, pred, var_of_interest, group_var, display_annotations = TRUE) {
+plotInteraction <- function(model, pred, var_of_interest, group_var, display_annotations = FALSE, display_sign = FALSE) {
         library(tidyverse)
         #Extract variable levels 
         var_sym <- sym(var_of_interest)
@@ -2199,13 +2215,30 @@ plotInteraction <- function(model, pred, var_of_interest, group_var, display_ann
                                 size=3
                         )
         }
+        if (display_sign) {
+                sign <- case_when(annotations$P>0.995 | annotations$P<0.005 ~ "***",
+                                  annotations$P>0.975 | annotations$P<0.025 ~ "*",
+                                  annotations$P>0.95 | annotations$P<0.05 ~ "(*)",
+                                  TRUE~"")
+                p <- p +
+                        geom_text(
+                                data = annotations,
+                                aes(x = !!var_sym, y = height + height * 0.05, 
+                                    label = paste0(sign)),
+                                color = "black",
+                                position = position_dodge(width = 0.5),
+                                vjust = 0,
+                                hjust = 0.5,
+                                size=5
+                        )
+        }
         
         # Print the plot
         print(p)
 }
 
 # plot rsmb model with forest plot
-plotForest <- function(model, print_oddsratio = TRUE, sig_color = "black", nonsig_color = "grey50", interactions_only=FALSE, size = 2, option="group"){
+xplotForest <- function(model, print_oddsratio = TRUE, sig_color = "black", nonsig_color = "grey50", interactions_only=FALSE, size = 2, option="group"){
         
         
         if (interactions_only){
@@ -2317,7 +2350,7 @@ plotForest <- function(model, print_oddsratio = TRUE, sig_color = "black", nonsi
                 
 }
 
-plotForest <- function(model, print_oddsratio = TRUE, sig_color = "black", nonsig_color = "grey50",
+xplotForest <- function(model, print_oddsratio = TRUE, sig_color = "black", nonsig_color = "grey50",
                        interactions_only = FALSE, size = 2, option = "group", x_min_plot = NULL, x_max_plot = NULL) {
         # Load necessary libraries
         library(dplyr)
@@ -2547,6 +2580,7 @@ plotForest <- function(model, print_oddsratio = TRUE, sig_color = "black", nonsi
                 tbl <- tbl %>%
                         mutate(label = str_trim(str_extract(Predictor, "^[^:-]+")))
                 tbl <- tbl %>% left_join(grp, by = c("label"))
+                tbl <- tbl %>% mutate(group = case_when(is.na(group)~"medication", TRUE~group))
                 
                 desired_group_order <- c(
                         "demographics",
@@ -2557,7 +2591,8 @@ plotForest <- function(model, print_oddsratio = TRUE, sig_color = "black", nonsi
                         "therapy",
                         "adverse outcome",
                         "etiology",
-                        "other"
+                        "other",
+                        "medication"
                 )
                 tbl <- tbl %>%
                         mutate(group = factor(group, levels = desired_group_order)) %>%
@@ -2568,6 +2603,7 @@ plotForest <- function(model, print_oddsratio = TRUE, sig_color = "black", nonsi
                 
                 tbl$Predictor <- gsub("Aphasia symptoms at admission - ", "", tbl$Predictor)
                 tbl$Predictor <- gsub("Neglect severity scale - ", "", tbl$Predictor)
+                tbl$Predictor <- gsub("Alcohol consumption level - ", "Alcohol", tbl$Predictor)
                 tbl$Predictor <- gsub("Modified TOAST Classification - ", "", tbl$Predictor)
                 tbl$Predictor <- gsub("Stroke of undetermined etiology \\(SUD\\)\\:Cardioembolism \\(CE\\)", "mTOAST - SUD:CE", tbl$Predictor)
                 tbl$Predictor <- gsub("Stroke of other determined etiology \\(SOD\\)\\:Cardioembolism \\(CE\\)", "mTOAST - SOD:CE", tbl$Predictor)
@@ -2634,7 +2670,8 @@ plotForest <- function(model, print_oddsratio = TRUE, sig_color = "black", nonsi
                         geom_point(aes(color = Significant), shape = 3, size = size) +
                         geom_vline(xintercept = 1, linetype = "dashed", color = sig_color) +
                         geom_vline(xintercept = 0, linetype = "dashed", color = sig_color) +
-                        labs(x = "Probability of Interaction with Biological Sex $$P(\\beta>0)$$", y = "", title = "") +
+                        labs(x = expression("Probability of Interaction with Biological Sex" ~ P(beta> 0)), y = "", title = "") +
+                        # labs(x = "Probability of Interaction with Biological Sex $$P(\\beta>0)$$", y = "", title = "") +
                         theme_ch() +
                         scale_color_manual(values = c("Significant" = sig_color, "Not Significant" = nonsig_color), guide = "none")
                 
@@ -2710,6 +2747,101 @@ plotForest <- function(model, print_oddsratio = TRUE, sig_color = "black", nonsi
         
         return(g)
 }
+
+# For TARGETS - extract the upstream dependecies automatically
+get_upstream_dependencies <- function(target_names, exclusions = c("case_id", "df_hei", "dfDoc", "db_heireka", "files")) {
+        
+        # get dependency
+        network <- tar_network(
+                targets_only = TRUE,  # Only include targets, exclude functions and other objects
+                names = NULL          # Include all targets
+        )
+        
+        g <- igraph::graph_from_data_frame(
+                d = network$edges,
+                vertices = network$nodes,
+                directed = TRUE
+        )
+        
+        # init
+        results <- list()
+        
+        # each target
+        for (target_name in target_names) {
+                
+           
+                if (!(target_name %in% V(g)$name)) {
+                        warning(paste("Target", target_name, "not found in the pipeline. Skipping."))
+                        next
+                }
+                vid <- which(V(g)$name == target_name)
+                upstream_nodes <- igraph::subcomponent(g, v = vid, mode = "in")
+                upstream_target_names <- V(g)[upstream_nodes]$name
+                upstream_target_names <- setdiff(upstream_target_names, target_name)
+                genuine_sources <- setdiff(upstream_target_names, exclusions)
+                results[[target_name]] <- genuine_sources
+        }
+        
+        return(results)
+}
+
+# Works together with FUNCTION -get_upstream_dependencies- 
+# Build a tbl summary for printing with kable
+build_target_summary_df <- function(dependencies, data_dic) {
+        
+        # Initialize an empty data frame
+        target_summary_df <- data.frame(
+                Variable = character(),
+                Description = character(),
+                n = integer(),
+                Sources = character(),
+                Levels = character(),
+                Missings = character(),
+                stringsAsFactors = FALSE
+        )
+        
+        # Iterate over each target to populate the data frame
+        for (target_name in names(dependencies)) {
+                
+                # Extract upstream sources
+                sources <- dependencies[[target_name]]
+                
+                # Load the target data frame
+                tar_load(target_name)
+                target_df <- get(target_name)
+                
+                # Identify the variable name (first column that is not 'case_id')
+                variable_name <- names(target_df)[which(names(target_df) != "case_id")][1]
+                
+                # Extract short description from data dictionary
+                short_description <- data_dic$description[data_dic$name == variable_name]
+                
+                # Calculate levels of the variable
+                levels_of_variable <- if (is.factor(target_df[[variable_name]])) {
+                        levels(target_df[[variable_name]])
+                } else {
+                        unique(target_df[[variable_name]])
+                }
+                
+                # Calculate missing values
+                missing_na <- sum(is.na(target_df[[variable_name]]))
+                
+                # Populate the data frame with the required information
+                target_summary_df <- target_summary_df %>% 
+                        add_row(
+                                Variable = variable_name,
+                                Description = ifelse(length(short_description) > 0, 
+                                                     short_description, paste("Description for", target_name)),
+                                n = length(sources),
+                                Sources = paste(sources, collapse = ", "),
+                                Levels = paste(levels_of_variable, collapse = ", "),
+                                Missings = paste(missing_na)
+                        )
+        }
+        
+        return(target_summary_df)
+}
+
 
 
 
@@ -2855,16 +2987,156 @@ ggplot(data = data.frame(x = c(0.01,10)), aes(x)) +
 
 
 
+# Load necessary libraries
 
-
-
-
-
-
-
-
-
-
+# Function to generate package citations
+get_package_citations <- function(package_type = c("basePkgs","loadedOnly","otherPkgs","all"), output=c("table", "text")){
+        library(purrr)
+        library(tibble)
+        
+        s <- sessionInfo()
+        
+       # Extract packages
+        package_names <- switch(
+                package_type,
+                basePkgs = s$basePkgs,
+                otherPkgs = names(s$otherPkgs),
+                loadedOnly = names(s$loadedOnly),
+                all = unique(c(names(s$basePkgs), names(s$otherPkgs), names(s$loadedOnly))),
+                stop("Invalid package type. Choose from 'basePkgs', 'otherPkgs', 'loadedOnly', or 'all'.")
+        )
+        
+        # Filter 
+        base_packages <- s$basePkgs
+        other_packages <- setdiff(package_names, base_packages)
+        
+        library(packageRank)
+        popular_file <- "output/package_popularity.csv"
+        if (file.exists(popular_file)){
+                popularity_data <- read.csv2(file = popular_file) 
+        } else {
+                popularity_data <- cranDownloads(packages = other_packages, from = as.character(Sys.Date() - 30), to = as.character(Sys.Date()))
+                write.csv2(popularity_data$cranlogs.data, file = popular_file)
+                popularity_data <- popularity_data$cranlogs.data
+        }
+        
+        package_popularity <- popularity_data %>%
+                group_by(package) %>%
+                summarize(total_downloads = sum(count)) %>%
+                arrange(desc(total_downloads))
+        
+        # Check diff to found on CRAN
+        found_packages <- package_popularity$package
+        missing_packages <- setdiff(other_packages, found_packages)
+        
+        # Sort on popularity
+        other_packages <- found_packages
+        
+        # Function to retrieve BibTeX entry for a given package
+        get_bibtex_entry <- function(pkg_name){
+                citation_info <- tryCatch(
+                        citation(pkg_name),
+                        error = function(e) NULL
+                )
+                
+                # Check doublettes
+                if (!is.null(citation_info) && length(citation_info) > 0) {
+                        bibtex_entry <- capture.output(print(citation_info, style = "Bibtex"))
+                        
+                        # Modify BibTeX key to fit package name
+                        bibtex_entry <- sub("^@([A-Za-z]+)\\{,", paste0("@\\1{", pkg_name, ","), bibtex_entry)
+                        return(bibtex_entry)
+                } else {
+                        return(NULL)
+                }
+        }
+        
+        # Retrieve BibTeX entries for all selected packages
+        bibtex_entries <- map(package_names, get_bibtex_entry) %>%
+                compact() %>%
+                unlist() 
+        
+        r_citation <- capture.output(print(citation(), style = "Bibtex"))
+        r_citation[1] <- "@Manual{Rcoreteam,"
+        rstudio_citation <- "@Manual{rstudio,
+    title = {RStudio: Integrated Development Environment for R},
+    author = {RStudio Team},
+    year = {2024},
+    note = {RStudio: Integrated Development Environment for R, PBC. URL https://www.rstudio.com/}
+  }"
+        bibtex_entries <- c(bibtex_entries, r_citation, rstudio_citation)
+        
+        # file
+        bib_file <- "selected_packages.bib"
+        writeLines(bibtex_entries, con = bib_file)
+        
+        # Append BibTeX entries to references.bib without duplicates
+        # references_file <- "references.bib"
+        # if (file.exists(references_file)) {
+        #         existing_entries <- readLines(references_file)
+        #         new_entries <- setdiff(bibtex_entries, existing_entries)
+        #         if (length(new_entries) > 0) {
+        #                 write(new_entries, file = references_file, sep = "\n", append = TRUE)
+        #         }
+        # } else {
+        #         writeLines(bibtex_entries, con = references_file)
+        # }
+        
+        pack <- tibble(Package = other_packages,
+                       Citation = paste0("@", other_packages))
+        if (output=="table") {
+                
+                return(pack)                          
+        }
+        
+        if (output=="text") {
+                
+                # Get hardware information using system commands
+                model_identifier <- system("system_profiler SPHardwareDataType | grep 'Model Identifier'", intern = TRUE)
+                chip <- system("system_profiler SPHardwareDataType | grep 'Chip'", intern = TRUE)
+                cores <- system("system_profiler SPHardwareDataType | grep 'Total Number of Cores'", intern = TRUE)
+                memory <- system("system_profiler SPHardwareDataType | grep 'Memory'", intern = TRUE)
+                
+                # Extract relevant hardware details
+                model_identifier <- sub(".*Model Identifier: ", "", model_identifier)
+                chip <- sub(".*Chip: ", "", chip)
+                cores <- sub(".*Total Number of Cores: ", "", cores)
+                memory <- sub(".*Memory: ", "", memory)
+                
+                # Create hardware statement
+                hardware_statement <- paste0(
+                        "A ", model_identifier, " with a chipset ", chip,
+                        " was used performing on a total number of ", cores,
+                        " cores including ", memory, " of memory. "
+                )
+                
+                statement_sentence <- paste0(
+                        "The following R packages were used: ",
+                        paste(pack$Package, pack$Citation, sep = " [", collapse = "], "),
+                        "]. The base R packages used include: ",
+                        paste(base_packages, collapse = ", "), "."
+                )
+                
+                statement <- paste0(
+                        "Version details and attached packages are as follows: ",
+                        "The most recent R version used in this project was: ", R.version.string, ".\n",
+                        hardware_statement, "The base R packages used include: ", paste(base_packages, collapse = ", "), ". Other packages used are given by it popularity index based on the number of downloads within the last 30 days of the time of this writing: ",
+                        paste(
+                                pack$Package,
+                                pack$Citation,
+                                sep = " [",
+                                collapse = "], "
+                        ),
+                        "]."
+                )
+                return(statement)
+                
+        }
+       
+        # cat("R.version:", R.version.string, "\n")
+        # cat("Platform:", s$platform, "\n")
+        # cat("Locale:", s$locale, "\n\n")
+}
 
 
 

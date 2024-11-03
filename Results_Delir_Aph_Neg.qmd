@@ -139,7 +139,7 @@
         moderate_P = getP(getRsmb(bm_delirium_var_aphasia_grade2_ia), var = "var_aphasia_grade2=moderate * sex=male")
 
 ```
-Symptoms of aphasia of any severity grade were found in n = `r nrow(df[df$var_aphasia_grade2 != "no aphasia", ])` (`r round(nrow(df[df$var_aphasia_grade2 != "no aphasia", ])/nrow(df)*100,1)`%) patient with available data (missing n = `r nrow(df[is.na(df$var_aphasia_grade2), ])`). More female patients than males presented with symptoms of aphasia. Aphasia with the grade `r most_category_aphasia[[1]]` was the most frequently occurring, affecting 29.9% of the patients, with a slightly higher occurrence in females (31.5%) compared to males (28.4%). @tbl-delir-aphasia
+Symptoms of aphasia of any severity grade were found in n = `r nrow(df[df$var_aphasia_grade2 != "no aphasia", ])` (`r round(nrow(df[df$var_aphasia_grade2 != "no aphasia", ])/nrow(df)*100,1)`%) patient with available data (missing n = `r nrow(df[is.na(df$var_aphasia_grade2), ])`). More female patients than males presented with symptoms of aphasia. Aphasia with the grade `r most_category_aphasia[[1]]` was the most frequently occurring, affecting 29.9% of the patients, with a slightly higher occurrence in females (31.5%) compared to males (28.4%). (@tbl-delir-aphasia)
 ```{r tbl-Delirium-Aphasia}
 #| label: tbl-delir-aphasia
 #| tbl-cap: Descriptive analysis of the *degree of aphasic symptoms* in the whole cohort and subgroups of biological sex
@@ -169,7 +169,7 @@ plot_tbl(
 
 
 ```
-The bayesian regression analysis investigates sex differences in the relationship between _levels of aphasia_ and the _risk of delirium_. While aphasia severity alone (main effect) shows variable and uncertain effects on delirium, the relevance of an interaction between aphasia severity and sex was evident. Males with moderate ($P_{interaction}(\beta>0):$ `r moderate_P`) to severe aphasia ($P_{interaction} (\beta>0):$ `r getP(getRsmb(bm_delirium_var_aphasia_grade2_ia), var = "var_aphasia_grade2=severe * sex=male")` are significantly more likely to develop delirium compared to females with the same level of aphasia. (@fig-delirium-aphasia A)
+The bayesian regression analysis investigates sex differences in the relationship between _levels of aphasia_ and the _risk of delirium_. While aphasia severity alone (main effect) shows variable and uncertain effects on delirium, the relevance of an interaction between aphasia severity and sex was evident. Males with moderate ($P_{interaction}(\beta>0):$ `r moderate_P`) to severe aphasia ($P_{interaction} (\beta>0):$ `r getP(getRsmb(bm_delirium_var_aphasia_grade2_ia), var = "var_aphasia_grade2=severe * sex=male")`) are significantly more likely to develop delirium compared to females with the same level of aphasia. (@fig-delirium-aphasia A)
 Inclusion of NIHSS (as a potential confounder of this interaction) demonstrated further strength of these findings. This suggests that males with moderate to severe aphasia are particularly vulnerable to delirium.
 ```{r tbl2-Delirium-Aphasia}
 #| label: tbl2-delir-aphasia
@@ -190,7 +190,7 @@ res_del_aphasia$tbl
 #| fig-cap: !expr 'paste0("**(A)** Descriptive Analysis of Levels of Aphasia (no, minor, moderate, severe, global) stratified by biological sex. **(B)** Probability of Occurrence of a New Delirium given the different levels of aphasia comparing females and males, **(C)** Differences in posterior probability of females - males in each level of aphasia.")'
 #| cache: TRUE
 p <-       plot_grid(
-        res_del_aphasia$p0 + ylim(0, 2500) + theme(legend.position = c(0.83,0.95), 
+        res_del_aphasia$p0 + ylim(0, 2000) + theme(legend.position = c(0.83,0.95), 
                                    axis.text.x = element_text(angle = 45, hjust = 1),
                                    legend.background = element_rect(fill = NA),
                                    legend.key.size = unit(0.2, "cm")),
@@ -353,7 +353,7 @@ p
         
 
 ```
-Symptoms of neglect of several severity grades were found in n = `r nrow(df[df$var_neglect_grade != "no aphasia", ])` (`r round(nrow(df[df$var_neglect_grade != "no neglect", ])/nrow(df)*100,1)`%) patient (missing n = `r nrow(df[is.na(df$var_neglect_grade), ])`). The frequencies in the different levels of neglect syndroms were quite balanced betwenn females and males. (@tbl-delir-neglect) Neglect with the grade `r most_category_neglect[[1]]` was the most frequently occurring among those with neglect, affecting 16.0% of the patients, with a slightly higher occurrence in females (16.9%) compared to males (15.1%). @tbl-delir-neglect
+Symptoms of neglect of several severity grades were found in n = `r nrow(df[df$var_neglect_grade != "no aphasia", ])` (`r round(nrow(df[df$var_neglect_grade != "no neglect", ])/nrow(df)*100,1)`%) patient (missing n = `r nrow(df[is.na(df$var_neglect_grade), ])`). The frequencies in the different levels of neglect syndroms were quite balanced betwenn females and males. (@tbl-delir-neglect) Neglect with the grade `r most_category_neglect[[1]]` was the most frequently occurring among those with neglect, affecting 16.0% of the patients, with a slightly higher occurrence in females (16.9%) compared to males (15.1%). (@tbl-delir-neglect)
 ```{r tbl-Delirium-Neglect}
 #| label: tbl-delir-neglect
 #| tbl-cap: Descriptive Analsis of _Neglect-Syndromes_ in the whole cohort and subgroups of biological sex 
@@ -379,7 +379,7 @@ plot_tbl(
 ) %>% 
     kable_styling(latex_options = c("scale_down"))
 ```
-The bayesian regression analysis investigates sex differences in the relationship between levels of neglect and the _risk of delirium. Compared to having no neglect, minor, visual, tactile, and multimodal neglect showed high probability of an positive association with occurrence of new delirium with  $P(\beta > 0)$ of >99%, 98.0%, 89.7%, and 99.9%, respectively. (@tbl-delir-neglect2) 
+The bayesian regression analysis investigates sex differences in the relationship between levels of neglect and the risk of delirium. Compared to having no neglect, minor, visual, tactile, and multimodal neglect showed high probability of an positive association with occurrence of new delirium with  $P(\beta > 0)$ of >99%, 98.0%, 89.7%, and 99.9%, respectively. (@tbl-delir-neglect2) 
 ```{r fig-Delirium-Neglect, fig.width=6, fig.asp=0.5, out.width="100%"}
 #| label: fig-delirium-neglect
 #| echo: false

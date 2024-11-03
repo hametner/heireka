@@ -152,7 +152,7 @@ The interaction model showed that being female or male was not clinically releva
 #| fig-cap: !expr 'paste0("**(A)** Descriptive Analysis of _Previously Diagnosed Thyroid Disease_ stratified by biological sex. **(B)** Probability of Occurrence of a New Delirium given the presence of thyroid disesase in feales and males, **(C)** Differences in posterior probability of females - males depending on the status of thyroid disease")'
 #| cache: TRUE
 p <-       plot_grid(
-        res_del_thyr$p0 + ylim(0, 2000) + theme(legend.position = c(0.83,0.95), 
+        res_del_thyr$p0 + ylim(0, 2500) + theme(legend.position = c(0.83,0.95), 
                                    axis.text.x = element_text(angle = 45, hjust = 1),
                                    legend.background = element_rect(fill = NA),
                                    legend.key.size = unit(0.2, "cm")),

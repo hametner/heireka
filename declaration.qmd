@@ -1,0 +1,9 @@
+# Declarations {.unnumerbered}
+
+Declaration of Generative AI and AI-Assisted Technologies in the Writing Process
+
+In the creation of this work, the author utilized services provided by OpenAI, Inc. to support both writing and code development. All contributions of these services were supplementary. Importantly, the author genuinely created the core intellectual content and made all final decisions.
+
+For written text, the author employed services to review grammar, semantics, and overall language quality, using recent large language models (e.g. GPT-3, GPT-4, and GPT-4-turbo). Each response was carefully evaluated by the author for accuracy, quality of improvement, and to ensure that the original intent and meaning of the text remained intact. The author maintained full control over the content, ensuring that all substantive contributions and creative decisions were their own.
+
+For code, prompts were used to review and address errors when needed. In specific instances, such as with the function 'getDelir,' the OpenAI advanced programming interface was employed to extract information from anonymized text. Similar to other methods used, such as regular expressions, prompts were iteratively refined until the desired quality was achieved. The author designed, refined and validated these solutions. Additional details are available in the methods section.

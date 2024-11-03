@@ -1,0 +1,5 @@
+### References {.unnumbered}
+\footnotesize
+::: {#refs}
+:::
+\normalsize

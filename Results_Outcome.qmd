@@ -1,0 +1,936 @@
+```{r outcome-load}
+tar_load(df_full_f)
+df <- df_full_f
+df$pRS02 <- as.factor((df$pRS<3)/1)
+df$var_eyedev <- as.factor(df$var_eyedev)
+df$outcome_delir <- as.factor(df$outcome_delir)
+
+dd <- datadist(df)
+options(datadist = 'dd')
+options(contrasts=c("contr.treatment", "contr.treatment"))
+```
+
+## Outcomes, Influcence of Delirium and Sex
+
+This analysis regards outcome evaluation of diverse outcomes in the whole cohort, the influence of delirium occuring during hospital stay and biological sex. @tbl-char-outcome depicts the characteristics of the different short and long term outcomes. The respective number of available outcomes in each categeory is also given, only the Barthel Index had a relatively low number of readings (n = `r sum(!is.na(df$outcome_dis_barthel_index))`).
+
+```{r tbl-char-outcome}
+#| label: tbl-char-outcome
+#| tbl-cap: Descriptive analysis of _Functional Outcomes_ (short- and long-term), _Adverse Outcomes_, and _Etiology_ in the whole cohort and subgroups of biological sex
+#| tbl-colwidths: "auto"
+#| echo: false
+
+
+var <- c("etio_mtoast", "etio_afib_new", "etio_dissection", "etio_stroke_mimic", "etio_pfo","outcome_pneumonia","outcome_mi","outcome_sepsis","outcome_tvt","outcome_lae","outcome_delir_lohs_days", "outcome_dis_barthel_index", "outcome_nihss_discharge", "outcome_ihd", "outcome_mrsd90") 
+
+
+# file storage
+file <- "output/models/tbl-char-outcome.rds"
+if (file.exists(file)) {
+        models <- readRDS(file)
+} else {
+        models <- run_models(df, var)
+        saveRDS(models,
+                file,
+                compress = "xz")
+}
+#extract bayesian stats c
+stat <- extract_bayes_stat(models, var)
+# stat <- getRsmb(bm_delirium_mdx, col_var=TRUE) %>% as_tibble() %>% rename(`P(β>0)`=P)
+
+# Bayes stats with multiple not working yet
+
+if (knitr::is_latex_output()) {
+        
+        plot_tbl(
+                data = df,
+                selected_columns = c(var, "sex"),
+                by = "sex",
+                stat_descr_loc = "bottom",
+                pkg = "kableExtra",
+                kable_option = "latex",
+                pvalue = FALSE,
+                bayes = TRUE,
+                stat,
+                missing="no"
+        ) %>% 
+                kable_styling(latex_options = c("scale_down"))  %>% 
+                pack_rows("Etiology (at discharge)", 1,12) %>%
+    pack_rows("Adverse Outcomes", 13,27) %>%
+    pack_rows("Short term Outcomes / Surrogates", 28,31) %>% 
+    pack_rows("Long term functional Outcome", 32,39) 
+
+                # column_spec(1, width = "4.5cm") %>%
+                # column_spec(3, width = "2.5cm") %>%
+                # column_spec(4, width = "2.5cm") %>%
+                # column_spec(5, width = "2.5cm") %>%
+                # column_spec(6, width = "2cm")
+        #  pack_rows("Characteristics (at admission)", 1,15) %>%
+        # pack_rows("Stroke severity", 16,18) %>%
+        # pack_rows("Risk factors (preexisting)", 19,28) %>%
+        # pack_rows("Specific risk factors (at admission)", 29, 50)
+        
+} else {
+        
+        plot_tbl(
+                data = df,
+                selected_columns = c(var, "sex"),
+                by = "sex",
+                stat_descr_loc = "bottom",
+                pkg = "kableExtra",
+                kable_option = "html",
+                pvalue = FALSE,
+                bayes = FALSE,
+                stat,
+                missing = "no"
+        ) %>% kable_classic(full_width = TRUE) %>% 
+                pack_rows("Etiology (at discharge)", 1,12) %>%
+    pack_rows("Adverse Outcomes", 13,27) %>%
+    pack_rows("Short term Outcomes / Surrogates", 28,31) %>% 
+    pack_rows("Long term functional Outcome", 32,39) 
+
+        
+}
+
+```
+
+### Etiology of Stroke
+
+Distributions of etiological subclassification according to the modified TOAST classification was with expected predominance for cardioembolism in females (52.4% vs. 37.1% in males), whereas atherothrombotic cause was more frequent in males (29.4% vs. 14.8% in females). Stroke of uncertain or undetermined etiology was also more common in females (see @tbl-char-outcome).
+
+### Adverse Outcomes, Short and Long Term Outcomes
+
+In this cohort, pneumonia rates were significantly higher in males (21.0% compared to females 14.4%). Newly occurring sepsis during hospital stay was also more common in males (1.5% versus 0.9% in females). As for length of Hospital stay, the sexes scored equal median values (4 days), but the male distribution was skewed to the upper end with a probability difference \> 99%. Functional outcome as measured by the Barthel Index at discharge showed higher scores in males than females (mean 55 vs. 40, probability of difference \>99.9%). Death during the hospital stay was equally distributed between the sexes. When looking at 3 monath outcomes on the mRS, females had higher rates of death at 3 months and slightly lower rates of independency (mRS 0-2) compared to males (@tbl-char-outcome).
+
+### Length of Hospital Stay
+
+```{r outcome-lohs, include=FALSE}
+dv <- "outcome_delir_lohs_days"
+# iv <- "rcs(age, 4) + sex + date_therapy_year +therapy + rcs(nihss_d0, 3) +  risk_factor_khd + risk_factor_dm + rf_prev_mi + var_aphasia_adm + var_neglect_grade + var_prev_dementia + var_microangio + var_vigil + outcome_delir + outcome_pneumonia + outcome_mi + outcome_sepsis + outcome_tvt + outcome_lae + outcome_ihd + etio_mtoast"
+# bm_lohs <- getModel(dv, iv, file_name = "output/models/bm_lohs", data = df, force_overwrite = FALSE)
+
+#full model
+iv <- "rcs(age, 4) + sex + pRS02 + side_stroke + therapy + date_therapy_year + rcs(nihss_d0, 3) + risk_factor_current_smoker + risk_factor_htn + risk_factor_khd + risk_factor_dm + risk_factor_hchol + risk_factor_pavk + rf_prev_mi +  risk_factor_prev_smoker + risk_factor_prev_stroke + risk_factor_af_known +var_aphasia_adm + var_neglect_grade + var_prev_dementia + var_microangio + var_vigil + var_eyedev + risk_factor_alc_adm + acetylsalicylic_acid + metoprolol + ramipril + pantoprazole + bisoprolol + amlodipine + torasemide + simvastatin + levothyroxine_sodium + hydrochlorothiazide + atorvastatin + candesartan + metformin + metamizole_sodium + allopurinol + phenprocoumon + clopidogrel + furosemide + colecalciferol + spironolactone + pravastatin + enalapril + rivaroxaban + lercanidipine + nebivolol + enoxaparin + omeprazole + apixaban + tamsulosin + ibuprofen + digoxin + valsartan + carvedilol + insulin_glargine + mirtazapine + insulin_human + potassium_chloride + prednisolone + chlortalidone + ramipril_and_diuretics + macrogol_combinations + glimepiride + lisinopril + diclofenac + moxonidine + Magnesium + sitagliptin + losartan + citalopram + pregabalin + tilidine + tiotropium_bromide + gabapentin + digitoxin + outcome_delir + outcome_pneumonia + outcome_mi + outcome_sepsis + outcome_tvt + outcome_lae + outcome_delir + etio_mtoast + outcome_ihd"
+bm_lohs_f <- getModel(dv, iv, file_name = "output/models/bm_lohs_f", data = df, force_overwrite = FALSE)
+
+# imputation
+bm_lohs_imp <- getModel(dv, iv, file_name = "output/models/bm_lohs_imp", data = df, force_overwrite = FALSE)
+
+bm_lohs <- bm_lohs_f
+
+# interactions
+ia = addInteractions(iv, ia = "sex", all = TRUE)
+bm_lohs_ia_f <- getModel(dv, ia, file_name = "output/models/bm_lohs_ia_f", data = df, force_overwrite = FALSE)
+
+#imputation
+bm_lohs_ia_imp <- getModel(dv, ia, file_name = "output/models/bm_lohs_ia_imp", data = df, force_overwrite = FALSE)
+
+bm_lohs_ia <- bm_lohs_ia_f
+# bm_lohs_tbl <- getLatexTableCH(bm_delirium_mdx_s, font_size=10, output_format="latex")
+
+```
+
+The length of hospital stay showed an increase mostly influenced by adverse complications during hospital stay, namely sepsis, deep vein thrombosis and pulmonary embolism, myocardial infarction, pneumonia (`r getMedCI(summary(bm_lohs), var="outcome_pneumonia")`), and newly occurring delirium (`r getMedCI(summary(bm_lohs), var="outcome_delir")`). Relevant also for length of stay were patients who were classified as stroke of other determined etiology, which includes patients that experience uncommon causes of stroke probably requiring a more time-consuming workup (`r getMedCI(summary(bm_lohs), var="SOD")`). On the other hand the length of hospital stay was decreased in patients with dementia (`r getMedCI(summary(bm_lohs), var="dementia")`). Also younger patients had about half the odds of older patients for an increased length of stay `r getMedCI(summary(bm_lohs), var="age")`. Over the years, the length of hospital stay decreased by 0.09 days per year (`r getMedCI(summary(bm_lohs), var="date_therapy_year")`). The model also included early in hopsital deaths to account for this as potential confounder. Biological sex was an independently predicting factor with females overall experiences shorter lengths of stay in hospitals (`r getMedCI(summary(bm_lohs), "female")`). (see also @fig-outcome-lohs-forest)
+
+```{r fig-outcome-lohs-forest, fig.width=10, fig.asp=1.5, out.width="100%"}
+#| label: fig-outcome-lohs-forest
+#| fig-pos: H
+#| echo: false
+#| warning: false
+#| error: false
+#| fig-cap: !expr 'paste0("Forest Plot of variables positively and negatively associated with _Length of Hospital Stay_")'
+#| cache: TRUE
+p <- plotForest(bm_lohs)
+p$data$Predictor <- gsub("Modified TOAST Classification - ", "", p$data$Predictor)
+p$data$Predictor <- gsub("Aphasia symptoms at admission - ", "", p$data$Predictor)
+p
+# plotForest(bm_delirium_mdx_iv2)
+```
+
+Meaningful interactions with biological sex in predicting the length of hospital stay was also found for pneumonia ($P_{interaction}(\beta>0)$: `r getP(getRsmb(bm_lohs_ia), var="sex=male * outcome_pneumonia=1", text=FALSE)`) and sepsis ($P_{interaction}(\beta>0)$: `r getP(getRsmb(bm_lohs_ia), var="sex=male * outcome_sepsis=1", text=FALSE)`).
+
+@fig-lohs-plot A illustrates how delirium increases the length of days in hospital depending on age and sex. The first aspect to notice is an overall increase in length of stay across all ages. Furthermore, the probability for very young patients is comparable between females and males, irrespective of presence of delirium or not. However, the trajectory diverges with increasing age between the sexes with trend reversal at around age of 70. Thereafter, females experience shorter lengths of stay in hospitals than males, which persists up to higher age groups.
+
+An overall increase in hospital days can be seen when pneumonia occurs (@fig-lohs-plot B). A similar pattern (as seen in delirium), is observed between the sexes for pneumonia, rendering males more hospital days, especially when pneumonia occurs. Again, a trend reversal is seen from the age of 70 upwards. This same pattern persists also for different stroke etiologies across the age groups (@fig-lohs-plot C).
+
+```{r lohs-plot-calc}
+p0 <- ggplot(
+        Predict(
+                bm_lohs_ia,
+                age,
+                sex,
+                funint = FALSE,
+                fun = plogis,
+                conf.int = TRUE,
+                np = 1000
+        ),
+        adj.subtitle = 0
+) + theme_ch()
+
+p1 <- ggplot(
+        Predict(
+                bm_lohs_ia,
+                age,
+                outcome_delir,
+                sex,
+                funint = FALSE,
+                fun = plogis,
+                conf.int = FALSE,
+                np = 1000
+        ),
+        adj.subtitle = 0
+) + theme_ch() + coord_cartesian(ylim = c(0, 1)) + theme(legend.position = "top", plot.title = element_text(size = 10, hjust = 0.5), legend.background = element_rect(fill = NA), legend.key.size = unit(0.2, "cm")) + ggtitle("Delirium") + ylab("Probability of days in hospital") + scale_color_colorblind()
+
+p2 <- ggplot(
+        Predict(
+                bm_lohs_ia,
+                age,
+                outcome_pneumonia,
+                sex,
+                funint = FALSE,
+                fun = plogis,
+                conf.int = FALSE,
+                np = 1000
+        ),
+        adj.subtitle = 0
+) + theme_ch() + coord_cartesian(ylim = c(0, 1)) +  theme(
+        legend.position = "top",
+        plot.title = element_text(size = 10, hjust = 0.5),
+        legend.background = element_rect(fill = NA),
+        legend.key.size = unit(0.2, "cm")
+) + ggtitle("Pneumonia") + scale_color_colorblind()
+
+p3 <- ggplot(Predict(bm_lohs_ia, age, etio_mtoast, sex, funint=FALSE, fun=plogis, conf.int=FALSE, np=1000), adj.subtitle = 0) + theme_ch() + coord_cartesian(ylim=c(0, 1)) +  theme(legend.position = "top", plot.title = element_text(size = 10, hjust = 0.5), legend.background = element_rect(fill = NA), legend.key.size = unit(0.2, "cm")) + ggtitle("mTOAST") +
+    scale_color_colorblind(
+        breaks = c(
+            "Stroke of undetermined etiology (SUD)",
+            "Cardioembolism (CE)",
+            "Atherothrombosis (AT)",
+            "Stroke of other determined etiology (SOD)",
+            "Small artery disease (SAD)",
+            "More than two causes identified (SUDm)",
+            "Uncertain determination (SUDu)"
+        ),
+        labels = c("SUD", "CE", "AT", "SOD", "SAD", "SUDm", "SUDu")
+    ) 
+
+p4 <- ggplot(Predict(bm_lohs_ia, date_therapy_year, therapy, sex, funint=FALSE, fun=plogis, conf.int=FALSE, np=1000), adj.subtitle = 0) + theme_ch() + coord_cartesian(ylim=c(0, 1)) +  theme(legend.position = "top", plot.title = element_text(size = 10, hjust = 0.5), legend.background = element_rect(fill = NA), legend.key.size = unit(0.2, "cm")) + ggtitle("Therapy") + ylab("Probability of days in hospital") + scale_x_continuous(
+                minor_breaks = seq(min(df$date_therapy_year), max(df$date_therapy_year), by = 1),
+                breaks = c(2000, 2010, 2020),
+                limits = c(min(df$date_therapy_year), max(df$date_therapy_year))
+        ) 
+
+p5 <- ggplot(Predict(bm_lohs_ia, nihss_d0, outcome_sepsis, sex, funint=FALSE, fun=plogis, conf.int=FALSE, np=1000), adj.subtitle = 0) + theme_ch() + coord_cartesian(ylim=c(0, 1)) +  theme(legend.position = "top", plot.title = element_text(size = 10, hjust = 0.5), legend.background = element_rect(fill = NA), legend.key.size = unit(0.2, "cm")) + ggtitle("Sepsis") +  scale_color_colorblind()
+
+p6 <- ggplot(Predict(bm_lohs_ia, nihss_d0, outcome_ihd, sex, funint=FALSE, fun=plogis, conf.int=FALSE, np=1000), adj.subtitle = 0) + theme_ch() + coord_cartesian(ylim=c(0, 1)) +  theme(legend.position = "top", plot.title = element_text(size = 10, hjust = 0.5), legend.background = element_rect(fill = NA), legend.key.size = unit(0.2, "cm")) + ggtitle("In-House-Death") + scale_color_colorblind()
+
+p_lohs <- plot_grid(p1, p2, p3, p4, p5, p6, labels = c("A", "B", "C", "D", "E", "F"), ncol = 3, nrow = 2, label_size = 10)
+
+```
+
+```{r fig-lohs-plot, fig.width=7, fig.asp=1, out.width="100%"}
+#| label: fig-lohs-plot
+#| echo: false
+#| warning: false
+#| error: false
+#| fig-cap: !expr 'paste0("Illustration of Biological Sex Moderating Adverse Outcomes, Etiology, Therapy, and In-House Death when predicting _Length of Hospital Stay_. (**A**) Occurrence of a new delirium during hosptial stay (**B**) New Pneumonia (**C**) Modified TOAST Classification ", paste0(df$etio_mtoast %>% levels(), collapse = ", "), "(**D**) Therapy (intravenous thrombolysis, endovascular therapy or combination) (**E**) Sepsis (**F**) In-House-Death")'
+#| cache: TRUE
+p_lohs
+```
+
+@fig-lohs-plot D illustrates the probability of a longer hospital stay across the treatment years, with a clear trend for a shorter stay in more recent years. Females follow this trend in a more pronounced way, especially in females treated with intravenous thrombolysis only, who had lower probability of longer hospital stays.
+
+A reversed pattern emerges in the case of newly occurring sepsis as a function of stroke severity. As for females, irrepspective of the stroke severity, hospital stay is markedly increased when sepsis occurs (@fig-lohs-plot E). On survival, males have a higher probability of a longer hospital stay. When patients decease during the hospital stay, females and males experience a similar length of hospital treatment (@fig-lohs-plot F).
+
+### Barthel Index at Discharge
+
+```{r outcome-barthel, include=FALSE}
+# dv <- "outcome_dis_barthel_index"
+# iv <- "rcs(age, 4) + sex + date_therapy_year +therapy + rcs(nihss_d0, 3) + pRS02 + side_stroke + risk_factor_khd + risk_factor_dm + rf_prev_mi + var_aphasia_adm + var_neglect_grade + var_prev_dementia + var_microangio + var_vigil + outcome_delir + outcome_pneumonia + outcome_mi + outcome_sepsis + outcome_tvt + outcome_lae + etio_mtoast + outcome_delir_lohs_days"
+# bm_barthel <- getModel(dv, iv, file_name = "output/models/bm_barthel", data = df, force_overwrite = FALSE)
+
+
+dv <- "outcome_dis_barthel_index"
+
+iv <- "rcs(age, 4) + sex + pRS02 + side_stroke + therapy + date_therapy_year + rcs(nihss_d0, 3) + risk_factor_current_smoker + risk_factor_htn + risk_factor_khd + risk_factor_dm + risk_factor_hchol + risk_factor_pavk + rf_prev_mi +  risk_factor_prev_smoker + risk_factor_prev_stroke + risk_factor_af_known +var_aphasia_adm + var_neglect_grade + var_prev_dementia + var_microangio + var_vigil + var_eyedev + acetylsalicylic_acid + metoprolol + ramipril + pantoprazole + bisoprolol + amlodipine + torasemide + simvastatin + levothyroxine_sodium + hydrochlorothiazide + atorvastatin + candesartan + metformin + metamizole_sodium + allopurinol + phenprocoumon + clopidogrel + furosemide + colecalciferol + spironolactone + pravastatin + enalapril + rivaroxaban + lercanidipine + nebivolol + enoxaparin + omeprazole + apixaban + tamsulosin + ibuprofen + digoxin + valsartan + carvedilol + insulin_glargine + mirtazapine + insulin_human + potassium_chloride + prednisolone + chlortalidone + ramipril_and_diuretics + macrogol_combinations + glimepiride + lisinopril + diclofenac + moxonidine + Magnesium + sitagliptin + losartan + citalopram + pregabalin + tilidine + tiotropium_bromide + gabapentin + digitoxin + outcome_delir + outcome_pneumonia + outcome_mi + outcome_sepsis + outcome_tvt + outcome_lae + outcome_delir + etio_mtoast"
+
+bm_barthel_f <- getModel(dv, iv, file_name = "output/models/bm_barthel_f", data = df, force_overwrite = FALSE)
+# imputation
+bm_barthel_imp <- getModel(dv, iv, file_name = "output/models/bm_barthel_imp", data = df, force_overwrite = FALSE, imputation=TRUE)
+
+bm_barthel <- bm_barthel_imp
+
+# interactions
+ia = addInteractions(iv, ia = "sex", all = TRUE)
+# bm_barthel_ia <- getModel(dv, ia, file_name = "output/models/bm_barthel_ia", data = df, force_overwrite = FALSE)
+bm_barthel_ia_f <- getModel(dv, ia, file_name = "output/models/bm_barthel_ia_f", data = df, force_overwrite = FALSE)
+# imputation
+bm_barthel_ia_imp <- getModel(dv, ia, file_name = "output/models/bm_barthel_ia_imp", data = df, force_overwrite = FALSE)
+
+bm_barthel_ia <- bm_barthel_ia_imp
+# bm_lohs_tbl <- getLatexTableCH(bm_delirium_mdx_s, font_size=10, output_format="latex")
+
+```
+
+```{r fig-barthel-plot, fig.width=7, fig.asp=0.6, out.width="100%"}
+#| label: fig-barthel-plot
+#| fig-pos: H
+#| echo: false
+#| warning: false
+#| error: false
+#| fig-cap: !expr 'paste0("**(A)** Comparison of *Barthel Index Categories* between Females and Males. Delta values (absolute) for each category are given. **(B)** Probability of higher Barthel score at discharge as a function of age")'
+#| cache: TRUE
+
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+library(Hmisc)
+
+df_long <- df %>%
+  pivot_longer(
+    cols = starts_with("dis_bi"),  
+    names_to = "category",
+    values_to = "score"
+  ) %>%
+  mutate(score = as.numeric(score)) 
+
+# Remove NA
+df_long <- df_long %>% filter(!is.na(score))
+
+# Modify label
+
+
+        df_long <- df_long %>%
+        mutate(category = factor(
+                category,
+                levels = c(
+                        "dis_bi_eat",
+                        "dis_bi_bath",
+                        "dis_bi_wash",
+                        "dis_bi_dress",
+                        "dis_bi_bowel",
+                        "dis_bi_urin",
+                        "dis_bi_toilet",
+                        "dis_bi_sit",
+                        "dis_bi_walk",
+                        "dis_bi_stair"
+                ),
+                labels = c(
+                        "Feeding",
+                        "Bathing",
+                        "Grooming",
+                        "Dressing",
+                        "Bowel Control",
+                        "Bladder Control",
+                        "Toileting",
+                        "Transfers",
+                        "Mobility",
+                        "Stairs"
+                )
+        ))
+
+# Calculate mean scores
+mean_scores <- df_long %>%
+  group_by(category, sex) %>%
+  summarize(mean_score = mean(score, na.rm = TRUE), .groups = 'drop')
+
+# Calculate absolute change between males and females for each category
+absolute_change <- mean_scores %>%
+  pivot_wider(names_from = sex, values_from = mean_score) %>%
+  mutate(
+    absolute_change = male - female
+  ) %>%
+  select(category, absolute_change)
+
+# annotation data
+annotation_data <- absolute_change %>%
+  left_join(
+    mean_scores %>%
+      group_by(category) %>%
+      summarize(max_mean = max(mean_score, na.rm = TRUE)),
+    by = "category"
+  ) %>%
+  mutate(
+    y_position = max_mean + 1  # Adjust the offset as needed
+  )
+
+# plot
+barthel_p <- ggplot(df_long, aes(x = category, y = score, fill = sex)) +
+  geom_bar(
+    stat = "summary",
+    fun = "mean",
+    position = position_dodge(width = 0.7),
+    color = "black",
+    alpha=0.6,
+    width = 0.7
+  ) +
+  geom_errorbar(
+    stat = "summary",
+    fun.data = mean_cl_boot,
+    position = position_dodge(width = 0.7),
+    width = 0.25
+  ) +
+  labs(
+    x = "",
+    y = "Mean Barthel Index Score",
+    fill = "Sex"
+  ) +
+        scale_fill_colorblind() +
+  theme_ch() +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    plot.title = element_text(hjust = 0.5)
+    # plot.margin = margin(t = 1.5, r = 1, b = 1, l = 1, unit = "cm")
+  ) + 
+        geom_text(
+  data = annotation_data,
+  aes(
+    x = category,
+    y =  y_position + 0.3, #-0.4, 10.1 
+    label = paste0(round(absolute_change, 1))),
+  inherit.aes = FALSE, 
+  vjust = 0.5,            
+  color = "black",
+  size = 3,
+  angle = 90
+) + theme(legend.background = element_rect(fill = NA), legend.key.size = unit(0.4, "cm"))
+
+
+
+
+barthel_age_sex_p <- ggplot(Predict(bm_barthel_ia, age, sex, funint=FALSE, fun=plogis, conf.int = FALSE), adj.subtitle = 0) + 
+        labs(
+    y = "Probability of higher Barthel score") +
+    theme_ch() + 
+    scale_color_colorblind() + 
+    geom_vline(xintercept = 65, linetype = "dashed", color = "grey") + 
+    annotate("text", x = 45, y = 0.9, label = expression(P[Interaction] * " (" * beta > 0 * "): 0.018"), hjust = -0.1, vjust = -1.5) + 
+        theme(legend.background = element_rect(fill = NA), legend.key.size = unit(0.4, "cm"))
+
+
+# print
+
+plot_grid(barthel_p, barthel_age_sex_p)
+```
+
+At hospital discharge, females had significantly a lower Barthel Index score compared to males (@tbl-char-outcome, $P(\beta>0)$: `r stat %>% filter(variable=="outcome_dis_barthel_index") %>% get_bayes_stat()`). A breakup of the individual Barthel Index categories is shown (@fig-barthel-plot A) emphasizing an overall lower score for females in each category.
+
+The Barthel Index at hospital discharge was furhter influenced by adverse outcomes including pneumonia (`r getMedCI(summary(bm_barthel), var="outcome_pneumonia")`), sepsis, and pulmonary embolism. Experiencing a new delirium was also associated with a lower Barthel index score (`r getMedCI(summary(bm_barthel), var="outcome_delir")`) and biological sex also contributed to the score independently (`r getMedCI(summary(bm_barthel), var="sex")`). Interestingly, males showed a comparable trajectory to females until the age of 70 and a steep decline in probability of a better Barthel Index score thereafter ($P_{Interaction} (\beta>0)$: `r getP(getRsmb(bm_barthel_ia), var="age'' * sex=male")`, @fig-barthel-plot B).
+
+Higher stroke severity (`r getMedCI(summary(bm_barthel), var="nihss_d0")`), higher age (`r getMedCI(summary(bm_barthel), var="age")`), and the level of consciousness at admission (`r getMedCI(summary(bm_barthel), var="var_vigil")`) were also associated with a lower Barthel index score.
+
+```{r tbl-outcome-barthel, include=FALSE}
+#| label: tbl-outcome-barthel
+#| tbl-cap: !expr 'paste0("Bayesian regression model _Barthel Index_.")'
+#| tbl-colwidths: "auto"
+#| results: hold
+#| echo: false
+#| warning: false
+#| error: false
+library(gt)
+library(kableExtra)
+getLatexTableCH(bm_barthel, font_size=8.5, output_format="latex", option="longtable") %>% 
+        column_spec(1, "1.9in") %>% 
+        column_spec(2, "0.3in") %>%
+        column_spec(3, "0.35in") %>%
+        column_spec(4, "0.3in") %>%
+        column_spec(5, "0.3in") %>%
+        column_spec(6, "0.35in") %>% 
+        column_spec(7, "0.3in")
+```
+
+As for the interaction model, pre-stroke condition like diabetes mellitus ($P(\beta>0)$: `r getP(getRsmb(bm_barthel_ia), var="sex=male * risk_factor_dm=1", text=FALSE)`) and dementia $P(\beta>0)$: `r getP(getRsmb(bm_barthel_ia), var="sex=male * var_prev_dementia", text=FALSE)`) showed relevant sex differences as depicted (@fig-bart-plot A,B). Again, an underlying pattern of a difference in the trajectory of age between the sexes can be seen with a pattern shift around the age of 70, at first in favour of males, but with a steep decline shortly after the age of 80 years. Symptoms of aphasia seems to be more relevant for for females in this short term outcome. ($P(\beta>0)$: `r getP(getRsmb(bm_barthel_ia), var="sex=male * var_aphasia_adm=global aphasia", text=FALSE)`, @fig-bart-plot C). In the occurrence of delirium, aside from the modifying age pattern, no additional independent moderation of sex when predicting Barthel index score at discharge was seen ($P(\beta>0)$: `r getP(getRsmb(bm_barthel_ia), var="sex=male * outcome_delir=1", text=FALSE)`, @fig-bart-plot D). Pneumonia on the other hand showed an association even more disadvantegous for males ($P(\beta>0)$: `r getP(getRsmb(bm_barthel_ia), var="sex=male * outcome_pneumonia=1", text=FALSE)`, @fig-bart-plot E). Lastly, a benefit for males is demonstrated in this short term surrogate relating to therapy ($P(\beta>0)$: `r getP(getRsmb(bm_barthel_ia), var="sex=male * therapy=IVT/EST", text=FALSE)`, @fig-bart-plot F).
+
+```{r lohs-bart-calc}
+p0 <- ggplot(
+        Predict(
+                bm_barthel_ia,
+                age,
+                sex,
+                funint = FALSE,
+                fun = plogis,
+                conf.int = TRUE,
+                np = 1000
+        ),
+        adj.subtitle = 0
+) + theme_ch()
+
+p4 <- ggplot(
+        Predict(
+                bm_barthel_ia,
+                age,
+                outcome_delir,
+                sex,
+                funint = FALSE,
+                fun = plogis,
+                conf.int = FALSE,
+                np = 1000
+        ),
+        adj.subtitle = 0
+) + theme_ch() + coord_cartesian(ylim = c(0, 1)) + theme(
+        legend.position = "top",
+        plot.title = element_text(size = 10, hjust = 0.5),
+        legend.background = element_rect(fill = NA),
+        legend.key.size = unit(0.2, "cm")
+) + ggtitle("Delirium") + ylab("Prob. of higher BI at discharge")
+
+
+p5 <- ggplot(Predict(bm_barthel_ia, age, outcome_pneumonia, sex, funint=FALSE, fun=plogis, conf.int=FALSE, np=1000), adj.subtitle = 0) + theme_ch() + coord_cartesian(ylim=c(0, 1)) +  theme(
+        legend.position = "top",
+        plot.title = element_text(size = 10, hjust = 0.5),
+        legend.background = element_rect(fill = NA),
+        legend.key.size = unit(0.2, "cm")) + ggtitle("Pneumonia")
+
+p6 <- ggplot(Predict(bm_barthel_ia, date_therapy_year, therapy, sex, funint=FALSE, fun=plogis, conf.int=FALSE, np=1000), adj.subtitle = 0) + theme_ch() + coord_cartesian(ylim=c(0, 1)) +  theme(
+        legend.position = "top",
+        plot.title = element_text(size = 10, hjust = 0.5),
+        legend.background = element_rect(fill = NA),
+        legend.key.size = unit(0.2, "cm")) + ggtitle("Therapy") + 
+        scale_x_continuous(
+                minor_breaks = seq(min(df$date_therapy_year), max(df$date_therapy_year), by = 1),
+                breaks = c(2000, 2010, 2020),
+                limits = c(min(df$date_therapy_year), max(df$date_therapy_year)))
+
+p2 <- ggplot(Predict(bm_barthel_ia, age, var_prev_dementia, sex, funint=FALSE, fun=plogis, conf.int=FALSE, np=1000), adj.subtitle = 0) + theme_ch() + coord_cartesian(ylim=c(0, 1)) +  theme(
+        legend.position = "top",
+        plot.title = element_text(size = 10, hjust = 0.5),
+        legend.background = element_rect(fill = NA),
+        legend.key.size = unit(0.2, "cm")) + ggtitle("Dementia")
+
+p3 <- ggplot(Predict(bm_barthel_ia, nihss_d0, var_aphasia_adm, sex, funint=FALSE, fun=plogis, conf.int=FALSE, np=1000), adj.subtitle = 0) + theme_ch() + coord_cartesian(ylim=c(0, 1)) +  theme(
+        legend.position = "top",
+        plot.title = element_text(size = 10, hjust = 0.5),
+        legend.background = element_rect(fill = NA),
+        legend.key.size = unit(0.2, "cm")) + ggtitle("Aphasia") + 
+        guides(fill = guide_legend(nrow = 2)) 
+
+
+p1 <- ggplot(Predict(bm_barthel_ia, age, risk_factor_dm, sex, funint=FALSE, fun=plogis, conf.int=FALSE, np=1000), adj.subtitle = 0) + theme_ch() + coord_cartesian(ylim=c(0, 1)) + theme(
+        legend.position = "top",
+        plot.title = element_text(size = 10, hjust = 0.5),
+        legend.background = element_rect(fill = NA),
+        legend.key.size = unit(0.2, "cm")) + ggtitle("Diabetes mellitus") + ylab("Prob. of higher BI at discharge")
+
+p <- plot_grid(p1, p2, p3, p4, p5, p6, labels = c("A", "B", "C", "D", "E", "F"), ncol = 3, nrow = 2, label_size = 10)
+
+```
+
+```{r fig-bart-plot, fig.width=7, fig.asp=1, out.width="100%"}
+#| label: fig-bart-plot
+#| echo: false
+#| warning: false
+#| error: false
+#| fig-cap: !expr 'paste0("Illustration of Biological Sex Moderating Pre-stroke Conditions, Adverse Outcomes, and Therapy when predicting the _Barthel Index at discharge_. (**A**) Diabetes Mellitus (**B**) Previous Dementia (**C**) Aphasia (**D**) New delirium (**E**) New pneumonia (**F**) Therapy (intravenous thrombolysis, endovascular therapy or combination)")'
+#| cache: TRUE
+p
+```
+
+### NIHSS at Discharge
+
+```{r outcome-nihss, include=FALSE}
+dv <- "outcome_nihss_discharge"
+# iv <- "rcs(age, 4) + sex + date_therapy_year +therapy + rcs(nihss_d0, 3) + pRS02 + side_stroke + risk_factor_khd + risk_factor_dm + rf_prev_mi + var_aphasia_adm + var_neglect_grade + var_prev_dementia + var_microangio + var_vigil + outcome_delir + outcome_pneumonia + outcome_mi + outcome_sepsis + outcome_tvt + outcome_lae + etio_mtoast + outcome_delir_lohs_days"
+# bm_nihss_dis <- getModel(dv, iv, file_name = "output/models/bm_nihss_dis", data = df, force_overwrite = FALSE, sampling.args = list(control=list(adapt_delta=0.99,max_treedepth=12)))
+
+# full model
+iv <- "rcs(age, 4) + sex + pRS02 + side_stroke + therapy + date_therapy_year + rcs(nihss_d0, 3) + risk_factor_current_smoker + risk_factor_htn + risk_factor_khd + risk_factor_dm + risk_factor_hchol + risk_factor_pavk + rf_prev_mi +  risk_factor_prev_smoker + risk_factor_prev_stroke + risk_factor_af_known +var_aphasia_adm + var_neglect_grade + var_prev_dementia + var_microangio + var_vigil + var_eyedev + risk_factor_alc_adm + acetylsalicylic_acid + metoprolol + ramipril + pantoprazole + bisoprolol + amlodipine + torasemide + simvastatin + levothyroxine_sodium + hydrochlorothiazide + atorvastatin + candesartan + metformin + metamizole_sodium + allopurinol + phenprocoumon + clopidogrel + furosemide + colecalciferol + spironolactone + pravastatin + enalapril + rivaroxaban + lercanidipine + nebivolol + enoxaparin + omeprazole + apixaban + tamsulosin + ibuprofen + digoxin + valsartan + carvedilol + insulin_glargine + mirtazapine + insulin_human + potassium_chloride + prednisolone + chlortalidone + ramipril_and_diuretics + macrogol_combinations + glimepiride + lisinopril + diclofenac + moxonidine + Magnesium + sitagliptin + losartan + citalopram + pregabalin + tilidine + tiotropium_bromide + gabapentin + digitoxin + outcome_delir + outcome_pneumonia + outcome_mi + outcome_sepsis + outcome_tvt + outcome_lae + etio_mtoast + outcome_delir_lohs_days*outcome_delir"
+bm_nihss_dis_f <- getModel(dv, iv, file_name = "output/models/bm_nihss_dis_f", data = df, force_overwrite = FALSE, sampling.args = list(control=list(adapt_delta=0.99,max_treedepth=12)))
+# imputation
+bm_nihss_dis_imp <- getModel(dv, iv, file_name = "output/models/bm_nihss_dis_imp", data = df, force_overwrite = FALSE, sampling.args = list(control=list(adapt_delta=0.99,max_treedepth=12)))
+
+bm_nihss_dis <- bm_nihss_dis_f
+
+# interactions
+ia = addInteractions(iv, ia = "sex", all = TRUE)
+bm_nihss_dis_ia_f <- getModel(dv, ia, file_name = "output/models/bm_nihss_dis_ia_f", data = df, force_overwrite = FALSE, sampling.args = list(control=list(adapt_delta=0.99,max_treedepth=12)))
+#imputation
+bm_nihss_dis_ia_imp <- getModel(dv, ia, file_name = "output/models/bm_nihss_dis_ia_imp", data = df, force_overwrite = FALSE, sampling.args = list(control=list(adapt_delta=0.99,max_treedepth=12)))
+
+bm_nihss_dis_ia <- bm_nihss_dis_ia_f
+# bm_lohs_tbl <- getLatexTableCH(bm_delirium_mdx_s, font_size=10, output_format="latex")
+```
+
+Another scale evaluating short term outcome (and a surrogate for long term outcome) with a more granular aspect of the clinical neurological deficit was the NIHSS score at hospital discharge. New pneumonia during hospital stay plays a tremendous role for the NIHSS score at discharge (*pneumonia* `r getMedCI(summary(bm_nihss_dis), var="outcome_pneumonia")`). Importantly, suffering from pneumonia during hospital stay even had comparable impact than the stroke severity at admission (*NIHSS at admission* `r getMedCI(summary(bm_nihss_dis), var="nihss_d0")`). Early predctive factor such a level of conciousness at admission and the presence of aphasia symptoms at admission were also strongly associated with the NIHSS score at discharge (*coma* `r getMedCI(summary(bm_nihss_dis), var="coma")`, *aphasia* `r getMedCI(summary(bm_nihss_dis), var="global.aphasia")`).
+
+Similar to the Barthel Index, an occurrance of a new delirium also predicted a higher NIHSS score at discharge independently of other factors (`r getMedCI(summary(bm_nihss_dis), var="outcome_delir")`). The model also included the length of hospital stay as a potential confounder.
+
+Biological sex showed an `r getMedCI(summary(bm_nihss_dis), var="female")` suggesting that there was no direct sex influence on the NIHSS at discharge. However, the interaction model suggested several moderation effects. (@fig-nihss-dis-plot A-E) Among them pre-stroke presence of microangiopathy ($P_{interaction} (\beta>0)$ `r getP(getRsmb(bm_nihss_dis_ia), var="sex=male * var_microangio=minor", text=FALSE)`), occurrence of sepsis during hosptial stay ($P_{interaction} (\beta>0)$ `r getP(getRsmb(bm_nihss_dis_ia), var="sex=male * outcome_sepsis=1", text=FALSE)`), new delirium ($P_{interaction} (\beta>0)$ `r getP(getRsmb(bm_nihss_dis_ia), var="sex=male * outcome_delir=1", text=FALSE)`), prestroke medication ibuprofen ($P_{interaction} (\beta>0)$ `r getP(getRsmb(bm_nihss_dis_ia), var="sex=male * ibuprofen", text=FALSE)`), pravastatin ($P_{interaction} (\beta>0)$ `r getP(getRsmb(bm_nihss_dis_ia), var="sex=male * pravastatin", text=FALSE)`), and human insulin ($P_{interaction} (\beta>0)$ `r getP(getRsmb(bm_nihss_dis_ia), var="sex=male * insulin_human", text=FALSE)`).
+
+```{r nihss-dis-plot-calc}
+p0 <- ggplot(
+        Predict(
+                bm_nihss_dis_ia,
+                age,
+                sex,
+                funint = FALSE,
+                fun = plogis,
+                conf.int = FALSE,
+                np = 1000
+        ),
+        adj.subtitle = 0
+) + theme_ch()
+
+p3 <- ggplot(
+        Predict(
+                bm_nihss_dis_ia,
+                age,
+                outcome_delir,
+                sex,
+                funint = FALSE,
+                fun = plogis,
+                conf.int = FALSE,
+                np = 1000
+        ),
+        adj.subtitle = 0
+) + theme_ch() + coord_cartesian(ylim = c(0, 1)) + theme(
+        legend.position = "top",
+        plot.title = element_text(size = 10, hjust = 0.5),
+        legend.background = element_rect(fill = NA),
+        legend.key.size = unit(0.2, "cm")) + ggtitle("Delirium") 
+
+p1 <- ggplot(Predict(bm_nihss_dis_ia, age, var_microangio, sex, funint=FALSE, fun=plogis, conf.int=FALSE, np=1000), adj.subtitle = 0) + theme_ch() + coord_cartesian(ylim=c(0, 1)) +  theme(
+        legend.position = "top",
+        plot.title = element_text(size = 10, hjust = 0.5),
+        legend.background = element_rect(fill = NA),
+        legend.key.size = unit(0.2, "cm")) + ggtitle("Microangiopathy")+ ylab("Prob. of higher NIHSS score at discharge")
+
+p5 <- ggplot(Predict(bm_nihss_dis_ia, age, pravastatin, sex, funint=FALSE, fun=plogis, conf.int=FALSE), adj.subtitle = 0) + theme_ch() + coord_cartesian(ylim=c(0, 1)) +  theme(
+        legend.position = "top",
+        plot.title = element_text(size = 10, hjust = 0.5),
+        legend.background = element_rect(fill = NA),
+        legend.key.size = unit(0.2, "cm")) + ggtitle("Pravastatin")
+# p3$mapping$linetype <- p3$mapping$colour
+# p3$mapping$colour <- NULL
+
+p4 <- ggplot(Predict(bm_nihss_dis_ia, age, ibuprofen, sex, funint=FALSE, fun=plogis, conf.int=FALSE, np=1000), adj.subtitle = 0) + theme_ch() + coord_cartesian(ylim=c(0, 1)) +  theme(
+        legend.position = "top",
+        plot.title = element_text(size = 10, hjust = 0.5),
+        legend.background = element_rect(fill = NA),
+        legend.key.size = unit(0.2, "cm")) + ggtitle("Ibuprofen") + ylab("Prob. of higher NIHSS score at discharge") + xlab("Year")
+
+p2 <- ggplot(Predict(bm_nihss_dis_ia, nihss_d0, outcome_sepsis, sex, funint=FALSE, fun=plogis, conf.int=FALSE, np=1000), adj.subtitle = 0) + theme_ch() + coord_cartesian(ylim=c(0, 1)) +  theme(
+        legend.position = "top",
+        plot.title = element_text(size = 10, hjust = 0.5),
+        legend.background = element_rect(fill = NA),
+        legend.key.size = unit(0.2, "cm")) + ggtitle("Sepsis")
+
+p6 <- ggplot(Predict(bm_nihss_dis_ia, nihss_d0, insulin_human, sex, funint=FALSE, fun=plogis, conf.int=FALSE, np=1000), adj.subtitle = 0) + theme_ch() + coord_cartesian(ylim=c(0, 1)) +  theme(
+        legend.position = "top",
+        plot.title = element_text(size = 10, hjust = 0.5),
+        legend.background = element_rect(fill = NA),
+        legend.key.size = unit(0.2, "cm")) + ggtitle("Humaninsulin")
+
+p <- plot_grid(p1, p2, p3, p4, p5, p6, labels = c("A", "B", "C", "D", "E", "F"), ncol = 3, nrow = 2, label_size = 10)
+
+```
+
+```{r fig-nihss-dis-plot, fig.width=7, fig.asp=1, out.width="100%"}
+#| label: fig-nihss-dis-plot
+#| fig-pos: H
+#| echo: false
+#| warning: false
+#| error: false
+#| fig-cap: !expr 'paste0("Illustration of Sex Moderating Predisposing Factors, Adverse Outcomes, and selected Pre-stroke Medication, when predicting _NIHSS Score at discharge_. (**A**) Presence of microangiopathy (**B**) New Sepsis (**C**) New Delirium (**D**) Ibuprofen (**E**) Pravastatin (**F**) Humaninsulin")'
+#| cache: TRUE
+p
+```
+
+```{r fig-outcome-nihss-dis-forest, fig.width=10, fig.asp=1.5, out.width="100%"}
+#| label: fig-outcome-nihss-dis-forest
+#| fig-pos: H
+#| echo: false
+#| warning: false
+#| error: false
+#| fig-cap: !expr 'paste0("Forest Plot of variables positively and negatively associated with _NIHSS at Discharge_")'
+#| cache: TRUE
+p <- plotForest(bm_nihss_dis)
+p$data$Predictor <- gsub("Modified TOAST Classification - ", "", p$data$Predictor)
+p$data$Predictor <- gsub("Aphasia symptoms at admission - ", "", p$data$Predictor)
+p
+# plotForest(bm_delirium_mdx_iv2)
+```
+
+### In-House-Death
+
+```{r outcome-ihd, include=FALSE}
+# dv <- "outcome_ihd"
+# iv <- "rcs(age, 4) + sex + date_therapy_year + therapy + rcs(nihss_d0, 3) + pRS02 + side_stroke + risk_factor_khd + risk_factor_dm + rf_prev_mi + var_aphasia_adm + var_neglect_grade + var_prev_dementia + var_microangio + var_vigil + outcome_delir + outcome_pneumonia + outcome_mi + outcome_sepsis + outcome_tvt + outcome_lae + outcome_delir_lohs_days*outcome_delir"
+
+# Model including mToast, outcome_lae, outcome_tvt instable 
+df <- df %>% mutate(outcome_systembol = case_when(outcome_tvt==1 | outcome_lae==1~1, TRUE~0))
+dd <- datadist(df)
+options(datadist = 'dd')
+options(contrasts=c("contr.treatment", "contr.treatment"))
+
+dv <- "outcome_ihd"
+iv <- "rcs(age, 4) + sex + pRS02 + side_stroke + therapy + date_therapy_year + rcs(nihss_d0, 3) + risk_factor_current_smoker + risk_factor_htn + risk_factor_khd + risk_factor_dm + risk_factor_hchol + risk_factor_pavk + rf_prev_mi +  risk_factor_prev_smoker + risk_factor_prev_stroke + risk_factor_af_known +var_aphasia_adm + var_neglect_grade + var_prev_dementia + var_microangio + var_vigil + var_eyedev + risk_factor_alc_adm + acetylsalicylic_acid + metoprolol + ramipril + pantoprazole + bisoprolol + amlodipine + torasemide + simvastatin + levothyroxine_sodium + hydrochlorothiazide + atorvastatin + candesartan + metformin + metamizole_sodium + allopurinol + phenprocoumon + clopidogrel + furosemide + colecalciferol + spironolactone + pravastatin + enalapril + rivaroxaban + lercanidipine + nebivolol + enoxaparin + omeprazole + apixaban + tamsulosin + ibuprofen + digoxin + valsartan + carvedilol + insulin_glargine + mirtazapine + insulin_human + potassium_chloride + prednisolone + chlortalidone + ramipril_and_diuretics + macrogol_combinations + glimepiride + lisinopril + diclofenac + moxonidine + Magnesium + sitagliptin + losartan + citalopram + pregabalin + tilidine + tiotropium_bromide + gabapentin + digitoxin + outcome_delir + outcome_pneumonia + outcome_mi + outcome_sepsis + outcome_delir_lohs_days*outcome_delir"
+
+
+
+ia <- "rcs(age, 4) * sex + date_therapy_year + therapy* sex + rcs(nihss_d0, 3) + pRS02* sex + side_stroke + risk_factor_khd* sex + risk_factor_dm* sex + rf_prev_mi* sex + var_aphasia_adm + var_neglect_grade + var_prev_dementia* sex + var_microangio + var_vigil + var_eyedev + outcome_delir* sex + outcome_pneumonia* sex + outcome_mi* sex + outcome_sepsis* sex + outcome_tvt + outcome_lae + outcome_delir_lohs_days*outcome_delir"
+# + etio_mtoast 
+# iv <- "rcs(age, 4) + sex + date_therapy_year +therapy + rcs(nihss_d0, 3) +  risk_factor_khd + risk_factor_dm + rf_prev_mi + var_aphasia_adm + var_neglect_grade + var_prev_dementia + var_microangio + var_vigil + outcome_delir + outcome_pneumonia + outcome_mi + outcome_sepsis + outcome_tvt + outcome_lae + etio_mtoast"
+bm_outcome_ihd_f <- getModel(dv, iv, file_name = "output/models/bm_outcome_ihd_f", data = df, force_overwrite = FALSE, sampling.args = list(control=list(adapt_delta=0.99,max_treedepth=12)))
+# imputation
+bm_outcome_ihd_imp <- getModel(dv, iv, file_name = "output/models/bm_outcome_ihd_imp", data = df, force_overwrite = FALSE, imputation=TRUE, sampling.args = list(control=list(adapt_delta=0.99,max_treedepth=12)))
+
+bm_outcome_ihd <- bm_outcome_ihd_f
+
+# interactions
+ia = addInteractions(iv, ia = "sex", all = TRUE)
+bm_outcome_ihd_ia <- getModel(dv, ia, file_name = "output/models/bm_outcome_ihd_ia", data = df, force_overwrite = FALSE)
+# imp
+bm_outcome_ihd_ia_imp <- getModel(dv, ia, file_name = "output/models/bm_outcome_ihd_ia_imp", data = df, force_overwrite = FALSE)
+
+```
+
+Investigating in-hopsital death showed that when a diagnosis of sepsis is made patients had a nearly 14-fold increased risk of dying (`r getMedCI(summary(bm_outcome_ihd), var="outcome_sepsis")`. Comparing females to males as independent predictor, females had significantly lower risk of death in hospital (`r getMedCI(summary(bm_outcome_ihd), var="female")`). [^results_outcome-1]
+
+[^results_outcome-1]: The model with the dependent variable `in-hospital-death` was built without the variable `modified TOAST` because of model instability. The variables for pulmonary embolism (`outcome_lae`) and for deep vein thrombosis (`outcome_tvt`) were collapsed into a new variable systemic thrombo-embolic event (`outcome_systembol`). On further examination of model stability, latter variable was also removed from the model.
+
+At first glance having a delirium seem to be associated with a lower risk of dying in hospital, however when allowing for an interaction, the length of stay turned out to be a significant moderator (`r getP(getRsmb(bm_outcome_ihd_ia), var="outcome_delir * outcome_delir_lohs_days")`) showing a characteristic pattern (@fig-ihd-delir). In general a longer stay was associated with a lower risk of dying in hospital. However, when a delirium occurs, the risk of dying is increased within the first two weeks.
+
+Concerning further interactions with sex when predicting death, some adverse outcomes had meaningful sex differences. For example, myocardial infarction ($P_{Interaction} (\beta>0)$: `r getP(getRsmb(bm_outcome_ihd_ia), var="sex=male * outcome_mi=1")`) demonstrated a higher risk of death for males when experiencing a new myocardial infarction in hospital after stroke. Likewise, a new pneumonia was associated with a higher risk of death for males ($P_{Interaction} (\beta>0)$: `r getP(getRsmb(bm_outcome_ihd_ia), var="sex=male * outcome_pneumonia=1")`. A pre-stroke functional dependence appear to be more relevant in death of males than of females ($P_{Interaction} (\beta>0)$: `r getP(getRsmb(bm_outcome_ihd_ia), var="sex=male * pRS02=TRUE")`)
+
+```{r fig-ihd-delir, fig.width=3.5, fig.asp=1, out.width="80%"}
+#| label: fig-ihd-delir
+#| echo: false
+#| warning: false
+#| error: false
+#| fig-cap: !expr 'paste0("Relationship of length of hospital stay and delirium showing trajectories of females and males in predicting _Death during hospital stay (in-house death)_")'
+#| cache: TRUE
+ggplot(Predict(bm_outcome_ihd, outcome_delir_lohs_days, outcome_delir, sex, conf.int = FALSE, funint=FALSE, fun=plogis),adj.subtitle = 0) + theme_ch() + coord_cartesian(ylim = c(0,0.3)) + ylab("P (in-house death | x)") 
+```
+
+```{r fig-ihd-forest, fig.width=10, fig.asp=1.5, out.width="100%"}
+#| label: fig-ihd-forst
+#| echo: false
+#| warning: false
+#| error: false
+#| fig-cap: !expr 'paste0("Forest Plot of variables positively and negatively associated with _in-hospital Death_ ")'
+#| cache: TRUE
+p <- plotForest(bm_outcome_ihd, x_max_plot = 14)
+p
+```
+
+### Modified Rankin Scale at 90 days
+
+#### Categorical Shift
+
+```{r outcome_mrsd90, include=FALSE}
+dv <- "outcome_mrsd90"
+# iv <- "rcs(age, 4) + sex + date_therapy_year +therapy + rcs(nihss_d0, 3) +  risk_factor_khd + risk_factor_dm + rf_prev_mi + var_aphasia_adm + var_neglect_grade + var_prev_dementia + var_microangio + var_vigil + outcome_delir + outcome_pneumonia + outcome_mi + outcome_sepsis + outcome_tvt + outcome_lae + etio_mtoast"
+# iv <- "rcs(age, 4) + sex + date_therapy_year + therapy + rcs(nihss_d0, 3) + pRS02 + side_stroke + risk_factor_htn + risk_factor_dm +  risk_factor_hchol + risk_factor_current_smoker + risk_factor_prev_stroke + risk_factor_khd + risk_factor_pavk + risk_factor_af_known + risk_factor_prev_smoker + risk_factor_current_smoker + var_handed + var_aphasia_adm + var_neglect_grade + var_prev_dementia + var_microangio + var_eyedev + var_vigil + outcome_delir + outcome_pneumonia + outcome_mi + outcome_sepsis + outcome_tvt + outcome_lae + etio_mtoast + outcome_delir_lohs_days*outcome_delir"
+# 
+# bm_outcome_mrsd90 <- getModel(dv, iv, file_name = "output/models/bm_outcome_mrsd90", data = df, force_overwrite = FALSE, sampling.args = list(control=list(adapt_delta=0.99,max_treedepth=12)))
+
+iv <- "rcs(age, 4) + sex + pRS02 + side_stroke + therapy + date_therapy_year + rcs(nihss_d0, 3) + risk_factor_current_smoker + risk_factor_htn + risk_factor_khd + risk_factor_dm + risk_factor_hchol + risk_factor_pavk + rf_prev_mi +  risk_factor_prev_smoker + risk_factor_prev_stroke + risk_factor_af_known +var_aphasia_adm + var_neglect_grade + var_prev_dementia + var_microangio + var_vigil + var_eyedev + risk_factor_alc_adm + acetylsalicylic_acid + metoprolol + ramipril + pantoprazole + bisoprolol + amlodipine + torasemide + simvastatin + levothyroxine_sodium + hydrochlorothiazide + atorvastatin + candesartan + metformin + metamizole_sodium + allopurinol + phenprocoumon + clopidogrel + furosemide + colecalciferol + spironolactone + pravastatin + enalapril + rivaroxaban + lercanidipine + nebivolol + enoxaparin + omeprazole + apixaban + tamsulosin + ibuprofen + digoxin + valsartan + carvedilol + insulin_glargine + mirtazapine + insulin_human + potassium_chloride + prednisolone + chlortalidone + ramipril_and_diuretics + macrogol_combinations + glimepiride + lisinopril + diclofenac + moxonidine + Magnesium + sitagliptin + losartan + citalopram + pregabalin + tilidine + tiotropium_bromide + gabapentin + digitoxin + outcome_delir + outcome_pneumonia + outcome_mi + outcome_sepsis + outcome_tvt + outcome_lae + outcome_delir_lohs_days*outcome_delir"
+
+bm_outcome_mrsd90_f <- getModel(dv, iv, file_name = "output/models/bm_outcome_mrsd90_f", data = df, force_overwrite = FALSE, sampling.args = list(control=list(adapt_delta=0.99,max_treedepth=12)))
+#imputation
+bm_outcome_mrsd90_imp <- getModel(dv, iv, file_name = "output/models/bm_outcome_mrsd90_imp", data = df, force_overwrite = FALSE, sampling.args = list(control=list(adapt_delta=0.99,max_treedepth=12)))
+
+bm_outcome_mrsd90 <- bm_outcome_mrsd90_f
+
+# interactions
+ia = addInteractions(iv, ia = "sex", all = TRUE)
+# Model instable - factor var_vigil / coma removed
+ia = "rcs(age, 4)*sex + date_therapy_year*sex + therapy*sex + rcs(nihss_d0, 3)*sex + pRS02*sex + side_stroke*sex + risk_factor_htn*sex + risk_factor_dm*sex +  risk_factor_hchol*sex + risk_factor_current_smoker*sex + risk_factor_prev_stroke*sex + risk_factor_khd*sex + risk_factor_pavk*sex + risk_factor_af_known*sex + risk_factor_prev_smoker*sex + var_handed*sex + var_aphasia_adm*sex + var_neglect_grade*sex + var_prev_dementia*sex + var_microangio*sex + var_eyedev*sex + var_vigil + outcome_delir*sex + outcome_pneumonia*sex + outcome_mi*sex + outcome_sepsis*sex + outcome_tvt*sex + outcome_lae*sex + etio_mtoast*sex + outcome_delir_lohs_days*sex + outcome_delir_lohs_days*outcome_delir"
+
+ia <- "rcs(age, 4)*sex + pRS02*sex + side_stroke*sex + therapy*sex + date_therapy_year*sex + rcs(nihss_d0, 3)*sex + risk_factor_current_smoker*sex + risk_factor_htn*sex + risk_factor_khd*sex + risk_factor_dm*sex + risk_factor_hchol*sex + risk_factor_pavk*sex + rf_prev_mi*sex +  risk_factor_prev_smoker*sex + risk_factor_prev_stroke*sex + risk_factor_af_known +var_aphasia_adm*sex + var_neglect_grade*sex + var_prev_dementia*sex + var_microangio*sex + var_eyedev*sex + risk_factor_alc_adm*sex + acetylsalicylic_acid*sex + metoprolol*sex + ramipril*sex + pantoprazole*sex + bisoprolol*sex + amlodipine*sex + torasemide*sex + simvastatin*sex + levothyroxine_sodium*sex + hydrochlorothiazide*sex + atorvastatin*sex + candesartan*sex + metformin*sex + metamizole_sodium*sex + allopurinol*sex + phenprocoumon*sex + clopidogrel*sex + furosemide*sex + colecalciferol*sex + spironolactone*sex + pravastatin*sex + enalapril*sex + rivaroxaban*sex + lercanidipine*sex + nebivolol*sex + enoxaparin*sex + omeprazole*sex + apixaban*sex + tamsulosin*sex + ibuprofen*sex + digoxin*sex + valsartan*sex + carvedilol*sex + insulin_glargine*sex + mirtazapine*sex + insulin_human*sex + potassium_chloride*sex + prednisolone*sex + chlortalidone*sex + ramipril_and_diuretics*sex + macrogol_combinations*sex + glimepiride*sex + lisinopril*sex + diclofenac*sex + moxonidine*sex + Magnesium*sex + sitagliptin*sex + losartan*sex + citalopram*sex + pregabalin*sex + tilidine*sex + tiotropium_bromide*sex + gabapentin*sex + digitoxin*sex + outcome_delir*sex + outcome_pneumonia*sex + outcome_mi*sex + outcome_sepsis*sex + outcome_tvt*sex + outcome_lae*sex + outcome_delir_lohs_days*outcome_delir*sex"
+
+
+bm_outcome_mRSd90_ia_f <- getModel(dv, ia, file_name = "output/models/bm_outcome_mrsd90_ia_f", data = df, force_overwrite = FALSE, sampling.args = list(control=list(adapt_delta=0.99,max_treedepth=12)))
+bm_outcome_mRSd90_ia <- bm_outcome_mRSd90_ia_f 
+# bm_lohs_tbl <- getLatexTableCH(bm_delirium_mdx_s, font_size=10, output_format="latex")
+```
+
+At the end of the hospital stay, new adverse outcome (e.g. delirium) may have occurred, new diagnosis regarding stroke etiology has been made, and there may have already been a shift in recovery. This analysis concerns the factors, which are known at hospital discharge and their associations with the long-term functional outcome as measured by the Modified Rankin Scale at 90 days with an emphasis on influence of delirium and biological sex amongst other factors.
+
+Having a compromised level of consciousness at admission increased chances up to 7-fold in case of coma for a shift to a higher category on the mRS at 90 days (`r getMedCI(summary(bm_outcome_mrsd90), var="coma")`). Additionally, presence of a eye deviation at the initial physical examination was also independently associated with tendency to a worse outcome (`r getMedCI(summary(bm_outcome_mrsd90), var="non.forced")`). Other most influencal factors for a shift to a higher mRS category were pre-stroke functional independence (`r getMedCI(summary(bm_outcome_mrsd90), var="pRS02")`), new pneumonia (`r getMedCI(summary(bm_outcome_mrsd90), var="outcome_pneumonia")`), and occurrence of a new delirium during hospital stay (`r getMedCI(summary(bm_outcome_mrsd90), var="outcome_delir")`). The same was true for well know factors such as higher age and a higher stroke severity at admission (@fig-outcome_mrsd90-forest). Information at admission that patients had a dementia of any grade before stroke was also independently associated with a shift on the mRS to a higher category (`r getMedCI(summary(bm_outcome_mrsd90), var="var_prev_dementia")`).
+
+Comparing *females and males* in the presence of all other factors showed that there was no unified independent association across all levels of the mRS (`r getMedCI(summary(bm_outcome_mrsd90), var="female")`). As for pre-stroke medications several sartanes showed an association to a lower mRS category, with valsartan (`r getMedCI(summary(bm_outcome_mrsd90), var="valsartan")`) and losartan (`r getMedCI(summary(bm_outcome_mrsd90), var="losartan")`) having significant associations. Likewise, patients taking pravastatin (`r getMedCI(summary(bm_outcome_mrsd90), var="pravastatin")`) before the stroke had a lower likelihood to shift to a higher mRS category. On the contrary, and despite diabetes mellitus already contributing independently to a shift toward a worse outcome, long-acting insuline glargin was additionally associated with a shift to higher mRS-category `r getMedCI(summary(bm_outcome_mrsd90), var="insulin_glargine")`.
+
+
+```{r tbl-outcome_mrsd90}
+#| label: tbl-outcome_mrsd90
+#| tbl-cap: Relationship between Variables during hospital stay and _Categorical Shift on mRS day 90_ (shift to higher category)
+#| tbl-colwidths: "auto"
+#| echo: false
+library(gt)
+library(kableExtra)
+getLatexTableCH(bm_outcome_mrsd90, font_size=8.5, output_format="latex", option="longtable") %>% 
+         column_spec(1, "1.9in") %>% 
+        column_spec(2, "0.3in") %>%
+        column_spec(3, "0.3in") %>%
+        column_spec(4, "0.3in") %>%
+        column_spec(5, "0.3in") %>%
+        column_spec(6, "0.3in") %>% 
+        column_spec(7, "0.3in")
+```
+
+```{r fig-outcome_mrsd90-forest, fig.width=10, fig.asp=1.5, out.width="100%"}
+#| label: fig-outcome_mrsd90-forest
+#| echo: false
+#| warning: false
+#| error: false
+#| fig-cap: !expr 'paste0("Forest Plot of variables positively and negatively associated with _Modified Rankin Scale d90_")'
+#| cache: TRUE
+plotForest(bm_outcome_mrsd90, x_max_plot = 11)
+```
+
+
+```{r fig-grotta, fig.width=7, fig.asp=0.3, out.width="100%"}
+#| label: fig-grotta
+#| echo: false
+#| warning: false
+#| error: false
+#| fig-cap: !expr 'paste0("_Modified Rankin Scale_ Distribution at d90 after stroke stratified by biological sex. Shown are predicted probabilities based on the bayesian model as demonstrated in @tbl-outcome_mrsd90")'
+#| cache: TRUE
+
+plotGrottaBars(df = df, group_var = "sex", model =bm_outcome_mrsd90)
+```
+
+Several associations were found with sex moderating the effect when predicting long term functional outcome. [^results_outcome-2]
+
+[^results_outcome-2]: *Comment:* In the interaction model the variable level of consciousness was only considered as main effect because of instability of the model.
+
+```{r fig-mrsd90-prep, include=FALSE}
+p1 <- plotInteraction(bm_outcome_mRSd90_ia,
+                Predict(bm_outcome_mRSd90_ia, sex, outcome_sepsis, funint=FALSE, fun = plogis, conf.int = TRUE),
+                var_of_interest = "outcome_sepsis",
+                group_var = "sex", display_annotations=FALSE) + theme_ch() + ylab("P(mRS-shift|data,x)")
+
+p2 <- ggplot(Predict(bm_outcome_mRSd90_ia, age, outcome_sepsis, sex, conf.int = FALSE, funint=FALSE, fun=plogis), adj.subtitle=0) + theme_ch() +ylab("P(mRS-shift|data,x)")
+
+
+p3 <- plotInteraction(bm_outcome_mRSd90_ia,
+                Predict(bm_outcome_mRSd90_ia, sex, therapy, funint=FALSE, fun = plogis, conf.int = TRUE),
+                var_of_interest = "therapy",
+                group_var = "sex", display_annotations=FALSE) + theme_ch() + ylab("P(mRS-shift|data,x)")
+
+p4 <- ggplot(Predict(bm_outcome_mRSd90_ia, date_therapy_year, therapy, sex, conf.int = FALSE, funint=FALSE, fun=plogis), adj.subtitle=0) + theme_ch() +ylab("P(mRS-shift|data,x)") + theme(axis.text.x = element_text(angle = 45, hjust = 1)) # legend.position = c(0.85,0.95)
+
+p5 <- plotInteraction(bm_outcome_mRSd90_ia,
+                Predict(bm_outcome_mRSd90_ia, sex, outcome_delir, funint=FALSE, fun = plogis, conf.int = TRUE),
+                var_of_interest = "outcome_delir",
+                group_var = "sex", display_annotations=FALSE) + theme_ch() + ylab("P(mRS-shift|data,x)") 
+
+p6 <- ggplot(Predict(bm_outcome_mRSd90_ia, outcome_delir_lohs_days, outcome_delir, sex, conf.int = FALSE, funint=FALSE, fun=plogis), adj.subtitle=0) + theme_ch() +ylab("P(mRS-shift|data,x)") + theme(axis.text.x = element_text(angle = 45, hjust = 1)) #(legend.position = c(0.85,0.95)
+
+
+p_mrsd90 <- plot_grid(p1, p2, p3, p4, p5, p6, labels = c("A", "B", "C", "D", "E", "F"), ncol = 2, nrow = 3, label_size = 10)
+```
+
+```{r, fig-mrsd90-ia, fig.width=7, fig.asp=1, out.width="100%"}
+#| label: fig-mrsd90-ia
+#| echo: false
+#| warning: false
+#| error: false
+#| fig-cap: !expr 'paste0("_Modified Rankin Scale d90_")'
+#| cache: TRUE
+p_mrsd90
+```
+
+#### Dichotomized mRSd90 outcomes
+
+```{r outcome_mrs02, include=FALSE}
+dv <- "outcome_mrs02"
+# iv <- "rcs(age, 4) + sex + date_therapy_year + therapy + rcs(nihss_d0, 3) + pRS02 + side_stroke + risk_factor_htn + risk_factor_dm +  risk_factor_hchol + risk_factor_current_smoker + risk_factor_prev_stroke + risk_factor_khd + risk_factor_pavk + risk_factor_af_known + risk_factor_prev_smoker + risk_factor_current_smoker + var_handed + var_aphasia_adm + var_neglect_grade + var_prev_dementia + var_microangio + var_eyedev + var_vigil + outcome_delir + outcome_pneumonia + outcome_mi + outcome_sepsis + outcome_tvt + outcome_lae + etio_mtoast + outcome_delir_lohs_days*outcome_delir"
+
+iv <- "rcs(age, 4) + sex + pRS02 + side_stroke + therapy + date_therapy_year + rcs(nihss_d0, 3) + risk_factor_current_smoker + risk_factor_htn + risk_factor_khd + risk_factor_dm + risk_factor_hchol + risk_factor_pavk + rf_prev_mi +  risk_factor_prev_smoker + risk_factor_prev_stroke + risk_factor_af_known +var_aphasia_adm + var_neglect_grade + var_prev_dementia + var_microangio + var_vigil + var_eyedev + risk_factor_alc_adm + acetylsalicylic_acid + metoprolol + ramipril + pantoprazole + bisoprolol + amlodipine + torasemide + simvastatin + levothyroxine_sodium + hydrochlorothiazide + atorvastatin + candesartan + metformin + metamizole_sodium + allopurinol + phenprocoumon + clopidogrel + furosemide + colecalciferol + spironolactone + pravastatin + enalapril + rivaroxaban + lercanidipine + nebivolol + enoxaparin + omeprazole + apixaban + tamsulosin + ibuprofen + digoxin + valsartan + carvedilol + insulin_glargine + mirtazapine + insulin_human + potassium_chloride + prednisolone + chlortalidone + ramipril_and_diuretics + macrogol_combinations + glimepiride + lisinopril + diclofenac + moxonidine + Magnesium + sitagliptin + losartan + citalopram + pregabalin + tilidine + tiotropium_bromide + gabapentin + digitoxin + outcome_delir + outcome_pneumonia + outcome_mi + outcome_sepsis + outcome_tvt + outcome_lae + outcome_delir_lohs_days*outcome_delir"
+
+bm_outcome_mrs02 <- getModel(dv, iv, file_name = "output/models/bm_outcome_mrs02", data = df, force_overwrite = FALSE, sampling.args = list(control=list(adapt_delta=0.99,max_treedepth=12)))
+
+# interactions
+ia = addInteractions(iv, ia = "sex", all = TRUE)
+ia <- "rcs(age, 4)*sex + pRS02*sex + side_stroke*sex + therapy*sex + date_therapy_year*sex + rcs(nihss_d0, 3)*sex + risk_factor_current_smoker*sex + risk_factor_htn*sex + risk_factor_khd*sex + risk_factor_dm*sex + risk_factor_hchol*sex + risk_factor_pavk*sex + rf_prev_mi*sex +  risk_factor_prev_smoker*sex + risk_factor_prev_stroke*sex + risk_factor_af_known +var_aphasia_adm*sex + var_neglect_grade*sex + var_prev_dementia*sex + var_microangio*sex + var_vigil + var_eyedev*sex + acetylsalicylic_acid*sex + metoprolol*sex + ramipril*sex + pantoprazole*sex + bisoprolol*sex + amlodipine*sex + torasemide*sex + simvastatin*sex + levothyroxine_sodium*sex + hydrochlorothiazide*sex + atorvastatin*sex + candesartan*sex + metformin*sex + metamizole_sodium*sex + allopurinol*sex + phenprocoumon*sex + clopidogrel*sex + furosemide*sex + colecalciferol*sex + spironolactone*sex + pravastatin*sex + enalapril*sex + rivaroxaban*sex + lercanidipine*sex + nebivolol*sex + enoxaparin*sex + omeprazole*sex + apixaban*sex + tamsulosin*sex + ibuprofen*sex + digoxin*sex + valsartan*sex + carvedilol*sex + insulin_glargine*sex + mirtazapine*sex + insulin_human*sex + potassium_chloride*sex + prednisolone*sex + chlortalidone*sex + ramipril_and_diuretics*sex + macrogol_combinations*sex + glimepiride*sex + lisinopril*sex + diclofenac*sex + moxonidine*sex + Magnesium*sex + sitagliptin*sex + losartan*sex + citalopram*sex + pregabalin*sex + tilidine*sex + tiotropium_bromide*sex + gabapentin*sex + digitoxin*sex + outcome_delir*sex + outcome_pneumonia*sex + outcome_mi*sex + outcome_sepsis*sex + outcome_tvt*sex + outcome_lae*sex + etio_mtoast*sex"
+bm_outcome_mrs02_ia <- getModel(dv, ia, file_name = "output/models/bm_outcome_mrs02_ia", data = df, force_overwrite = FALSE, sampling.args = list(control=list(adapt_delta=0.99,max_treedepth=12)))
+
+```
+
+```{r tbl-outcome_mrs02}
+#| label: tbl-outcome_mrs02
+#| tbl-cap: Relationship between Variables during hospital stay and _Favourable Functional Outcome (mRS 0--2 vs. 3--6) at day 90_
+#| tbl-colwidths: "auto"
+#| results: hold
+#| echo: false
+library(gt)
+library(kableExtra)
+getLatexTableCH(bm_outcome_mrs02, font_size=8.5, output_format="latex", option="longtable") %>% 
+        column_spec(1, "1.9in") %>% 
+        column_spec(2, "0.3in") %>%
+        column_spec(3, "0.3in") %>%
+        column_spec(4, "0.3in") %>%
+        column_spec(5, "0.3in") %>%
+        column_spec(6, "0.3in") %>% 
+        column_spec(7, "0.3in")
+```
+
+```{r fig-outcome_mrs02-forest, fig.width=10, fig.asp=1.5, out.width="100%"}
+#| label: fig-outcome_mrs02-forest
+#| fig-pos: H
+#| echo: false
+#| warning: false
+#| error: false
+#| fig-cap: !expr 'paste0("Forest Plot of variables positively and negatively associated with _Favourable Outcome (mRS 0--2 vs. 3--6) d90_")'
+#| cache: TRUE
+p <- plotForest(bm_outcome_mrs02)
+p$data$Predictor <- gsub("Modified TOAST Classification - ", "", p$data$Predictor)
+p$data$Predictor <- gsub("Aphasia symptoms at admission - ", "", p$data$Predictor)
+p
+
+```
+
+```{r fig-outcome_mrs02-ia, fig.width=7, fig.asp=1.2, out.width="100%", eval=FALSE}
+#| label: fig-outcome_mrs02-ia
+#| echo: false
+#| warning: false
+#| error: false
+#| fig-cap: !expr 'paste0("Probability of Interactions of biological sex with predictors of reaching a favourable outcome (mRS0--2)")'
+#| cache: TRUE
+# plotForest(bm_delirium_mdx)
+plotForest(bm_outcome_mrs02_ia, interactions_only = TRUE)
+
+```
+
+
+Analysing a dichotomized version of the mRS at 90 days is quite common in the stroke literature and reflects the clinical reality of a favourable outcome (mRS 0--2) versus an unfavourable outcome (mRS 3--6). Largely the same factors that were associated with a shift to a higher category on the mRS at 90 days were also associated with an unfavourable outcome. The most influencal factors for an unfavourable outcome were pre-stroke functional independence (`r getMedCI(summary(bm_outcome_mrs02), var="pRS02")`), new pneumonia (`r getMedCI(summary(bm_outcome_mrs02), var="outcome_pneumonia")`), and occurrence of a new delirium during hospital stay (`r getMedCI(summary(bm_outcome_mrs02), var="outcome_delir")`). The same was true for well know factors such as higher age and a higher stroke severity at admission (@fig-outcome_mrs02-forest).
+
+```{r outcome_mrs01, include=FALSE}
+dv <- "outcome_mrs01"
+iv <- "rcs(age, 4) + sex + date_therapy_year + therapy + rcs(nihss_d0, 3) + pRS02 + side_stroke + risk_factor_htn + risk_factor_dm +  risk_factor_hchol + risk_factor_current_smoker + risk_factor_prev_stroke + risk_factor_khd + risk_factor_pavk + risk_factor_af_known + risk_factor_prev_smoker + risk_factor_current_smoker + var_handed + var_aphasia_adm + var_neglect_grade + var_prev_dementia + var_microangio + var_eyedev + var_vigil + outcome_delir + outcome_pneumonia + outcome_mi + outcome_sepsis + outcome_tvt + outcome_lae + etio_mtoast + outcome_delir_lohs_days*outcome_delir"
+bm_outcome_mrs01 <- getModel(dv, iv, file_name = "output/models/bm_outcome_mrs01", data = df, force_overwrite = FALSE, sampling.args = list(control=list(adapt_delta=0.99,max_treedepth=12)))
+
+# interactions
+ia = addInteractions(iv, ia = "sex", all = TRUE)
+bm_outcome_mrs01_ia <- getModel(dv, ia, file_name = "output/models/bm_outcome_mrs01_ia", data = df, force_overwrite = FALSE)
+```
+
+Likewise, a dichotomization of the mRS reflecting excellent outcome (mRS 0--1) versus a less favourable outcome (mRS 2--6) was analysed. Again, the most influencal factors for an unfavourable outcome were pre-stroke functional independence (`r getMedCI(summary(bm_outcome_mrs01), var="pRS02")`), new pneumonia (`r getMedCI(summary(bm_outcome_mrs01), var="outcome_pneumonia")`), and occurrence of a new delirium during hospital stay (`r getMedCI(summary(bm_outcome_mrs01), var="outcome_delir")`). The same was true for well know factors such as higher age and a higher stroke severity at admission.
+
+```{r tbl-outcome_mrs01, eval=FALSE}
+#| label: tbl-outcome_mrs01
+#| tbl-cap: Relationship between Variables during hospital stay and _Favourable Functional Outcome (mRS 0--1 vs. 2--6) at day 90_
+#| tbl-colwidths: "auto"
+#| results: hold
+#| echo: false
+library(gt)
+library(kableExtra)
+getLatexTableCH(bm_outcome_mrs01, font_size=10, output_format="latex")
+```
+
+```{r fig-outcome_mrs01-forest, fig.width=10, fig.asp=1.5, out.width="100%", eval=FALSE}
+#| label: fig-outcome_mrs01-forest
+#| fig-pos: H
+#| echo: false
+#| warning: false
+#| error: false
+#| fig-cap: !expr 'paste0("Forest Plot of variables positively and negatively associated with _Favourable Outcome (mRS 0--1 vs. 2--6) d90_")'
+#| cache: TRUE
+p <- plotForest(bm_outcome_mrs01)
+p$data$Predictor <- gsub("Modified TOAST Classification - ", "", p$data$Predictor)
+p$data$Predictor <- gsub("Aphasia symptoms at admission - ", "", p$data$Predictor)
+p
+
+```

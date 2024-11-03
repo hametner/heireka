@@ -134,7 +134,7 @@ ylab(expression(P(Delirium ~ "|" ~ Data, x)))  +
 ### Small vessel Disease
 
 The variable for this analysis is presence of small vessel disease, which is categorized into five levels: no, minor, moderate, severe, and Unknown. Out of `r nrow(df)` total observations, `r 100-round(sum(!is.na(df$var_microangio))/nrow(df)*100,1) `% (n = `r nrow(df)-sum(!is.na(df$var_microangio))`) were not available for information on the degree of small vessel disease
-In available data, 31.1% of patients had some degree of cerebral small vessel disease A higher frequency of minor small vessel disease was observed in males (17.4% versus 15.9% in female), whereas females exhibited a higher frequency of severe small vessel disease (10.8% versus 7.5% in males). The probability of this difference was 98.9%. 
+In available data, 31.1% of patients had some degree of cerebral small vessel disease. A higher frequency of minor small vessel disease was observed in males (17.4% versus 15.9% in female), whereas females exhibited a higher frequency of severe small vessel disease (10.8% versus 7.5% in males). The probability of this difference was 98.9%. 
 ```{r tbl-delirium-microangio}
 #| label: tbl-delirium-microangio
 #| tbl-cap: Descriptive analysis of _Small Vessel disease_ in subgroups of sex
@@ -174,8 +174,8 @@ plot_tbl(
 ) %>% 
     kable_styling(latex_options = c("scale_down"))  
 ```
-The relationship between small vessel disease and delirium was assessed using a Bayesian logistic regression model. Compared to having no small vessel disease, the odds of developing delirium were higher in patients with moderate (`r getMedCI(summary(bm_delirium_var_microangio), var="moderate")`, `r getP(getRsmb(res_del_microangio$model, dec=3), var="var_microangio=moderate")` and severe small vessel disease (`r getMedCI(summary(bm_delirium_var_microangio), var="severe")`, `r getP(getRsmb(res_del_microangio$model, dec=3), var="var_microangio=severe")`. @tbl-delirium-microangio, @fig-delirium-microangio2
-Investigating the interaction of sex on multiplicative scale revealed that some tendency for severe small vessel disease, but overall not so strong associations with delirium. An influence of NIHSS and age was also considered, but no significant associations were found. @tbl-delirium-microangio @fig-delirium-microangio2
+The relationship between small vessel disease and delirium was assessed using a Bayesian logistic regression model. Compared to having no small vessel disease, the odds of developing delirium were higher in patients with moderate (`r getMedCI(summary(bm_delirium_var_microangio), var="moderate")`, `r getP(getRsmb(res_del_microangio$model, dec=3), var="var_microangio=moderate")` and severe small vessel disease (`r getMedCI(summary(bm_delirium_var_microangio), var="severe")`, `r getP(getRsmb(res_del_microangio$model, dec=3), var="var_microangio=severe")`. (@tbl-delirium-microangio, @fig-delirium-microangio2)
+Investigating the interaction of sex on multiplicative scale revealed that some tendency for severe small vessel disease, but overall not so strong associations with delirium. An influence of NIHSS and age was also considered, but no significant associations were found. (@tbl-delirium-microangio, @fig-delirium-microangio2)
 ```{r fig-delirium-microangio2, fig.width=7, fig.asp=0.3, out.width="100%"}
 #| label: fig-delirium-microangio2
 #| echo: false
@@ -184,8 +184,10 @@ Investigating the interaction of sex on multiplicative scale revealed that some 
 #| fig-cap: !expr 'paste0("Forest plot of Bayesian regression model including Degree of Microangiopathy, and sex explaining the probability of New-Onset Delirium. ", getFootnote(res_del_microangio$model, double_escape=FALSE))'
 #| cache: TRUE
 # names <- c("Year of birth", "Height", "Number of children", "Cranial volume", "Sex" )
-header <- c("OR", "Lower", "Upper" )
-forestplot(summary(res_del_microangio$model), header=header)
+
+# header <- c("OR", "Lower", "Upper" )
+# forestplot(summary(res_del_microangio$model), header=header)
+plotForest(res_del_microangio$model)
 ```
 
 ```{r fig-delirium-microangio, fig.width=10.5, fig.asp=0.4, out.width="100%", eval=FALSE}

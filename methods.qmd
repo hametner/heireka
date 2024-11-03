@@ -19,15 +19,14 @@ df <- df_adm_f
 
 In 1763, Thomas Bayes wrote a paper called "An Essay towards solving a Problem in the Doctrine of Chances". At its core, it describes how *Bayesian theory* allows us to update prior knowledge as one gathers new data. Prior information is used in the form of distributions, so-called prior distributions, which may take different levels of information. [@vandeschoot2021]
 
--   A [probability distribution]{.smallcaps} is defined as a mathematical function describing the likelihood of different outcomes or values. A prior distribution, or simply *Prior*, represents the potential knowledge before observing the data and is included in the Bayesian models as a probability distribution (\@fig-priordemo).
+-   A [probability distribution]{.smallcaps} is defined as a mathematical function describing the likelihood of different outcomes or values. A prior distribution, or simply *Prior*, represents the potential knowledge before observing the data and is included in the Bayesian models as a probability distribution ( @fig-priordemo ).
 
 ```{r fig-priordemo}
 #| label: fig-priordemo
 #| fig-cap: "Demonstration of different forms of priors"
 #| fig-width: 5
 #| fig-asp: 0.8
-#| out-width: "85%"
-#| fig-pos: H
+#| out-width: "70%"
 #| echo: false
 #| warning: false
 #| error: false
@@ -105,7 +104,6 @@ Summarized shorty, the Bayes Theorem facilitates an integrative approach, combin
 #| fig-width: 5
 #| fig-asp: 0.8
 #| out-width: "85%"
-#| fig-pos: H
 #| echo: false
 #| warning: false
 #| error: false
@@ -373,8 +371,7 @@ kable(target_summary_df, format = "latex", booktabs = TRUE, longtable=TRUE, esca
 
 Outcome definitions
 
-As for definitions of diverse outcomes including disease criteria for delirium, pneumonia, sepsis, myocardial infarction, deep vein thrombosis, pulmonary embolism, and dementia it has to be mentioned that this was to the discretion of the treating physician following a well structured guideance of experienced stroke neurologists and a continously updating standard operating procedure for patients treated on the stroke unit. [@ringleb2022]
-For delirium detection the CAM-ICU and ICDSC were the most commonly used tools throughout the year.
+The definitions of various outcomes, including diagnostic criteria for delirium, pneumonia, sepsis, myocardial infarction, deep vein thrombosis, pulmonary embolism, and dementia, were determined by the treating physician. These decisions followed structured guidance from experienced stroke neurologists and a continuously updated standard operating procedure for patients treated in the stroke unit [@ringleb2022]. For detecting delirium, the CAM-ICU and ICDSC were the most frequently used tools throughout the study period. All clinimetric scoring systems were applied as part of routine care, capturing incidences that reflect real-world clinical practice. The modified Rankin Scale at 90 days post-stroke was assessed using a semi-structured interview, an outpatient visit, or, if neither was feasible, through available documentation such as rehabilitation reports.
 
 ### Clinimetric intstruments
 

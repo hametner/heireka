@@ -170,8 +170,9 @@ The bayesian regression model to investigate the relationship between alcohol co
 #| fig-cap: !expr 'paste0("Forest plot of Bayesian regression model including Habits of Alcohol Consumption before stroke, and sex explaining the probability of New-Onset Delirium. ", getFootnote(res_del_c2$model, double_escape=FALSE))'
 #| cache: TRUE
 # names <- c("Year of birth", "Height", "Number of children", "Cranial volume", "Sex" )
-header <- c("OR", "Lower", "Upper" )
-forestplot(summary(res_del_c2$model), header=header)
+# header <- c("OR", "Lower", "Upper" )
+# forestplot(summary(res_del_c2$model), header=header)
+plotForest(res_del_c2$model)
 ```
 
 ```{r tbl2-delirium-c22, eval = FALSE}

@@ -189,5 +189,5 @@ In the bayesian regression model males were less likely to present with a worse 
 #| echo: false
 library(gt)
 library(kableExtra)
-res_del_loc$tbl
+replace_H_with(res_del_loc$tbl)
 ```

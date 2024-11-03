@@ -1,0 +1,864 @@
+```{r load, include=FALSE}
+# options(mc.cores=parallel::detectCores())
+# library(Hmisc)
+# library(rms)
+# library(rmsb)
+# library(knitr)
+# library(kableExtra)
+# library(tidyverse)
+# library(rvest)
+# library(texreg)
+# library(huxtable)
+# library(flextable)
+# library(modelsummary)
+# library(magrittr)
+# library(ggthemes)
+# # options(tinytex.verbose = TRUE)
+# source("_targets.R", local = knitr::knit_global())
+# source("R/helper.R", local = knitr::knit_global())
+# source("R/load.R", local = knitr::knit_global())
+# source("R/transform.R", local = knitr::knit_global())
+# source("R/plot.R", local = knitr::knit_global())
+# require(data.table)
+# require(qreport)
+
+
+# d <- readRDS('df.rds')
+tar_load(df_adm) # was tar_load(df)
+df <- df_adm %>% filter(therapy!="IVT24" & side_stroke!="spinal" & side_stroke!="retinal")
+df <- df %>% mutate(therapy = recode(therapy, "IVT0.6" = "IVT")) %>% droplevels()
+df_bkp <- df
+# remove when nearly only NA and constant in whole column (= all zero)
+df <- df %>%
+  select_if(~sum(!is.na(.)) >= 2 && length(unique(.[!is.na(.)])) > 1)
+# datadistribuation
+dd <- datadist(df)
+options(datadist = 'dd')
+options(contrasts=c("contr.treatment", "contr.treatment"))
+
+# VARIABLES TO DEFINE
+# out <- "html" # not needed 
+# pvalue = TRUE
+# color... TODO
+
+```
+
+## Description of the cohort core characteristics
+
+The final cohort sample covered n=`r nrow(df)` cases. The core characteristics of the cohort are presented in @tbl-corecohort. Females tended to be older (median age 78 vs. 72 for males) and more likely to have worse pre-stroke functional status (e.g., 47% females versus 59% males had a pRS of 0). Interestingly, males were more frequently active smokers (32.2% vs. 16.6% in females). Regarding comorbidities, diabetes mellitus, dyslipidemia, and coronary heart disease were slightly more frequent among males, while arterial hypertension was more common in females.
+
+```{r tbl-corecohort}
+#| label: tbl-corecohort
+#| tbl-cap: "Core characteristics of the cohort at hospital admission"
+#| tbl-colwidths: "auto"
+#| echo: false
+library(tidyverse)
+library(gtsummary)
+library(gt)
+library(brms)
+library(rmsb)
+
+# define variables for table
+# sel <- c("age","sex", "pRS", "risk_factor_htn", "risk_factor_dm", "risk_factor_hchol",  
+# "risk_factor_current_smoker", "risk_factor_prev_stroke", "risk_factor_khd", "risk_factor_pavk", "risk_factor_af_known")
+sel <- c("age","sex", "pRS", "risk_factor_htn", "risk_factor_dm", "risk_factor_hchol", "risk_factor_current_smoker", "risk_factor_prev_stroke", "risk_factor_khd", "risk_factor_pavk", "risk_factor_af_known", "risk_factor_prev_smoker", "risk_factor_current_smoker")
+
+var <- setdiff(sel, "sex")
+# file storage
+file <- "output/models/tbl-risk_factor_models.rds"
+
+# Run Bayesian Univariate calculations
+if (file.exists(file)) {
+        models <- readRDS(file)
+} else {
+        models <- run_models(df, var)
+        saveRDS(models,
+                file,
+                compress = "xz")
+}
+#extract bayesian stats 
+stat <- extract_bayes_stat(models, var)
+
+if (knitr::is_latex_output()) {
+        
+        plot_tbl(
+                data = df,
+                selected_columns = sel,
+                by = "sex",
+                stat_descr_loc = "bottom",
+                pkg = "kableExtra",
+                kable_option = "latex",
+                pvalue = FALSE,
+                bayes = TRUE,
+                stat, # adding 'stat# to add bayesian stats
+                missing="ifany"
+        ) %>% 
+                kable_styling(latex_options = c("scale_down"))
+                # column_spec(1, width = "4.5cm") %>%
+                # column_spec(3, width = "2.5cm") %>%
+                # column_spec(4, width = "2.5cm") %>%
+                # column_spec(5, width = "2.5cm") %>%
+                # column_spec(6, width = "2cm")
+        
+} else {
+        
+plot_tbl(data = df, selected_columns = sel, by="sex", stat_descr_loc = "bottom", pkg = "kableExtra", kable_option = "html", pvalue=FALSE, bayes = TRUE, missing="ifany", stat) %>% kable_classic(full_width = TRUE)
+        
+}
+```
+
+### Age and functional status
+
+The disparity in age between females and males, as anticipated based on epidemiological investigations, is a notable observation. Both sexes show a density peak of stroke onset in the 70-80 age range, with the male curve peaking earlier and more sharply than the female curve. Females have a broader and more right-shifted distribution, indicating they generally experience strokes at older ages compared to males. Males have a more concentrated distribution, peaking around age 72, whereas females peak slightly later, around age 78. For a visual representatione of age distribution see @fig-age-dist.
+
+```{r fig-age-dist, fig.width=7, fig.asp=0.35, out.width="100%"}
+#| label: fig-age-dist
+#| fig-cap: "Distribution of Age by Sex: **(A)** Histogram of and overlaying density estimation of whole cohort, **(B)** Overlay of histogram and density in females and males, **(C)** Overlay of density estimations of females and males."
+#| echo: false
+#| warning: false
+#| error: false
+
+library(ggplot2)
+library(cowplot)
+library(grid)
+library(overlapping)
+
+
+x <- list("females"=df$age[(df$sex=="female")], "males"=df$age[(df$sex=="male")])
+out <- overlap(x, plot=FALSE)
+overlap <- paste0("overlap: ", round(out$OV*100,1), "%")
+
+y_limits <- c(0, max(density(df$age)$y) + 0.25 * max(density(df$age)$y))
+
+p1 <- ggplot(df, aes(x = age)) +
+    geom_histogram(aes(y = after_stat(density)), binwidth = 5, color = "black", fill = "#E69F00", alpha = 0.5, linewidth = 0.1) +
+    geom_density(color = "black", linewidth = 0.3) +
+    labs(x = "",
+         y = "Density") +
+    theme_minimal() +
+    scale_fill_colorblind() +
+    theme(
+        legend.position = "bottom",
+        legend.title = element_blank(),
+        plot.title = element_text(hjust = 0.5),
+        panel.grid.major.x = element_blank(),
+        panel.grid.minor.x = element_blank(),
+        axis.ticks = element_line()
+    ) +
+    ylim(y_limits)
+
+p2 <- ggplot(df, aes(x = age, fill = sex)) +
+    geom_histogram(aes(y = after_stat(density)), binwidth = 3, color = "black", alpha = 0.5, linewidth = 0.1, position = position_dodge(width = 3.5)) +
+    geom_density(aes(color = sex), linewidth = 0.2, fill = NA) +
+    labs(x = "Age",
+         y = "",
+         fill = "Sex",
+         color = "Sex") +
+    theme_minimal() +
+    scale_fill_colorblind() +
+    scale_color_colorblind() +
+    theme(
+        legend.position = "none",
+        plot.title = element_text(hjust = 0.5),
+        panel.grid.major.x = element_blank(),
+        panel.grid.minor.x = element_blank(),
+        axis.ticks = element_line()
+    ) +
+    ylim(y_limits)
+
+p3 <- ggplot(df, aes(x = age, fill = sex)) +
+    geom_density(alpha = 0.4, linewidth = 0.1) +
+    labs(x = "",
+         y = "",
+         fill = "Sex") +
+    theme_minimal() +
+    annotate("text",
+             x = 15,
+             y = 0.034,
+             label = overlap,
+             color = "black", hjust = 0, size = 10 / .pt) +
+    annotate("segment",
+             x = 79,
+             y = 0.015,
+             xend = 50,
+             yend = 0.034,
+             size = 0.2,
+             color = "black") +
+    scale_fill_colorblind() +
+    theme(
+        legend.position = "none",
+        plot.title = element_text(hjust = 0.5),
+        panel.grid.major.x = element_blank(),
+        panel.grid.minor.x = element_blank(),
+        axis.ticks = element_line()
+    ) +
+    ylim(y_limits)
+
+# Extract legend from p3
+legend_p3 <- get_legend(
+  ggplot(df, aes(x = age, fill = sex)) +
+    geom_density(alpha = 0.4, linewidth = 0.1) +
+    labs(fill = "Sex") +
+    theme_minimal() +
+    scale_fill_colorblind() +
+    theme(
+      legend.position = "bottom"
+    )
+)
+
+# arrange
+p <- plot_grid(plot_grid(p1, p2, p3, ncol = 3, labels=c("A","B","C")), legend_p3, ncol = 1, rel_heights = c(3, 0.2))
+
+p
+```
+
+### Temporal variation of cohort based on biological sex
+
+Males showed a higher absolute number of cases with intravenous thrombolysis throughout the years -- with one major exception around 2008/2009. Initially, the usage of endovascular stroke therapy (EST) was similar for both sexes. Since the beginning of the thrombectomy area in 2015 (with markedly increasing numbers overall), females have been more frequently treated with mechanical thrombectomy. As for the combined therapy, the sex difference fluctuates, with males generally receiving more combined therapy. However, a similar trend in favour of females (as in EST alone) may be seen. @fig-therapy-year
+
+```{r fig-therapy-year, fig.width=7, fig.asp=0.8, out.width="100%"}
+#| label: fig-therapy-year
+#| fig-pos: H
+#| echo: false
+#| warning: false
+#| error: false
+#| fig-cap: "Temporal trend of acute therapy (stratified by treatment modality) between females and males. *Upper* shows absolute number of cases per year. *Lower* depicts the respective difference (absolute). EST indicates endovascular stroke therapy, IVT intravenous thrombolysis, IVT/EST combined therapy. Comment: Data from 2022 not shown (availability only until march)."
+
+library(gridExtra)
+library(scales)
+library(ggh4x)
+
+
+df_summary <- df %>% select(sex, therapy, date_therapy_year) %>%
+        filter(date_therapy_year != 2022) %>%
+    group_by(sex, therapy, date_therapy_year) %>%
+    summarise(frequency = n(), .groups = "drop")
+x_length <- df_summary$date_therapy_year %>% unique() %>% length()
+
+p1 <- ggplot(df_summary, aes(x = date_therapy_year, y = frequency, color = sex)) +
+    geom_point(size = 2, alpha = 0.75) +
+    geom_line(alpha = 0.3, linewidth=0.2) +
+    facet_wrap(~therapy,  scales = "fixed") +
+    labs(x = "Year", y = "Frequency", color = "Sex") +
+    theme_minimal() +
+        scale_color_colorblind() +
+        # guides(color = "none") +
+        scale_y_continuous(limits = c(0, 150)) +
+        # scale_x_continuous(breaks = scales::pretty_breaks(n = x_length)) +
+        scale_x_continuous(
+                minor_breaks = seq(min(df_summary$date_therapy_year), max(df_summary$date_therapy_year), by = 1),
+                breaks = seq(2000, 2022, by = 5),
+                limits = c(min(df_summary$date_therapy_year), max(df_summary$date_therapy_year)),
+                guide = "axis_minor" # this is added to the original code
+        ) +
+        ylab("number of cases (absolute)") +
+        xlab("year") +
+        # ggtitle("Jährliche Zahl der Schlaganfälle per Klinik") +
+        theme(legend.position = "bottom", legend.title = element_blank(),
+              plot.title = element_text(hjust = 0.5),
+              panel.grid.major.x = element_blank(),  
+          panel.grid.minor.x = element_blank(),
+          axis.ticks = element_line())
+
+df_diff <- df_summary %>%
+    spread(key = sex, value = frequency, fill = 0) %>%  # convert from long to wide format
+    mutate(diff = female - male) %>%  # calculate difference
+    gather(key = sex, value = frequency, -therapy, -date_therapy_year, -diff)  # convert back to long format
+
+p2 <- ggplot(df_diff, aes(x = date_therapy_year, y = diff)) + # fill = diff > 0
+    geom_bar(stat = "identity", width = 0.8, alpha = 0.75) +
+    facet_wrap(~therapy, scales = "fixed") +
+    # scale_fill_manual(values = c("TRUE" = "red", "FALSE" = "blue")) +
+    labs(x = "Year", y = "Difference (Female - Male)", fill = "Difference") +
+        guides(color = "none") +
+    theme_minimal() +
+        scale_fill_colorblind() +
+        scale_y_continuous(limits = c(-90, 90)) +
+        scale_x_continuous(
+                minor_breaks = seq(min(df_summary$date_therapy_year), max(df_summary$date_therapy_year), by = 1),
+                breaks = seq(2000, 2022, by = 5),
+                limits = c(min(df_summary$date_therapy_year), max(df_summary$date_therapy_year)),
+                guide = "axis_minor" # this is added to the original code
+        ) +
+    theme(legend.position = "none", legend.title = element_blank(),
+          plot.title = element_text(hjust = 0.5),
+          panel.grid.major.x = element_blank(), 
+          panel.grid.minor.x = element_blank(),
+          axis.ticks = element_line(),
+          strip.text = element_blank())
+
+# Arrange the plots
+grid.arrange(p1, p2, ncol = 1)
+
+```
+
+The sex distrubtion is consistent across the spectrum of functional dependency prior to stroke (@fig-age-pRS).
+
+```{r fig-age-pRS, fig.width=7, fig.asp=0.4, out.width="100%"}
+#| label: fig-age-pRS
+#| fig-pos: H
+#| echo: false
+#| warning: false
+#| error: false
+#| fig-cap: !expr 'paste0("Distribution of Age by Sex and functional status before stroke (as measured by *premorbid Rankin Scale (pRS) [0--5]*, 0 indicates no disability, 5 bedridden, fully dependent, n=", sum(!is.na(df$pRS)), "), missing values are indicated by NA (n= ", sum(is.na(df$pRS)),"). A consistent sex distribution pattern in the strata of pRS is demonstrated.")'
+library(gridExtra)
+library(scales)
+library(ggh4x)
+library(overlapping)
+
+
+p <- ggplot(df , aes(x = age, fill = sex)) +
+        geom_density(alpha = 0.4) +
+        labs(x = "Age",
+             y = "Density",
+             fill = "Sex") +
+        theme_minimal() +
+        # annotate("text",
+        #         x = 15,
+        #         y = 0.034,
+        #         label = overlap,
+        #         color = "black", hjust = 0, size = 10/.pt
+        # ) +
+        facet_wrap(~pRS, ncol=7, scales = "fixed") +
+        # annotate("segment",
+        #         x = 79,
+        #         y = 0.015,
+        #         xend = 59,
+        #         yend = 0.034,
+        # size = 0.2,
+        # color = "black") +
+        scale_fill_colorblind() +
+        theme(
+                legend.position = "bottom",
+                legend.title = element_blank(),
+                plot.title = element_text(hjust = 0.5),
+                panel.grid.major.x = element_blank(),
+                panel.grid.minor.x = element_blank(),
+                axis.ticks = element_line(),
+                legend.key.size = unit(0.5, 'cm')
+        )
+
+p
+```
+
+*Chronological age* and *functional dependency prior stroke (pRS)* are therefore most relevant variables to be considerd in further analysis. When comparing earlier with more recent *years*, the number of cases with either intravenous thromobolysis or mechanical thrombectomy or both increased substantially.
+
+#### Operational Aspects
+
+##### Wake-Up Stroke
+
+There are fluctuations in the frequency disparities between biological sexes, with a higher number of female cases seen in some years (e.g., 2011, 2017, and 2018), while in other instances, the reverse tendency emerges (e.g., 2004, 2006, and 2009, [@fig-tele-wakeup B]). Likewise to above mentioned increased since 2015, female wake-up stroke cases have risen considerably compared to males, with the most significant difference in 2018 (@tbl-wakeup-tele).
+
+##### Telemedicine assisted thrombolysis
+
+Patients admitted to hospitals surrounding the area of Heidelberg are considered of being eligible for telemedicine assisted thrombolysis, if a consultant neurologist is not within near reach. Mainly in the case of a large vessel occlusion of these cases, patients are referred from the other hospitals for an evaluation of mechanical thrombectomy to the stroke center Heidelberg. An annual trend is shown (@fig-tele-wakeup A). Aside from 2015 and 2020 in the last years, more (`r paste0(df$sex %>% levels() %>% .[1], ": ", ( df$TeleLyse[df$sex==df$sex %>% levels() %>% .[1]] %>% sum() / df$TeleLyse[df$sex==df$sex %>% levels() %>% .[1]] %>% length() * 100 ) %>% round(1)  ,"%; ", df$sex %>% levels() %>% .[1],": ", ( df$TeleLyse[df$sex==df$sex %>% levels() %>% .[2]] %>% sum() / df$TeleLyse[df$sex==df$sex %>% levels() %>% .[2]] %>% length() * 100 ) %>% round(1)  ,"%")`) female patients who were treated with intravenous thrombolysis and transferred (@tbl-wakeup-tele).
+
+```{r tbl-wakeup-tele}
+#| label: tbl-wakeup-tele
+#| tbl-cap: Intravenous thrombolysis initiated via telemedicine and transferred to the Heidelberg Stroke Center
+#| tbl-colwidths: "auto"
+#| results: hold
+#| echo: false
+library(tidyverse)
+# tar_load(df)
+sel <- c("age","sex", "TeleLyse", "wake_up")
+var <- setdiff(sel, "sex")
+# file storage
+file <- "output/models/tbl-tele_models.rds"
+# Run Bayesian Univariate calculations
+if (file.exists(file)) {
+        models <- readRDS(file)
+} else {
+        models <- run_models(df, var)
+        saveRDS(models,
+                file,
+                compress = "xz")
+}
+
+#extract bayesian stats 
+stat <- extract_bayes_stat(models, var)
+
+if (knitr::is_latex_output()) {
+        
+        plot_tbl(
+                data = df,
+                selected_columns = sel,
+                by = "sex",
+                stat_descr_loc = "bottom",
+                pkg = "kableExtra",
+                kable_option = "latex",
+                pvalue = FALSE,
+                bayes = TRUE,
+                stat, # adding 'stat# to add bayesian stats
+                missing="ifany"
+        ) %>% 
+                kable_styling(latex_options = c("scale_down"))  
+                # column_spec(1, width = "4.5cm") %>%
+                # column_spec(3, width = "2.5cm") %>%
+                # column_spec(4, width = "2.5cm") %>%
+                # column_spec(5, width = "2.5cm") %>%
+                # column_spec(6, width = "2cm")
+        
+} else {
+        
+plot_tbl(data = df, selected_columns = sel, by="sex", stat_descr_loc = "bottom", pkg = "kableExtra", kable_option = "html", pvalue=FALSE, bayes = TRUE, stat, missing="ifany") %>% kable_classic(full_width = TRUE)
+        
+}
+
+```
+
+```{r wakeup-tele}
+#| echo: false
+#| warning: false
+#| error: false
+
+
+library(gridExtra)
+library(scales)
+library(ggh4x)
+# df_summary <- df %>% select(sex, wake_up, date_therapy_year) %>%
+#     group_by(sex, wake_up, date_therapy_year) %>%
+#     summarise(frequency = n(), .groups = "drop")
+# x_length <- df_summary$date_therapy_year %>% unique() %>% length()
+
+df_summary <- df %>% select(sex, wake_up, date_therapy_year) %>%
+    group_by(sex, wake_up, date_therapy_year) %>%
+    summarise(frequency = n(), .groups = "drop")
+
+# Filter for wake_up = 1
+df_summary <- df_summary %>% filter(wake_up == 1)
+
+x_length <- df_summary$date_therapy_year %>% unique() %>% length()
+
+
+p1 <- ggplot(df_summary, aes(x = date_therapy_year, y = frequency, color = sex)) +
+    geom_point(size = 2, alpha = 0.75) +
+    geom_line(alpha = 0.3, linewidth=0.2) +
+    facet_wrap(~wake_up,  scales = "fixed") +
+    labs(x = "Year", y = "Frequency", color = "Sex") +
+    theme_minimal() +
+        scale_color_colorblind() +
+        # guides(color = "none") +
+        scale_y_continuous(limits = c(0, 110)) +
+        # scale_x_continuous(breaks = scales::pretty_breaks(n = x_length)) +
+        scale_x_continuous(
+                minor_breaks = seq(min(df_summary$date_therapy_year), max(df_summary$date_therapy_year), by = 1),
+                breaks = seq(2000, 2022, by = 5),
+                limits = c(min(df_summary$date_therapy_year), max(df_summary$date_therapy_year)),
+                guide = "axis_minor" # this is added to the original code
+        ) +
+        ylab("number of cases") +
+        xlab("year") +
+        # ggtitle("Jährliche Zahl der Schlaganfälle per Klinik") +
+        theme(legend.position = "bottom", 
+              legend.title = element_blank(),
+              plot.title = element_text(hjust = 0.5),
+              panel.grid.major.x = element_blank(),  
+          panel.grid.minor.x = element_blank(),
+          axis.ticks = element_line())
+
+df_diff <- df_summary %>%
+    spread(key = sex, value = frequency, fill = 0) %>%
+    mutate(diff = female - male) %>%
+    gather(key = sex, value = frequency, -wake_up, -date_therapy_year, -diff)
+
+p2 <- ggplot(df_diff, aes(x = date_therapy_year, y = diff, fill = diff > 0)) +
+    geom_bar(stat = "identity", width = 0.8, alpha = 0.75) +
+    facet_wrap(~wake_up, scales = "fixed") +
+    # scale_fill_manual(values = c("TRUE" = "red", "FALSE" = "blue")) +
+    labs(x = "Year", y = "Difference (Female - Male)", fill = "Difference") +
+    theme_minimal() +
+        scale_fill_colorblind() +
+        scale_y_continuous(limits = c(-90, 90)) +
+        scale_x_continuous(
+                minor_breaks = seq(min(df_summary$date_therapy_year), max(df_summary$date_therapy_year), by = 1),
+                breaks = seq(2000, 2022, by = 5),
+                limits = c(min(df_summary$date_therapy_year), max(df_summary$date_therapy_year)),
+                guide = "axis_minor" # this is added to the original code
+        ) +
+    theme(legend.position = "none", 
+          plot.title = element_text(hjust = 0.5),
+          panel.grid.major.x = element_blank(), 
+          panel.grid.minor.x = element_blank(),
+          axis.ticks = element_line(),
+          strip.text = element_blank())
+
+
+
+df_summary <- df %>% select(sex, TeleLyse, date_therapy_year) %>%
+    group_by(sex, TeleLyse, date_therapy_year) %>%
+    summarise(frequency = n(), .groups = "drop")
+
+# Filter for TeleLyse = 1
+df_summary <- df_summary %>% filter(TeleLyse == 1)
+x_length <- df_summary$date_therapy_year %>% unique() %>% length()
+
+
+p3 <- ggplot(df_summary, aes(x = date_therapy_year, y = frequency, color = sex)) +
+    geom_point(size = 2, alpha = 0.75) +
+    geom_line(alpha = 0.3, linewidth=0.2) +
+    facet_wrap(~TeleLyse,  scales = "fixed") +
+    labs(x = "Year", y = "Frequency", color = "Sex") +
+    theme_minimal() +
+        scale_color_colorblind() +
+        # guides(color = "none") +
+        scale_y_continuous(limits = c(0, 110)) +
+        # scale_x_continuous(breaks = scales::pretty_breaks(n = x_length)) +
+        scale_x_continuous(
+                minor_breaks = seq(min(df_summary$date_therapy_year), max(df_summary$date_therapy_year), by = 1),
+                breaks = seq(2000, 2022, by = 5),
+                limits = c(min(df_summary$date_therapy_year), max(df_summary$date_therapy_year)),
+                guide = "axis_minor" # this is added to the original code
+        ) +
+        ylab("number of cases") +
+        xlab("year") +
+        # ggtitle("Jährliche Zahl der Schlaganfälle per Klinik") +
+        theme(legend.position = "bottom", 
+              legend.title = element_blank(),
+              plot.title = element_text(hjust = 0.5),
+              panel.grid.major.x = element_blank(),  
+          panel.grid.minor.x = element_blank(),
+          axis.ticks = element_line())
+
+df_diff <- df_summary %>%
+    spread(key = sex, value = frequency, fill = 0) %>%
+    mutate(diff = female - male) %>%
+    gather(key = sex, value = frequency, -TeleLyse, -date_therapy_year, -diff)
+
+p4 <- ggplot(df_diff, aes(x = date_therapy_year, y = diff, fill = diff > 0)) +
+    geom_bar(stat = "identity", width = 0.8, alpha = 0.75) +
+    facet_wrap(~TeleLyse, scales = "fixed") +
+    # scale_fill_manual(values = c("TRUE" = "red", "FALSE" = "blue")) +
+    labs(x = "Year", y = "Difference (Female - Male)", fill = "Difference") +
+    theme_minimal() +
+        scale_fill_colorblind() +
+        scale_y_continuous(limits = c(-90, 90)) +
+        scale_x_continuous(
+                minor_breaks = seq(min(df_summary$date_therapy_year), max(df_summary$date_therapy_year), by = 1),
+                breaks = seq(2000, 2022, by = 5),
+                limits = c(min(df_summary$date_therapy_year), max(df_summary$date_therapy_year)),
+                guide = "axis_minor" # this is added to the original code
+        ) +
+    theme(legend.position = "none", 
+          plot.title = element_text(hjust = 0.5),
+          panel.grid.major.x = element_blank(), 
+          panel.grid.minor.x = element_blank(),
+          axis.ticks = element_line(),
+          strip.text = element_blank()) 
+
+
+```
+
+```{r fig-tele-wakeup, fig.width=7, fig.asp=0.8, out.width="80%"}
+#| label: fig-tele-wakeup
+#| echo: false
+#| warning: false
+#| error: false
+#| fig-cap: "*(A)* Annual variances telemedicine-assisted intravenous thrombolysis males and females. *Upper* shows absolute number of cases per year. *Lower* depicts the respective difference (absolute). *(B)* Annual variances Wake-Up strokes. *Upper* shows absolute number of cases per year. *Lower* depicts the respective difference (absolute)"
+
+plot_grid(p1, p3, p2, p4, ncol = 2, labels = c("A", "B"))
+```
+
+### Stroke Severity as measured by National Institutes of Health Stroke Scale Score (NIHSS)
+
+```{r nihss}
+#| cache: TRUE
+tar_load(df_adm)
+dfx <- df_adm %>% filter(side_stroke %in% c("left", "right")) %>% droplevels
+
+sel <- c("age", "nihss_d0", "sex", "side_stroke", "pRS", "risk_factor_htn", "risk_factor_dm", "risk_factor_hchol", "risk_factor_prev_stroke", "risk_factor_khd", "risk_factor_pavk", "risk_factor_af_known", "risk_factor_prev_smoker", "risk_factor_current_smoker")
+dfx <- dfx %>% select(sel)
+
+# sel <- setdiff(sel,"age") %>% append("rcs(age,4)")
+# m.nihss.vif <- lrm(getFormula(resp = "nihss_d0", var = sel, interaction = FALSE), data = dfx)
+file <- "output/models/bm.nihss.vif"
+# Bayesian regression 
+if (file.exists(file)){ bm.nihss.vif <- readRDS(file) } else {
+bm.nihss.vif <- blrm(getFormula("nihss_d0", sel, interaction = FALSE), data = dfx, file = file) }
+s <- shortREV(bm.nihss.vif, keep = "all", output="graph")
+p2 <- s$graph
+
+caption <- paste("Variances of predictors of admission National Institutes of Health Stroke Scale Score (NIHSS) based on a bayesian regression model.", s$footnote, getFootnote(bm.nihss.vif))
+
+pRS <- getMedCI(getRsmb(bm.nihss.vif), "pRS")
+loc <- getMedCI(getRsmb(bm.nihss.vif), "side_stroke=right")
+afib <- getMedCI(getRsmb(bm.nihss.vif), "risk_factor_af_known=1")
+
+```
+
+Several aspects are to be considered when NIHSS is used as proxy for stroke severity in statistical models. The following analysis explains why consideration of stroke location when introducing NIHSS as a measure of stroke severity is rather important. Leaving aside cases who have been classified as posterior circulation stroke (n = `r df$side_stroke[df$side_stroke=="posterior"] %>% length`, `r (df$side_stroke[df$side_stroke=="posterior"] %>% length / df$side_stroke %>% length * 100) %>% round(1)`%), and bilateral strokes (n = `r df$side_stroke[df$side_stroke=="bilateral"] %>% length`, `r (df$side_stroke[df$side_stroke=="bilateral"] %>% length / df$side_stroke %>% length * 100) %>% round(1)`%, @tbl-stroke-side), the remaining cases (n = `r dfx %>% nrow()`) are facilitated for the analysis of this chapter.
+
+```{r tbl-stroke-side}
+#| label: tbl-stroke-side
+#| tbl-cap: Characteristics of stroke location (lateralilty) 
+#| tbl-colwidths: "auto"
+#| results: hold
+#| echo: false
+library(tidyverse)
+tar_load(df)
+sel <- c("age","sex", "side_stroke")
+var <- setdiff(sel, "sex")
+# file storage
+file <- "output/models/tbl-side_stroke_models.rds"
+# Run Bayesian Univariate calculations
+if (file.exists(file)) {
+        models <- readRDS(file)
+} else {
+        models <- run_models(df, var)
+        saveRDS(models,
+                file,
+                compress = "xz")
+}
+
+#extract bayesian stats 
+stat <- extract_bayes_stat(models, var)
+
+if (knitr::is_latex_output()) {
+        
+        plot_tbl(
+                data = df,
+                selected_columns = sel,
+                by = "sex",
+                stat_descr_loc = "bottom",
+                pkg = "kableExtra",
+                kable_option = "latex",
+                pvalue = FALSE,
+                bayes = TRUE,
+                stat, # adding 'stat# to add bayesian stats
+                missing="ifany"
+        ) %>% 
+                kable_styling(latex_options = c("scale_down"))  
+                # column_spec(1, width = "4.5cm") %>%
+                # column_spec(3, width = "2.5cm") %>%
+                # column_spec(4, width = "2.5cm") %>%
+                # column_spec(5, width = "2.5cm") %>%
+                # column_spec(6, width = "2cm")
+        
+} else {
+        
+plot_tbl(data = df, selected_columns = sel, by="sex", stat_descr_loc = "bottom", pkg = "kableExtra", kable_option = "html", pvalue=FALSE, bayes = TRUE, stat) %>% kable_classic(full_width = TRUE)
+        
+}
+
+```
+
+```{r fig-nihss-vif}
+#| label: fig-nihss-vif
+#| fig-cap: !expr 'paste0(caption)'
+#| fig-width: 6
+#| fig-asp: 0.6
+#| out-width: "85%"
+#| echo: false
+#| warning: false
+#| error: false
+#| cache: FALSE
+require(gridExtra)
+require(rmsb)
+# tar_load(df)
+# dfx <- df %>% filter(side_stroke %in% c("left", "right")) %>% droplevels
+
+plot(p2)
+
+
+# file2 <- "output/models/bm.nihss.vif2"
+# if (file.exists(file2)){ bm.nihss.vif <- readRDS(file2) } else {
+# bm.nihss.vif2 <- blrm(getFormula(resp = "nihss_d0", var = sel, interaction = TRUE), data = dfx, file = file) }
+# s <- shortREV(bm.nihss.vif2, keep = "all", output="graph")
+# s$graph
+
+```
+
+#### Influence on admission NIHSS
+
+Stroke severity at admission (NIHSS) is known to be influenced by atrial fibrillation and by the functional condition before stroke (premorbid Rankin Scale). To asses these relationships in the presence of others, a regression model to explain NIHSS (response variable, @fig-nihss-vif) was investigated. Bayesian regression suggested atrial fibrillation (`r afib`) as the most important factor to influence NIHSS, followed by pRS (`r pRS`) and stroke location (`r loc`) when considering early clinical factors.
+
+```{r NIHSS-distribution-overlap}
+#| cache: TRUE
+
+library(overlapping)
+
+df_nihss_overlap <- dfx %>% select(nihss_d0, sex, side_stroke) %>% drop_na()
+
+overlap_female <- list("right"=df_nihss_overlap %>% filter(side_stroke=="right", sex=="female") %>% pull(nihss_d0), 
+                        "left"= df_nihss_overlap %>% filter(side_stroke=="left", sex=="female") %>% pull(nihss_d0))
+
+overlap_male <- list("right"=df_nihss_overlap %>% filter(side_stroke=="right", sex=="male") %>% pull(nihss_d0), 
+                        "left"= df_nihss_overlap %>% filter(side_stroke=="left", sex=="male") %>% pull(nihss_d0))
+
+overlap_right <- list("female"=df_nihss_overlap %>% filter(side_stroke=="right", sex=="female") %>% pull(nihss_d0), 
+                        "male"= df_nihss_overlap %>% filter(side_stroke=="right", sex=="male") %>% pull(nihss_d0))
+
+overlap_left <- list("female"=df_nihss_overlap %>% filter(side_stroke=="left", sex=="female") %>% pull(nihss_d0), 
+                        "male"= df_nihss_overlap %>% filter(side_stroke=="left", sex=="male") %>% pull(nihss_d0))
+
+overlap_out <- function(x, difference = TRUE, ...) {
+        out <- overlap(x, ...)
+        # overlap <- paste0("overlap: ", round(out$OV*100,1), "%")
+        if (difference) {
+                difference = paste0(round( (1 - out[[1]])*100, 1), "%")
+                return(difference)
+        }
+        else {
+                overlap = paste0(round( (1 - out[[1]])*100, 1), "%") 
+                return(overlap)
+        }
+}
+
+ov_female <- overlap_out(overlap_female)
+ov_male <- overlap_out(overlap_male)
+ov_right <- overlap_out(overlap_right)
+ov_left <- overlap_out(overlap_left)
+
+```
+
+```{r fig-nihss-side, fig.width=7, fig.asp=0.8, out.width="80%"}
+#| label: fig-nihss-side
+#| fig-pos: H
+#| echo: false
+#| warning: false
+#| error: false
+#| fig-cap: Distribution overlap of NIHSS by stroke location and biological sex. Numbers depict the differences in the distribution overlaps.
+#| cache: TRUE
+library(gridExtra)
+library(scales)
+library(ggh4x)
+library(overlapping)
+library(grid)
+library(cowplot)
+
+dfx <- dfx %>% mutate(
+        label1 = case_when(sex == "female" ~ ov_female,
+                           sex == "male" ~ ov_male),
+        label2 = case_when(side_stroke == "right" ~ ov_right,
+                           side_stroke == "left" ~ ov_left)
+)
+
+#2x2 plot
+p <- ggplot(dfx , aes(x = nihss_d0, fill = sex, linetype = side_stroke)) +
+    geom_density(alpha = 0.4) +
+    labs(x = NULL,
+         y = NULL,
+         fill = "Sex") +
+    theme_minimal() +
+    facet_wrap(sex~side_stroke, scales = "fixed") +
+    scale_fill_colorblind() +
+    theme(
+        legend.position = "none",
+        legend.title = element_blank(),
+        plot.title = element_text(hjust = 0.5),
+        panel.grid.major.x = element_blank(),
+        panel.grid.minor.x = element_blank(),
+        axis.ticks = element_line(),
+        # axis.text.x = element_blank(),
+        # axis.text.y = element_blank()
+    )
+
+#1x2 plot 
+p1 <- ggplot(dfx , aes(x = nihss_d0, fill = sex, linetype = side_stroke)) +
+    geom_density(alpha = 0.4) +
+    labs(x = NULL,
+         y = NULL,
+         fill = "Sex") +
+    theme_minimal() +
+    facet_wrap(.~sex, nrow = 2) +
+    scale_fill_colorblind() +
+    theme(
+        legend.position = "none",
+        legend.title = element_blank(),
+        plot.title = element_text(hjust = 0.5),
+        panel.grid.major.x = element_blank(),
+        panel.grid.minor.x = element_blank(),
+        axis.ticks = element_line(),
+        # axis.text.x = element_blank(),
+        # axis.text.y = element_blank()
+    ) +
+        theme(strip.text = element_text(margin = margin(t = 5, b = 20, l = 5, r = 5, "pt")))
+
+annotate_data <- data.frame(
+    sex = c("female", "female", "male","male"),
+    side_stroke = c("right","left", "right","left"),
+    nihss_d0 = c(34, 34, 34, 34), 
+    y = c(0.05, 0.05, 0.05, 0.05), 
+    end_y = c(0.05, 0.035, 0.043, 0.03),
+    x_start = c(28,28,28,28),
+    end_x = c(15,22,12,22),
+    label = c(ov_female, ov_female, ov_male, ov_male),
+    end_y2 = c(0.054, 0.043, 0.048, 0.035),
+    end_x2 = c(15,20.5,8,16.3),
+    label2 = c(ov_right, ov_left, ov_right, ov_left)
+    )
+
+p1 <- p1 +
+  geom_text(data = annotate_data, aes(x = nihss_d0, y = y, label = label), color = "black", size = 10/.pt) +
+        geom_segment(data = annotate_data, 
+               aes(x = x_start, xend = end_x, y = y, yend = end_y), 
+               color = "black", linewidth = 0.2)
+
+#2x1 plot
+p2 <- ggplot(dfx , aes(x = nihss_d0, fill = sex, linetype = side_stroke)) +
+    geom_density(alpha = 0.4) +
+    labs(x = NULL,
+         y = NULL,
+         fill = "Sex") +
+    theme_minimal() +
+    facet_wrap(.~side_stroke, nrow = 1) +
+    scale_fill_colorblind() +
+    theme(
+        legend.position = "none",
+        legend.title = element_blank(),
+        plot.title = element_text(hjust = 0.5),
+        panel.grid.major.x = element_blank(),
+        panel.grid.minor.x = element_blank(),
+        axis.ticks = element_line(),
+        # axis.text.x = element_blank(),
+        # axis.text.y = element_blank()
+    )
+
+p2 <- p2 +
+        geom_text(data = annotate_data, aes(x = nihss_d0, y = y, label = label2), color = "black", size = 10/.pt) +
+        geom_segment(data = annotate_data, 
+               aes(x = x_start, xend = end_x2, y = y, yend = end_y2), 
+               color = "black", linewidth = 0.2)
+
+# plot for legend
+p_legend <- ggplot(dfx , aes(x = nihss_d0, fill = sex, linetype = side_stroke)) +
+    geom_density(alpha = 0.4) +
+    labs(x = NULL,
+         y = NULL,
+         fill = "Sex") +
+    theme_minimal() +
+    facet_wrap(sex~side_stroke, scales = "fixed") +
+    scale_fill_colorblind() +
+    theme(
+        legend.position = "right",
+        legend.title = element_blank(),
+        plot.title = element_text(hjust = 0.5),
+        panel.grid.major.x = element_blank(),
+        panel.grid.minor.x = element_blank(),
+        axis.ticks = element_line(),
+        # axis.text.x = element_blank(),
+        # axis.text.y = element_blank()
+    )
+
+# legend extraction
+legend_p <- get_legend(p_legend)
+# build combined legend
+combined_legend <- arrangeGrob(legend_p, ncol = 1)
+
+# Overall matrix layout for plot
+layout_matrix <- matrix(c(1, 1, 5,
+                          1, 1, 5,
+                          7, 7, 9), ncol = 3, byrow = TRUE)
+
+# Arrange plots
+grid.arrange(p, p1, p2, combined_legend, layout_matrix = layout_matrix,
+             bottom = textGrob("National Institutes of Health Stroke Scale Score (NIHSS)"),
+             left = textGrob("Density", 
+                             rot = 90, 
+                             vjust = 0.5))
+
+
+
+```
+
+Analysing NIHSS distributions for both sexes and laterality, a bimodal characteristic is demonstrated. Differences in the distributation of NIHSS for females and males in the right and left hemispheres varied considerably between `r ov_left` and `r ov_female` (@fig-nihss-side). The most significant difference was seen in females between their stroke locations. The low overlaps for left-sided strokes suggest a greater similarity in stroke severity between sexes for this hemisphere on the NIHSS scale. In contrast, right-sided strokes exhibit a more pronounced separation.

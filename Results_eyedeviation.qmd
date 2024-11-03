@@ -134,7 +134,7 @@ ylab(expression(P(Delirium ~ "|" ~ Data, x)))  +
 
 ### Eye deviation
 
-The frequency and relationship with new onset delirium is investigated when patients present with any form of eye deviation at the initial clinical examination at hospital admission. @fig-delirium-eyedeviation The overall frequency of presenting with eye deviation was 35.6%, with females experiencing a higher frequency (39.4%) as compared to males (32.0%). [^results_eyedeviation-1]
+The frequency and relationship with new onset delirium is investigated when patients present with any form of eye deviation at the initial clinical examination at hospital admission. (@fig-delirium-eyedeviation) The overall frequency of presenting with eye deviation was 35.6%, with females experiencing a higher frequency (39.4%) as compared to males (32.0%).[^results_eyedeviation-1]
 
 [^results_eyedeviation-1]: *Comment:* This was higher than the author would have suspected. For this reason the character extraction strings for the variable generation were rechecked and results manually revisited, keeping the false positive rate as low as possible.
 

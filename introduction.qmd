@@ -11,9 +11,11 @@ Ischemia accounts for 62% of all incidence strokes, intracerebral haemorrhage fo
 Historically, "apoplexy" and "brain softening" were used to describe many conditions now recognized as strokes. Johann Jakob Wepfer (1650-1695) was the first to draw an association between apoplexy and cerebral haemorrhage. (Wepfer, J.J. Observationes Anatomicae, ex Cadaveribus Eorum, quos Sustulit Apoplexia, cum Exercitatione de eius Loco Affecto; Joh Caspari Suteri: Schaffhausen, Switzerland, 1658.) In 1847, Rudolf Virchow (1821–1902) made decisive arguments conﬁrming the vascular theory of softening by introducing the concepts of thrombosis and embolism (Virchow, R. Über die akute Entzündung der Artérien. Arch. Für Pathol. Anat. Und Physiol. Und Für Klin. Med. (Virchow Arch.) 1847, 1, 272–378.):
 
 ::: {.callout-note appearance="minimal" icon="true"}
-"These clots never originate in the local circulation\
-but are torn off at a distance and carried along in the blood stream\
-as far as they can go"
+"These clots never originate in the local circulation
+
+but are torn off at a distance and carried along
+
+in the blood stream as far as they can go"
 
 *(Rudolf Virchow)*
 :::
@@ -44,41 +46,15 @@ Today a modern, updated definition is followed: Sacco and coworkers defined infa
 
 Ischemic stroke is further defined as "episode of neurological dysfunction caused by focal cerebral, spinal, or retinal infarction." and silent infarction of the CNS as "imaging or neuropathological evidence of CNS infarction, without a history of acute neurological dysfunction attributable to the lesion."
 
-## Importance of studying sex differences in ischemic stroke
-
-Investigating ischemic stroke with an emphasis on the differential attainment of biological sex is essential for enhancing our understanding of the disease. It ultimately leads to more effective, individualized therapies for both sexes. Sexual dimorphism in brain structure and function, hormonal states, and underlying genetics might influence the risk for stroke, the course of the disease, and its recuperation [@szadvári2023]. By looking at these differences, researchers may be able to find risk factors and protective mechanisms that are unique to each sex. This could lead to new ideas for targeted therapies that are made to meet the needs of each sex.
-
-When analyzing sex as a biological variable, it is imperative to examine differences using adequate scientific methodologies. Their absence may result in misunderstanding of findings, exaggeration of sex differecunces, or concealment of sex-specific effects when data from males and females are simply aggregated. Out of 147 papers from many scientific fields, Garcia-Sifuentes and Maney discovered that researchers often failed to statistically assess whether the treatment response varied across sexes. To circumvent these difficulties, it is essential that researchers examine interactions between sex and other factors, instead of only comparing outcomes within each sex [@garcia-sifuentes2021].
-
-## Translational links between age and the (patho)physiological basis of sex differences within the neurovascular unit
-
-## Age, Neurovascular Unit and Sex
-
-The neurovascular unit - introduced by del Zoppo in 2006 - describes the concept focuses not only on the neuron itself, but rather holistically on the complex of neurons and the supplying (micro)vessels aside from astrocytes, other glial cells, and resident inflammatory cells [@delzoppo2006]. Translational research on the neurovascular unit (NVU) has shown significant sex variations in the response to ischemic stroke [@tang2022].
-
-In *premenopausal* women, estrogen and progesterone exert neuroprotective effects by regulating the elements of the NVU. Estrogen increases neuronal survival, facilitates vasodilation, diminishes excitotoxicity, and preserves blood-brain barrier integrity. Death of neurons is minimized, astrocyte activation is limited, and cerebral perfusion is enhanced, hypothesizing better stroke outcomes for women compared to men of equivalent age.
-
-On the other hand, *postmenopausal* women have reduced (protective) hormones, which may increase vulnerability to stroke and worse results compared to age-matched males [@lang2008]. The aging process modifies hormonal equilibrium and immunological reactions, weakening neuroprotective systems and perhaps making hormone replacement therapy less effective or even harmful. Moreover, genetic and epigenetic factors—such as variations in X chromosome gene expression and histone modifications—contribute to sex-specific responses to stroke. These elements affect neuronal apoptotic mechanisms, immune cell activation, and vascular functionality within the neurovascular unit [@tang2022].
-
 ## Epidemiology of ischemic stroke
 
-### Descriptive epidemiology in women and men
-
-The incidence and prevalence of ischemic stroke differ between men and women [@petrea2009][@fukuda2009].
-
-Historically, men have been found to have a higher overall incidence of stroke [@petrea2009], but women tend to have higher stroke incidence above 85 years of age, lower at all other ages, and a higher lifetime risk of stroke at all ages.
-
-young women have poorer outcomes than men after stroke [@reeves2008][@persky2010]
-
-In the female population, stroke is more frequently observed as the initial presentation of cardiovascular disease, while in males, coronary heart disease is a more prevalent occurrence [@leening2014].
-
-## Geographic and ethnic variations
+### Geographic and ethnic variations
 
 The increase in cardiovascular risk factors observed from 1990 to 2010 suggests a worldwide epidemiological shift, although it conceals significant regional variations [@bennett2014]. Hypertension, tobacco consumption, alcohol consumption, and a high body mass index were essential risk factors across North and South America, Europe, and Asia-Pacific. Conversely, being underweight during childhood, exposure to household air pollution from solid fuels, suboptimal breastfeeding practices, and iron deficiency were found to be primary contributors to disease burden in most African regions [@yusuf2020].
 
 Ethnic variations contribute as well to the observed sex differences in stroke. For example, African American individuals in the United States are more susceptible to stroke than their non-Hispanic white counterparts. A further disparity in stroke risk exists between African American men and women, with the former having a 1.5-fold higher risk. Similarly, non-Hispanic white men have a 1.3-fold higher risk of stroke compared to non-Hispanic white women. [@howard2019; @graham2015]
 
-## Temporal trends
+### Temporal trends
 
 Two studies are presented, one concerning stroke incidences and one concerning stroke management differences in temporal trends.
 
@@ -90,21 +66,34 @@ In contrast, women consistently had a higher likelihood of receiving intra-arter
 
 These temporal trends illustrate that while some sex disparities in stroke treatment, such as in IVT administration, have diminished over time, others persist. Overall, the evolution of stroke treatment reflects a growing awareness and adjustment to sex differences.
 
-## Sex Differences in Risk Factors of Stroke
+## Importance of studying sex differences in ischemic stroke
 
-Understanding the sex differences in the risk factors is crucial for developing targeted prevention strategies. This chapter explores the nonmodifiable and modifiable risk factors of stroke, emphasizing how they differ between women and men.
+Investigating ischemic stroke with an emphasis on the differential attainment of biological sex is essential for enhancing our understanding of the disease. It ultimately leads to more effective, individualized therapies for both sexes. Sexual dimorphism in brain structure and function, hormonal states, and underlying genetics might influence the risk for stroke, the course of the disease, and its recuperation [@szadvári2023]. By looking at these differences, researchers may be able to find risk factors and protective mechanisms that are unique to each sex. This could lead to new ideas for targeted therapies that are made to meet the needs of each sex.
 
-### Nonmodifiable Risk Factors
+The neurovascular unit - introduced by del Zoppo in 2006 - describes a concept which focuses not only on the neuron itself, but rather holistically on the integartion of neurons and its supplying (micro)vessels aside from astrocytes, other glial cells, and resident inflammatory cells [@delzoppo2006]. Translational research on the neurovascular unit (NVU) has shown significant sex variations in the response to ischemic stroke [@tang2022].
 
-#### Age and Sex Relationship in Stroke Risk
+In *premenopausal* women, estrogen and progesterone exert neuroprotective effects by regulating the elements of the NVU. Estrogen increases neuronal survival, facilitates vasodilation, diminishes excitotoxicity, and preserves blood-brain barrier integrity. Death of neurons is minimized, astrocyte activation is limited, and cerebral perfusion is enhanced, hypothesizing better stroke outcomes for women compared to men of equivalent age.
 
-Age is one of the most significant risk factors for stroke, but it plays out differently between the sexes. The relationship between age and stroke incidence is nonlinear, with the risk of stroke increasing more rapidly after age 65 for both women and men [@reeves2008]. Women are typically five years older than men when experiencing a stroke. This difference is usually attributed to an estrogen-protective effect and a generally more extended life expectancy of women [@appelros2009]. A decline in estrogen levels—as after menopause—levels out their risk of stroke compared to men.
+On the other hand, *postmenopausal* women have reduced (protective) hormones, which may increase vulnerability to stroke and worse results compared to age-matched males [@lang2008]. The aging process modifies hormonal equilibrium and immunological reactions, weakening neuroprotective systems and perhaps making hormone replacement therapy less effective or even harmful. Moreover, genetic and epigenetic factors—such as variations in X chromosome gene expression and histone modifications—contribute to sex-specific responses to stroke. These elements affect neuronal apoptotic mechanisms, immune cell activation, and vascular functionality within the neurovascular unit [@tang2022].
 
-Age significantly impacts patient outcomes following a stroke, which occurs primarily in older adults. As women are, on average, older when a stroke occurs, their comorbidities and pre-existing conditions may ultimately complicate long-term outcomes. Aged stroke patients have higher mortality and morbidity and poorer functional recovery than younger patients. Ischemic stroke patients are biologically older than their chronological age, and the difference between biological age and actual chronological age would indicate an individual's ageing level. In younger generations, males have a higher incidence of ischemic stroke and poorer functional outcomes than females [@rexrode2022].
+When analyzing sex as a biological variable, it is imperative to examine differences using adequate scientific methodologies. Their absence may result in misunderstanding of findings, exaggeration of sex differecunces, or concealment of sex-specific effects when data from males and females are simply aggregated. Out of 147 papers from many scientific fields, Garcia-Sifuentes and Maney discovered that researchers often failed to statistically assess whether the treatment response varied across sexes. To circumvent these difficulties, it is essential that researchers examine interactions between sex and other factors, instead of only comparing outcomes within each sex [@garcia-sifuentes2021].
 
-The higher stroke risk among women at younger ages likely reflects risks related to pregnancy and the postpartum state, as well as other hormonal factors, such as the use of hormonal contraceptives [@demel2018]. In middle age, the rates of ischemic stroke begin to increase for women, concurrent with the onset of menopause and loss of female sex hormones. After middle age, stroke rates continue to grow in women, with some reports of higher stroke incidence in older women (age \>85 years) compared with older men [@bushnell2018].
+## Differences of Biological Sex in Ischemic Stroke
 
-Mortality risk in ischemic stroke is high, with estimated 30-day case fatalities ranging from 16% to 32%. This complex relationship between age and sex complicates the assessment of sex differences in stroke-related mortality, as no independent effect of sex on stroke mortality risk was observed. Earlier reports suggested higher mortality in women because of a nonlinear relationship between age and mortality rate. More recently, it was suggested that higher mortality—especially in older women—could most likely be explained by advanced age, stroke severity, stroke morbidity, and atrial fibrillation as a risk factor [@reeves2008].
+### Stroke Epidemiology  - a Relationship of Age and Sex
+
+Understanding the sex differences in stroke risk factors is crucial for developing targeted prevention strategies. This chapter explores the nonmodifiable and modifiable risk factors of stroke, emphasizing how they differ between women and men. The incidence and prevalence of ischemic stroke differ substantially between sexes across the lifespan [@petrea2009; @fukuda2009; @reeves2008; @persky2010], with a complex epidemiological pattern that depends heavily on age-specific incidence rates.
+
+In young adults under 35, women experience 44% more strokes than men, according to a recent meta-analysis [@leppert2022]. This higher risk among young women likely reflects pregnancy-related risks, the postpartum state, and other hormonal factors such as the use of hormonal contraceptives [@demel2018]. Between the ages of 35 and 45, evidence is inconclusive regarding which sex has higher incidence rates. However, in middle age (45–65 years), men appear to have a higher incidence of ischemic stroke than women [@ospel2023; @norman2022; @rexrode2022].
+
+Women are typically five years older than men when they experience a stroke, a difference often attributed to the protective effects of estrogen and a generally longer life expectancy in women [@appelros2009]. As women approach menopause and estrogen levels decline, their stroke risk begins to align with that of men during the ages of 65–84 [@ospel2023]. After age 85, stroke rates continue to increase in women, resulting in a higher incidence compared to men [@bushnell2018].
+
+Because women are, on average, older when a stroke occurs, they often have more comorbidities and pre-existing conditions, which can complicate long-term outcomes. Older stroke patients generally have higher mortality and morbidity rates and poorer functional recovery than younger patients.
+Mortality risk in ischemic stroke is high, with estimated 30-day case fatality rates ranging from 16% to 32%. The complex interplay between age and sex complicates the assessment of sex differences in stroke-related mortality, as no independent effect of sex on mortality risk has been observed. Earlier studies suggested higher mortality in women due to a nonlinear relationship between age and mortality rate. More recent research indicates that higher mortality—especially in older women—is likely explained by advanced age, greater stroke severity, increased stroke morbidity, and the presence of atrial fibrillation as a risk factor [@reeves2008].
+
+::: {.callout-note appearance="simple" icon="false"}
+Importantly, age is a major risk factor for stroke, but it affects men and women differently. The link between age and stroke risk isn’t straightforward, adding complexity to understanding this sex-specific relationship.
+:::
 
 ### Pre-Stroke Disability
 
@@ -290,7 +279,7 @@ kable(tbl_delirium_tools, format = "markdown", escape=FALSE) %>%
         # column_spec(6, "2in")
 
 ```
-
+:::{#tbl-delirium-tools}
 +----------+------------------+-----------------+----------------+------------------+-----------------------+
 | Scale    | Sensitivity      | Specificity     | PPV            | NPV              | Source                |
 +:=========+:=================+:================+:===============+:=================+:======================+
@@ -316,7 +305,8 @@ kable(tbl_delirium_tools, format = "markdown", escape=FALSE) %>%
 +----------+------------------+-----------------+----------------+------------------+-----------------------+
 | Nu-DESC  | 93 (83--98)      | 66 (56--76)     | 64 (55--72)    | 94 (88--97)      | @fleischmann2021      |
 +----------+------------------+-----------------+----------------+------------------+-----------------------+
-
+Selected delirium instruments used in clinical practice. PPV indicates positive predictive value, NPV negativ predictive value.
+:::
 ### Relevance of delirium detection in stroke patients
 
 Delirium has a negativ impact on the prognosis of stroke patients in the short and long term [@gjestad2024]. In a meta-analysis in 2012 by Saposnik and colleagues [@shi2012], the authors recognized that delirium after stroke directly impacts essential outcomes. For example, stroke patients with delirium had longer hospital stays than those without delirium (mean difference, 9.39 days; 95% CI, 6.67–12.11). Additionally, patients with delirium were more likely to be discharged to a nursing home or any other institution than in the absence of delirium (OR, 3.39; 95% CI, 2.21–5.21). Stroke patients with delirium had higher hospital mortality (OR, 4.71; 95% CI, 1.85–11.96) but also higher mortality that persisted up to 12 months (OR, 4.91; 95% CI, 3.18–7.6) after stroke.
@@ -335,7 +325,7 @@ Wischmann and colleagues investigated 525 patients who were admitted to the stro
 
 ```{r tbl-delirium-factors, eval=FALSE}
 #| label: tbl-delirium-factors
-#| tbl-cap: Conditions Contirbuting to the Development of Delirium
+#| tbl-cap: Conditions Contributing to the Development of Delirium
 #| tbl-colwidths: "auto"
 #| echo: false
 #| warning: false
@@ -416,7 +406,7 @@ kable(tbl_delirium_factors, format = "markdown", booktabs = TRUE, escape=TRUE) %
         column_spec(4, "0.6in") 
 
 ```
-
+::: {#tbl-delirium-factors}
 +----------------+---------------------------------------------------------+-------------------------+---------------+
 | Time           | Condition                                               | Citation                | Consideration |
 +:===============+:========================================================+:========================+:==============+
@@ -454,7 +444,8 @@ kable(tbl_delirium_factors, format = "markdown", booktabs = TRUE, escape=TRUE) %
 +----------------+---------------------------------------------------------+-------------------------+---------------+
 |                | *Heart failure*                                         | @niu2023                | no            |
 +----------------+---------------------------------------------------------+-------------------------+---------------+
-
+Conditions Contributing to the Development of Delirium
+:::
 {{< pagebreak >}}
 
 ## Aim of this work
