@@ -127,7 +127,7 @@ ylab(expression(P(Delirium ~ "|" ~ Data, x)))  +
 This analysis investigates habits of alcohol consumption in the patient population analysed by sex. Data on self reported alcohol consumption were available in 68.8% of patients. Males were more likely to report a moderate to severe level of alcohol consumption at 22.2% compared to females with 6.5% (odds ratio 3.48, 95% credible interval 2.86--4.18; probability of difference: >99.9%, @tbl-delirium-c2) 
 ```{r tbl-delirium-c2}
 #| label: tbl-delirium-c2
-#| tbl-cap: Descriptive analysis of _Levels of Alcohol consumption habits_ prior to stroke within subgroups of sex
+#| tbl-cap: Descriptive analysis of _levels of alcohol consumption habits_ prior to stroke within subgroups of sex
 #| tbl-colwidths: "auto"
 #| echo: false
 library(gt)
@@ -167,7 +167,7 @@ The bayesian regression model to investigate the relationship between alcohol co
 #| echo: false
 #| warning: false
 #| error: false
-#| fig-cap: !expr 'paste0("Forest plot of Bayesian regression model including Habits of Alcohol Consumption before stroke, and sex explaining the probability of New-Onset Delirium. ", getFootnote(res_del_c2$model, double_escape=FALSE))'
+#| fig-cap: !expr 'paste0("Forest plot of Bayesian regression model including habits of alcohol consumption before stroke, and sex explaining the probability of new-onset delirium. ", getFootnote(res_del_c2$model, double_escape=FALSE))'
 #| cache: TRUE
 # names <- c("Year of birth", "Height", "Number of children", "Cranial volume", "Sex" )
 # header <- c("OR", "Lower", "Upper" )
@@ -177,7 +177,7 @@ plotForest(res_del_c2$model)
 
 ```{r tbl2-delirium-c22, eval = FALSE}
 #| label: tbl2-delirium-c2
-#| tbl-cap: Relationship between _c2_ and occurrence of _New Delirium_
+#| tbl-cap: Relationship between _c2_ and occurrence of _new delirium_
 #| tbl-colwidths: "auto"
 #| echo: false
 library(gt)

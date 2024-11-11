@@ -8,7 +8,7 @@ library(rms)
         options(contrasts=c("contr.treatment", "contr.treatment"))
 ```
 
-## New Onset Delirium
+## New onset delirium
 
 A delirium of any cause occurred in 6.3% (n=364) of patients with a preponderance of males (7.3% vs. 4.8% in females, probablility of difference \>0.999). Categorisation of the delirium cases showed that in most cases the cause of the delirium could not be determined for sure (4.6%, n=268). Aside from this unspecified delirium group, alcohol related delirium was the most common specific cause, showing a sex difference with higher numbers in males (0.8% versus 0.1% in females, @tbl-delirium-sex). The remaining specific causes of delirium were rare. [^results_delir-1]
 
@@ -69,7 +69,7 @@ plot_tbl(data = df, selected_columns = sel, by="sex", stat_descr_loc = "bottom",
 
 ```
 
-### Relationship of Age and Sex on Delirium
+### Relationship of age and sex on delirium
 
 ```{r load-delirium-age, include=FALSE}
 tar_load(res_del_age)
@@ -79,7 +79,7 @@ Non-linear consideration of age showed a meaningful association with the occurre
 
 ```{r tbl-delir-age}
 #| label: tbl-delir-age
-#| tbl-cap: Relationship between age and occurrence of *_New Delirium_* analysed by biological sex
+#| tbl-cap: Relationship between age and occurrence of *_new delirium_* analysed by biological sex
 #| tbl-colwidths: "auto"
 #| out-width: 100%
 #| echo: false
@@ -93,7 +93,7 @@ replace_H_with(res_del_age$tbl)
 #| echo: false
 #| warning: false
 #| error: false
-#| fig-cap: !expr 'paste0("Overview of the **Relationship of _Age_ and _Sex_ on Delirium** after ischemic stroke from a plain Bayesian Model including internal model characteristics, observed results and predictions. **(A)** Non-linear relationship of age stratified by sex on occurence of delirium using restricted cubic splines with cutpoints ", paste(res_del_age$spline_knots, collapse=", ")," using ", res_del_age$d.f.," degrees of freedom. **(B)** Density plots for the posterior distributions of key predictors, including both main effects (e.g., age) and interactions (e.g., age*sex), illustrating distribution of observed effects are presented. **(C)** Probability difference between females and males given the observed model data at any given age point. **(D)** Distribution of the outcome variable for both sexes of observed data (y) are compared with model-replicated data (y_rep) to determine the model’s predictive accuracy. **(E)** Forest Plot showing odds ratios with 95% credible intervals.", res_del_age$pred_fn)'
+#| fig-cap: !expr 'paste0("Overview of the *relationship of _age_ and _sex_ on delirium* after ischemic stroke from a plain Bayesian model including internal model characteristics, observed results and predictions. **(A)** Non-linear relationship of age stratified by sex on occurence of delirium using restricted cubic splines with cutpoints ", paste(res_del_age$spline_knots, collapse=", ")," using ", res_del_age$d.f.," degrees of freedom. **(B)** Density plots for the posterior distributions of key predictors, including both main effects (e.g., age) and interactions (e.g., age*sex), illustrating distribution of observed effects are presented. **(C)** Probability difference between females and males given the observed model data at any given age point. **(D)** Distribution of the outcome variable for both sexes of observed data (y) are compared with model-replicated data (y_rep) to determine the model’s predictive accuracy. **(E)** Forest plot showing odds ratios with 95% credible intervals.", res_del_age$pred_fn)'
 #| cache: false
 library(gridExtra)
 library(ormPlot)
@@ -141,7 +141,7 @@ spline_knots <-
 
 ```
 
-### Relationship of Premorbid Function and Delirium
+### Relationship of premorbid function and delirium
 
 ```{r load-delirium-pRS, include=FALSE}
 tar_load(res_del_prs)
@@ -153,14 +153,14 @@ The premorbid Rankin Scale (pRS) was used to assess the relationship between pre
 
 ```{r tbl-2-Delirium-pRS}
 #| label: tbl-delir-pRS
-#| tbl-cap: Relationship between _premorbid Rankin Scale (pRS)_ and occurrence of *_New Delirium_*
+#| tbl-cap: Relationship between _premorbid Rankin Scale (pRS)_ and occurrence of *_new delirium_*
 #| tbl-colwidths: "auto"
 #| tbl-pos: H
 #| echo: false
 replace_H_with(res_del_prs$tbl)
 ```
 
-### Relationship of Stroke Severity and Delirium
+### Relationship of stroke severity and delirium
 
 ```{r load-delirium-nihss, include=FALSE}
 #Variables
@@ -223,9 +223,9 @@ header <- c("OR", "Lower", "Upper" )
 bm_delirium_nihss_p6 <- forestplot(summary(bm_delirium_nihss), header=header)
 ```
 
-Additionally, the location of the stroke was associated with delirium. Patients with a stroke in the right hemisphere had a higher probability of developing delirium compared to patients with a stroke in the left hemisphere (`r getMedCI(summary(bm_delirium_nihss), var="side_stroke")`). Patients experiencing a stroke in the posterior circulation had also a higher likelihood of delirium than patients with left hemispheric strokes (`r getMedCI(summary(bm_delirium_nihss), var="posterior")`). All these effects did not alter the independent effect of sex on the occurrence of delirium. @fig-delirium-nihss
+Additionally, the location of the stroke was associated with delirium. Patients with a stroke in the right hemisphere had a higher probability of developing delirium compared to patients with a stroke in the left hemisphere (`r getMedCI(summary(bm_delirium_nihss), var="side_stroke")`). Patients experiencing a stroke in the posterior circulation had also a higher likelihood of delirium than patients with left hemispheric strokes (`r getMedCI(summary(bm_delirium_nihss), var="posterior")`). All these effects did not alter the independent effect of sex on the occurrence of delirium. (@fig-delirium-nihss)
 
-```{r fig-delirium-nihss-2, fig.width=7, fig.asp=1, out.width="100%"}
+```{r fig-delirium-nihss-2, fig.width=6, fig.asp=1, out.width="80%"}
 #| label: fig-delirium-nihss-2
 #| fig-pos: H
 #| echo: false
@@ -236,7 +236,7 @@ Additionally, the location of the stroke was associated with delirium. Patients 
 bm_delirium_nihss_p1 
 ```
 
-### Relationship of Year of Therapy, Therapy, Sex and Delirium
+### Relationship of year of therapy, therapy, sex and delirium
 
 ```{r load-delirium-year, include=FALSE}
 tar_load(res_del_year)
@@ -261,15 +261,15 @@ As demonstrated in the general description of the cohort, the year of therapy an
 #| fig-cap: !expr 'paste0("**(A)** Descriptive analysis of counts of therapy modes (intravenous thrombolysis (IVT) or endovascular stroke therapy (EST) (with or without IVT) during the years 1998--2022. **(B)** Relationship of year of therapy, therapy, sex and probability of new onset delirium")'
 #| cache: TRUE
 plot_grid(
-        plot_grouped_bar_chart(df, var="date_therapy_year_cat", group_var = "therapy", chart_type = "lollipop") + ylab("P(Delrium|year)") + xlab("Year of Therapy") + coord_cartesian(expand=TRUE, ylim=c(0,500)) + theme(axis.text.x = element_text(angle = 45)),
-        res_del_year$p1 + xlab("Year of Therapy") + theme(axis.text.x = element_text(angle = 45)), rel_widths = c(1, 1), ncol=1, labels = c("A", "B"))
+        plot_grouped_bar_chart(df, var="date_therapy_year_cat", group_var = "therapy", chart_type = "lollipop") + ylab("counts") + xlab("Year of Therapy") + coord_cartesian(expand=TRUE, ylim=c(0,600)) + theme(axis.text.x = element_text(angle = 45)),
+        res_del_year$p1 + xlab("Year of Therapy") + ylab("P(Delrium|year)") + theme(axis.text.x = element_text(angle = 45)), rel_widths = c(1, 1), ncol=1, labels = c("A", "B"))
 ```
 
 When considering the influence of the year of therapy on the occurrence of delirium, a clear pattern can be observed with a beginning increase from 2005 onwards (@fig-delirium-year B). The steepest increase in delirium was observed in 2012 (e.g. 1.3% increase from 2011 in males with endovascular therapy), and a top in 2015/2016. The mode of therapy was also associated with the occurrence of delirium. Patients receiving intravenous thrombolysis had lower odds of developing a delirum than patients receiving endovascular therapy (`r getMedCI(summary(res_del_year$model), var="EST")`). Further adjusting for age and NIHSS, this association was at least partly explained by the influence of these variables, with a shift in the median posterior estimate of therapy towards 1 (`r getMedCI(summary(res_del_year$modeladj), var="EST")`). The strong association of biological sex with delirium was even more pronounced when adjusting for year of therapy, therapy mode, age and NIHSS (`r getMedCI(summary(res_del_year$modeladj), var="sex")`).
 
 ```{r tbl-delir-year}
 #| label: tbl-delir-year
-#| tbl-cap: Relationship between Year of Therapy and Occurrence of New Delirium analysed by Biological Sex
+#| tbl-cap: Relationship between year of therapy and occurrence of new delirium analysed by biological sex
 #| tbl-colwidths: "auto"
 #| out-width: 100%
 #| echo: false

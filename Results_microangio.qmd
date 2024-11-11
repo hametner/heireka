@@ -131,13 +131,13 @@ ylab(expression(P(Delirium ~ "|" ~ Data, x)))  +
             
 
 ```
-### Small vessel Disease
+### Cerebral small vessel disease
 
 The variable for this analysis is presence of small vessel disease, which is categorized into five levels: no, minor, moderate, severe, and Unknown. Out of `r nrow(df)` total observations, `r 100-round(sum(!is.na(df$var_microangio))/nrow(df)*100,1) `% (n = `r nrow(df)-sum(!is.na(df$var_microangio))`) were not available for information on the degree of small vessel disease
 In available data, 31.1% of patients had some degree of cerebral small vessel disease. A higher frequency of minor small vessel disease was observed in males (17.4% versus 15.9% in female), whereas females exhibited a higher frequency of severe small vessel disease (10.8% versus 7.5% in males). The probability of this difference was 98.9%. 
 ```{r tbl-delirium-microangio}
 #| label: tbl-delirium-microangio
-#| tbl-cap: Descriptive analysis of _Small Vessel disease_ in subgroups of sex
+#| tbl-cap: Descriptive analysis of _cerebral small vessel disease_ in subgroups of sex
 #| tbl-colwidths: "auto"
 #| echo: false
 library(gt)
@@ -181,13 +181,13 @@ Investigating the interaction of sex on multiplicative scale revealed that some 
 #| echo: false
 #| warning: false
 #| error: false
-#| fig-cap: !expr 'paste0("Forest plot of Bayesian regression model including Degree of Microangiopathy, and sex explaining the probability of New-Onset Delirium. ", getFootnote(res_del_microangio$model, double_escape=FALSE))'
+#| fig-cap: !expr 'paste0("Forest plot of Bayesian regression model including _degree of cerbral small vessel disease_, and sex explaining the probability of new-onset delirium. ", getFootnote(res_del_microangio$model, double_escape=FALSE))'
 #| cache: TRUE
 # names <- c("Year of birth", "Height", "Number of children", "Cranial volume", "Sex" )
 
-# header <- c("OR", "Lower", "Upper" )
-# forestplot(summary(res_del_microangio$model), header=header)
-plotForest(res_del_microangio$model)
+header <- c("OR", "Lower", "Upper" )
+forestplot(summary(res_del_microangio$model), header=header)
+# plotForest(res_del_microangio$model)
 ```
 
 ```{r fig-delirium-microangio, fig.width=10.5, fig.asp=0.4, out.width="100%", eval=FALSE}

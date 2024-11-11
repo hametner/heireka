@@ -1,6 +1,29 @@
-# Declarations {.unnumerbered}
+\normalsize
+# Declarations {.unnumbered}
 
-Declaration of Generative AI and AI-Assisted Technologies in the Writing Process
+## Eidesstattliche Versicherung / Statutory Declaration 
+
+-   Bei der eingereichten Dissertation handelt es sich um meine eigenständig erbrachte Leistung. \
+    *I herewith formally declare that I have written the submitted dissertation independently.*
+
+-   Ich habe nur die angegebenen Quellen und Hilfsmittel benutzt und mich keiner unzulässigen Hilfe Dritter bedient. Insbesondere habe ich wörtlich oder sinngemäß aus anderen Werken übernommene Inhalte als solche kenntlich gemacht. \
+    *I did not use any third party support except for the quoted literature and other sources mentioned in the text. Content from other work, either literally or in content, has been declared as such.*
+
+-   Die Arbeit oder Teile davon habe ich bislang nicht an einer Hochschule des In- oder Auslands als Bestandteil einer Prüfungs- oder Qualifikationsleistung vorgelegt. \
+    *The thesis has not been submitted to any examination body in this, or similar, form.*
+
+-   Die Richtigkeit der vorstehenden Erklärungen bestätige ich. \
+    *I confirm the correctness of the aforementioned declarations.*
+
+-   Die Bedeutung der eidesstattlichen Versicherung und die strafrechtlichen Folgen einer unrichtigen oder unvollständigen eidesstattlichen Versicherung sind mir bekannt. Ich versichere an Eides statt, dass ich nach bestem Wissen die reine Wahrheit erklärt und nichts verschwiegen habe. *I am aware of the legal consequences of this declaration. To the best of my knowledge I have told the pure truth and not concealed anything.*
+
+\vspace{2.8cm}
+
+Würzburg, 10.11.2024 \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_ (Christian Hametner)
+
+\newpage
+
+## Declaration of Generative AI and AI-Assisted Technologies within this work
 
 In the creation of this work, the author utilized services provided by OpenAI, Inc. to support both writing and code development. All contributions of these services were supplementary. Importantly, the author genuinely created the core intellectual content and made all final decisions.
 

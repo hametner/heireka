@@ -1,5 +1,5 @@
 # Methods {#sec-methods}
-
+\normalsize
 {{< include setup.qmd >}}
 
 ```{r LOAD-Admission-DF, include=FALSE}
@@ -16,7 +16,7 @@ df <- df_adm_f
 ## Methodological Excursus: A short introduction to Bayesian statistics
 
 ### Definition of Bayesian statistics
-
+\normalsize
 In 1763, Thomas Bayes wrote a paper called "An Essay towards solving a Problem in the Doctrine of Chances". At its core, it describes how *Bayesian theory* allows us to update prior knowledge as one gathers new data. Prior information is used in the form of distributions, so-called prior distributions, which may take different levels of information. [@vandeschoot2021]
 
 -   A [probability distribution]{.smallcaps} is defined as a mathematical function describing the likelihood of different outcomes or values. A prior distribution, or simply *Prior*, represents the potential knowledge before observing the data and is included in the Bayesian models as a probability distribution ( @fig-priordemo ).
@@ -66,9 +66,9 @@ $$
 
 Where:
 
--   $P(A\|B)$ is the conditional probability of $A$ given $B$,
+-   $P(A|B)$ is the conditional probability of $A$ given $B$,
 
--   $P(B\|A)$ is the conditional probability of $B$ given $A$,
+-   $P(B|A)$ is the conditional probability of $B$ given $A$,
 
 -   $P(A)$ is the probability of $A$ ("the prior"), and
 
@@ -78,24 +78,26 @@ $$
 P(\theta | \text{Data}) = \frac{P(\text{Data} | \theta) P(\theta)}{P(\text{Data})}
 $$
 
-where P(\theta \| \text{Data}) is the posterior, P(\text{Data} \| \theta) is the likelihood, P(\theta) is the prior, and P(\text{Data}) is the marginal likelihood (normalizing constant).
+where
+
+-   $P(\theta | \text{Data})$ is the posterior, $P(\text{Data} | \theta)$ is the likelihood, $P(\theta)$ is the prior, and $P(\text{Data})$ is the marginal likelihood (normalizing constant).
 
 The Markov Chain Monte Carlo (MCMC) methods are computational algorithms that simplify the calculations needed to draw samples from posterior distributions. In recent years, the most commonly used advanced MCMC algorithms were Hamiltonian Monte Carlo (HMC). HMC improves sampling efficiency by using information about the gradient of the probability distribution.
 
 ::: {.callout-tip appearance="simple" icon="false"}
-A *simple example* shall add to the understanding of the given terms.
+A simple example shall add to the understanding of the given terms.
 
 Please consider a card game with a deck of 52 cards. Your game partner pulls one card and its your turn to guess which card.
 
-At this point each card (C) has equal probability $P(C_i) = \frac{1}{52} \approx 0.0192$ (prior distribution).
+At this point each card (C) has equal probability $$P(C_i) = \frac{1}{52} \approx 0.0192$$ (prior distribution).
 
-Then you get a new information that the card is a heart. From now on *non-hearts (Cnh)* would have a likelihood of $P(Hint|Cnh) = 0$, and all *hearts* would be $P(Hint|Ch) = 1$.
+Then you get a new information that the card is a heart. From now on non-hearts (Cnh) would have a likelihood of $P(Hint|Cnh) = 0$, and all hearts would be $P(Hint|Ch) = 1$.
 
-Using Bayes’ Theorem, the updated probability for each card: $P(C_i | \text{Clue}) = \frac{P(\text{Clue} | C_i) \cdot P(C_i)}{P(\text{Clue})}$
+Using Bayes’ Theorem, the updated probability for each card: $$P(C_i | \text{Clue}) = \frac{P(\text{Clue} | C_i) \cdot P(C_i)}{P(\text{Clue})}$$
 
-For each card of hearts (Ch) the *updated posterior probability* would be: $P(C_h | \text{Clue}) = \frac{1 \times \frac{1}{52}}{\frac{13}{52}} = \frac{1}{13} \approx 0.0769.$
+For each card of hearts (Ch) the updated posterior probability would be: $$P(C_h | \text{Clue}) = \frac{1 \times \frac{1}{52}}{\frac{13}{52}} = \frac{1}{13} \approx 0.0769.$$
 
-Summarized shorty, the Bayes Theorem facilitates an integrative approach, combining a *prior distribution* with a *likelihood* that is derived from the new data; together they form the probability distribution (so-called *posterior distribution*). [@mcelreath2020]
+Summarized shorty, the Bayes Theorem facilitates an integrative approach, combining a prior distribution with a likelihood that is derived from the new data; together they form the probability distribution (so-called posterior distribution). [@mcelreath2020]
 :::
 
 ```{r fig-posteriordemo}
@@ -185,7 +187,7 @@ This contrasts with more traditional forms of statistical inference, notably fre
 
 ```{r tbl-freq-bayes}
 #| tbl-label: tbl-freq-bayes
-#| tbl-cap: "A limited overview on viewpoints of Frequentist and Bayesian statistical approaches."
+#| tbl-cap: "A limited overview on viewpoints of Frequentist and Bayesian statistical approaches. (adapted from @harrell2024)"
 #| tbl-colwidths: "auto"
 #| echo: false
 library(knitr)
@@ -249,10 +251,12 @@ This work is in accordance with the Declaration of Helsinki and its subsequent a
 
 This work uses principles of literate programming [@knuth1984]. It aims at reproduceability. All input data were being left unchanged. Instead they are imported and processed by R code to fit the need for desired modifications and analysis. The R software with a graphical user interface of RStudio (Posit Software, PBC, 2024) was used to write and execute code.
 
-\footnotesize `r get_package_citations(package_type="all", output="text")` \normalsize
+\footnotesize 
+`r get_package_citations(package_type="all", output="text")` 
+\normalsize
 
 ### Code
-
+\normalsize
 The whole code of the project can be accessed from within a *GitHub repository* under <https://github.com/hametner/heireka>. Selected R-code/function are presented in the text demonstrating the relevant methodology applied. Although many variable are already present in the HEIREKA database in highest quality, some were re-evaluated by leveraging different data sources and others newly created. The following functions are examples how data were extracted and processed:
 
 #### Function `smoking`
@@ -319,7 +323,7 @@ webshot("output/pic/outcome_delir_network.html", file = "output/pic/outcome_deli
 #| fig-cap: !expr 'paste0("Dependency network visualizing the relationships between the _outcome_delir_ target and its dependencies within the pipeline. Upstream targets represent the inputs and intermediate steps that contribute to the computation of outcome_delir. Only key dependencies are shown, downstream targets are omitted. In the lower right corner the whole network is shown.")'
 #| fig-width: 7
 #| fig-asp: 1
-#| out-width: "80%"
+#| out-width: "100%"
 #| echo: false
 #| warning: false
 #| error: false
@@ -342,7 +346,8 @@ target_names <- c(
 )
 
 dependencies <- get_upstream_dependencies(target_names)
-tar_load(data_dic)
+# tar_load(data_dic)
+data_dic <- read_delim("data_dic.csv", delim = ";", escape_double = FALSE, trim_ws = TRUE)
 target_summary_df <- build_target_summary_df(dependencies, data_dic)
 
 
@@ -536,6 +541,7 @@ Stroke Etiology within this database is following the principles of the Trial of
 #| tbl-colwidths: "auto"
 #| echo: false
 tar_load(data_dic)
+
 data_dic$levels <- sapply(data_dic$name, function(varname) {
     if (varname %in% names(df)) {
         # Check if the variable is a factor

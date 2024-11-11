@@ -122,7 +122,7 @@ ylab(expression(P(Delirium ~ "|" ~ Data, x)))  +
 Handedness was evaluated as 3-level variable with levels of being right- or lefthanded, or being ambidextrous. Self reported handedness was available in n = 3227 (55.9%). Ambidextrousness was overall rare with 0.2-0.4%. Being male is associated with higher odds of being left-handed (males (2.3%), females (1.5%, probability of this association `r bm_delirium_var_handed_univar_P`) or ambidextrous (compared to being right-handed). (@tbl-delir-handedness) 
 ```{r tbl-delirium-handedness}
 #| label: tbl-delir-handedness
-#| tbl-cap: Relationship between _Lateralization of Handedness_ and Occurrence of *_New Delirium_*
+#| tbl-cap: Relationship between _lateralization of handedness_ and occurrence of *_new delirium_*
 #| tbl-colwidths: "auto"
 #| echo: false
 # t <- getLatexTableCH(bm_delirium_age, font_size=8)
@@ -157,10 +157,10 @@ plot_tbl(
 ) %>% 
     kable_styling(latex_options = c("scale_down"))  
 ```
-Bayesian logistic regression analysis evaluated the occurence of a new delirium after stroke during hosptial stay and its association to the handedness of the patient. No meaningful associations in the main effect analysis or the sex specific analysis (including a multiplicative interaction by sex) was found. (@tbl-delir-handedness2)
+Bayesian logistic regression analysis evaluated the occurence of a new delirium after stroke during hosptial stay and its association to the handedness of the patient. No meaningful associations in the main effect analysis or the sex specific analysis (including a multiplicative interaction by sex) were found. (@tbl-delir-handedness2)
 ```{r tbl-Delirium-Handedness2}
 #| label: tbl-delir-handedness2
-#| tbl-cap: Relationship between _lateralization of handedness_ and occurrence of *_New Delirium_*
+#| tbl-cap: Relationship between _lateralization of handedness_ and occurrence of *_new delirium_*
 #| tbl-colwidths: "auto"
 #| echo: false
 replace_H_with(res_del_handedness$tbl)

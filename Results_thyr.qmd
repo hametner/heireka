@@ -101,13 +101,13 @@
         
 # }
 ```
-### Thyroid and Delirium
+### Thyroid and delirium
 This analysis investigates the frequency and differences in pre-stroke thyroid diseases by biological sex.
 Frequencies of hypothyroidism, hyperthyroidism, and euthyroidism are presented. (@tbl-delirium-thyr, @fig-delirium-thyr (A)) 
 Not surprisingly, more females in this cohort presented with any form of thyroid disease (females `r round((df %>% filter(var_prev_thyr!="euthyroidism") %>% filter(sex=="female") %>% nrow()) /  (df %>% filter(!is.na(var_prev_thyr)) %>% nrow())*100,1)`% versus males `r round((df %>% filter(var_prev_thyr!="euthyroidism") %>% filter(sex=="male") %>% nrow()) /  (df %>% filter(!is.na(var_prev_thyr)) %>% nrow())*100,1)`%). Of all females (n=`r df %>% filter(sex=="female") %>% nrow()`) hypothyroidism was present in `r round((df %>% filter(sex=="female") %>% filter(var_prev_thyr=="hypo") %>% nrow() )/(df %>% filter(sex=="female") %>% nrow())*100,1)`% compared to males (n= `r df %>% filter(sex=="male") %>% nrow()`) with `r round((df %>% filter(sex=="male") %>% filter(var_prev_thyr=="hypo") %>% nrow() )/(df %>% filter(sex=="female") %>% nrow())*100,1)`%. 
 ```{r tbl-delirium-thyr}
 #| label: tbl-delirium-thyr
-#| tbl-cap: Descriptive analysis of _Thyroid Disesease_ in subgroups of sex
+#| tbl-cap: Descriptive analysis of _thyroid disesease_ in subgroups of sex
 #| tbl-colwidths: "auto"
 #| results: hold
 #| tbl-pos: H
@@ -142,14 +142,14 @@ plot_tbl(
 ) %>% 
     kable_styling(latex_options = c("scale_down"))  
 ```
-Patients that were diagnosed with _hypothyroidism_ before stroke, when compared to euthyroid patients, had no signs of an increased likelihood of developing delirium `r getMedCI(summary(res_del_thyr$model), var="hypo")`. Patients with already diagnosed _hyperthyroidism_ on the other hand, showed an increased likelihood of developing delirium `r getMedCI(summary(res_del_thyr$model), var="hyper")` with a probability of the direction of this effect of `r round(parse_number(getP(getRsmb(res_del_thyr$model), var="var_prev_thyr=hyper", text=FALSE))*100,1)`%. 
+Patients that were diagnosed with _hypothyroidism_ before stroke, when compared to euthyroid patients, had no signs of an increased likelihood of developing delirium (`r getMedCI(summary(res_del_thyr$model), var="hypo")`). Patients with already diagnosed _hyperthyroidism_ on the other hand, showed an increased likelihood of developing delirium (`r getMedCI(summary(res_del_thyr$model), var="hyper")`) with a probability of the direction of this effect of `r round(parse_number(getP(getRsmb(res_del_thyr$model), var="var_prev_thyr=hyper", text=FALSE))*100,1)`%. 
 The interaction model showed that being female or male was not clinically relevant (`r round(parse_number(getP(getRsmb(res_del_thyr$model_ia), var="var_prev_thyr=hyper * sex=male", text=FALSE))*100,1)`%) for the association of thyroid disease and delirium. 
 ```{r fig-delirium-thyr, fig.width=6, fig.asp=0.5, out.width="100%"}
 #| label: fig-delirium-thyr
 #| echo: false
 #| warning: false
 #| error: false
-#| fig-cap: !expr 'paste0("**(A)** Descriptive Analysis of _Previously Diagnosed Thyroid Disease_ stratified by biological sex. **(B)** Probability of Occurrence of a New Delirium given the presence of thyroid disesase in feales and males, **(C)** Differences in posterior probability of females - males depending on the status of thyroid disease")'
+#| fig-cap: !expr 'paste0("**(A)** Descriptive analysis of _previously diagnosed thyroid disease_ stratified by biological sex. **(B)** Probability of occurrence of a new delirium given the presence of thyroid disesase in feales and males, **(C)** Differences in posterior probability of females - males depending on the status of thyroid disease")'
 #| cache: TRUE
 p <-       plot_grid(
         res_del_thyr$p0 + ylim(0, 2500) + theme(legend.position = c(0.83,0.95), 

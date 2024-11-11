@@ -45,7 +45,7 @@ options(contrasts=c("contr.treatment", "contr.treatment"))
 
 ## Description of the cohort core characteristics
 
-The final cohort sample covered n=`r nrow(df)` cases. The core characteristics of the cohort are presented in @tbl-corecohort. Females tended to be older (median age 78 vs. 72 for males) and more likely to have worse pre-stroke functional status (e.g., 47% females versus 59% males had a pRS of 0). Interestingly, males were more frequently active smokers (32.2% vs. 16.6% in females). Regarding comorbidities, diabetes mellitus, dyslipidemia, and coronary heart disease were slightly more frequent among males, while arterial hypertension was more common in females.
+The final cohort sample covered n=`r nrow(df)` cases. The core characteristics of the cohort are presented in @tbl-corecohort. Females tended to be older (median age 78 vs. 72 for males) and more likely to have worse pre-stroke functional status (e.g., 47% females versus 59% males had a pRS of 0). Males were more frequently active smokers (32.2% vs. 16.6% in females). Regarding comorbidities, diabetes mellitus, dyslipidemia, and coronary heart disease were slightly more frequent among males, while arterial hypertension was more common in females.
 
 ```{r tbl-corecohort}
 #| label: tbl-corecohort
@@ -113,7 +113,7 @@ The disparity in age between females and males, as anticipated based on epidemio
 
 ```{r fig-age-dist, fig.width=7, fig.asp=0.35, out.width="100%"}
 #| label: fig-age-dist
-#| fig-cap: "Distribution of Age by Sex: **(A)** Histogram of and overlaying density estimation of whole cohort, **(B)** Overlay of histogram and density in females and males, **(C)** Overlay of density estimations of females and males."
+#| fig-cap: "Distribution of age stratified by sex: **(A)** Histogram of and overlaying density estimation of whole cohort, **(B)** Overlay of histogram and density in females and males, **(C)** Overlay of density estimations of females and males."
 #| echo: false
 #| warning: false
 #| error: false
@@ -181,7 +181,7 @@ p3 <- ggplot(df, aes(x = age, fill = sex)) +
              x = 79,
              y = 0.015,
              xend = 50,
-             yend = 0.034,
+             yend = 0.032,
              size = 0.2,
              color = "black") +
     scale_fill_colorblind() +
@@ -214,7 +214,7 @@ p
 
 ### Temporal variation of cohort based on biological sex
 
-Males showed a higher absolute number of cases with intravenous thrombolysis throughout the years -- with one major exception around 2008/2009. Initially, the usage of endovascular stroke therapy (EST) was similar for both sexes. Since the beginning of the thrombectomy area in 2015 (with markedly increasing numbers overall), females have been more frequently treated with mechanical thrombectomy. As for the combined therapy, the sex difference fluctuates, with males generally receiving more combined therapy. However, a similar trend in favour of females (as in EST alone) may be seen. @fig-therapy-year
+Males showed a higher absolute number of cases with intravenous thrombolysis throughout the years -- with one major exception around 2008/2009. Initially, the usage of endovascular stroke therapy (EST) was similar for both sexes. Since the beginning of the thrombectomy area in 2015 (with markedly increasing numbers overall), females have been more frequently treated with mechanical thrombectomy. As for the combined therapy, the sex difference fluctuates, with males generally receiving more combined therapy. However, a similar trend in favour of females (as in EST alone) may be seen. @fig-therapy-year When comparing earlier with more recent *years*, the number of cases with either intravenous thromobolysis or mechanical thrombectomy or both increased substantially.
 
 ```{r fig-therapy-year, fig.width=7, fig.asp=0.8, out.width="100%"}
 #| label: fig-therapy-year
@@ -292,7 +292,7 @@ grid.arrange(p1, p2, ncol = 1)
 
 ```
 
-The sex distrubtion is consistent across the spectrum of functional dependency prior to stroke (@fig-age-pRS).
+The sex distrubtion showed consistency across the spectrum of functional dependency prior to stroke (@fig-age-pRS).
 
 ```{r fig-age-pRS, fig.width=7, fig.asp=0.4, out.width="100%"}
 #| label: fig-age-pRS
@@ -341,13 +341,13 @@ p <- ggplot(df , aes(x = age, fill = sex)) +
 p
 ```
 
-*Chronological age* and *functional dependency prior stroke (pRS)* are therefore most relevant variables to be considerd in further analysis. When comparing earlier with more recent *years*, the number of cases with either intravenous thromobolysis or mechanical thrombectomy or both increased substantially.
+*Chronological age* and *functional dependency prior stroke (pRS)* are therefore most relevant variables to be considerd in further analysis.
 
-#### Operational Aspects
+#### Operational aspects
 
-##### Wake-Up Stroke
+##### Wake-Up stroke
 
-There are fluctuations in the frequency disparities between biological sexes, with a higher number of female cases seen in some years (e.g., 2011, 2017, and 2018), while in other instances, the reverse tendency emerges (e.g., 2004, 2006, and 2009, [@fig-tele-wakeup B]). Likewise to above mentioned increased since 2015, female wake-up stroke cases have risen considerably compared to males, with the most significant difference in 2018 (@tbl-wakeup-tele).
+There are noticeable fluctuations in the frequency differences between biological sexes regarding wake-up strokes. In certain years, such as 2011, 2017, and 2018, there is a higher prevalence of female cases, while in others—like 2004, 2006, and 2009—the trend reverses (see @fig-tele-wakeup B). Similarly, since 2015, the incidence of wake-up strokes in females has risen significantly compared to males, with the largest disparity observed in 2018 (see @tbl-wakeup-tele).
 
 ##### Telemedicine assisted thrombolysis
 
@@ -559,7 +559,7 @@ p4 <- ggplot(df_diff, aes(x = date_therapy_year, y = diff, fill = diff > 0)) +
 plot_grid(p1, p3, p2, p4, ncol = 2, labels = c("A", "B"))
 ```
 
-### Stroke Severity as measured by National Institutes of Health Stroke Scale Score (NIHSS)
+### Stroke severity as measured by National Institutes of Health Stroke Scale Score (NIHSS)
 
 ```{r nihss}
 #| cache: TRUE
@@ -578,7 +578,7 @@ bm.nihss.vif <- blrm(getFormula("nihss_d0", sel, interaction = FALSE), data = df
 s <- shortREV(bm.nihss.vif, keep = "all", output="graph")
 p2 <- s$graph
 
-caption <- paste("Variances of predictors of admission National Institutes of Health Stroke Scale Score (NIHSS) based on a bayesian regression model.", s$footnote, getFootnote(bm.nihss.vif))
+caption <- paste0("Variances of predictors of admission National Institutes of Health Stroke Scale Score (NIHSS) based on a bayesian regression model. ", s$footnote, getFootnote(bm.nihss.vif, double_escape = FALSE))
 
 pRS <- getMedCI(getRsmb(bm.nihss.vif), "pRS")
 loc <- getMedCI(getRsmb(bm.nihss.vif), "side_stroke=right")
@@ -586,7 +586,7 @@ afib <- getMedCI(getRsmb(bm.nihss.vif), "risk_factor_af_known=1")
 
 ```
 
-Several aspects are to be considered when NIHSS is used as proxy for stroke severity in statistical models. The following analysis explains why consideration of stroke location when introducing NIHSS as a measure of stroke severity is rather important. Leaving aside cases who have been classified as posterior circulation stroke (n = `r df$side_stroke[df$side_stroke=="posterior"] %>% length`, `r (df$side_stroke[df$side_stroke=="posterior"] %>% length / df$side_stroke %>% length * 100) %>% round(1)`%), and bilateral strokes (n = `r df$side_stroke[df$side_stroke=="bilateral"] %>% length`, `r (df$side_stroke[df$side_stroke=="bilateral"] %>% length / df$side_stroke %>% length * 100) %>% round(1)`%, @tbl-stroke-side), the remaining cases (n = `r dfx %>% nrow()`) are facilitated for the analysis of this chapter.
+Several aspects are to be considered when NIHSS is used as proxy for stroke severity in statistical analysis. The following may explains why consideration of stroke location when introducing NIHSS as a measure of stroke severity is rather important. For the analysis of this chapter, cases who have been classified as posterior circulation stroke (n = `r df$side_stroke[df$side_stroke=="posterior"] %>% length`, `r (df$side_stroke[df$side_stroke=="posterior"] %>% length / df$side_stroke %>% length * 100) %>% round(1)`%), and bilateral strokes (n = `r df$side_stroke[df$side_stroke=="bilateral"] %>% length`, `r (df$side_stroke[df$side_stroke=="bilateral"] %>% length / df$side_stroke %>% length * 100) %>% round(1)`%, @tbl-stroke-side) are left aside, the remaining cases (n = `r dfx %>% nrow()`) are facilitated.
 
 ```{r tbl-stroke-side}
 #| label: tbl-stroke-side

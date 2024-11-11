@@ -1,4 +1,4 @@
-### Level of Consciousness
+### Level of consciousness
 
 ```{r Delirium-Vigilance, include=FALSE}
 # getResDelAphasia <- function(df_adm_f = df_adm_f, data_dic = data_dic){
@@ -124,7 +124,7 @@ This analysis investigates the frequency of differences in the level of consciou
 
 ```{r tbl-Delirium-LOC}
 #| label: tbl-delirium-loc
-#| tbl-cap: Descriptive analysis of _Levels of Consciousness_ within the whole cohort and the subgroups of biological sex
+#| tbl-cap: Descriptive analysis of _levels of consciousness_ within the whole cohort and the subgroups of biological sex
 #| tbl-colwidths: "auto"
 #| echo: false
 sel <- c("sex", "var_vigil")
@@ -164,8 +164,7 @@ The majority of patients in this dataset were awake (`r round((df %>% filter(var
 #| echo: false
 #| warning: false
 #| error: false
-#| fig-cap: !expr 'paste0("**(A)** Descriptive Analysis of _Levels of Consciousness (awake, somnolence, sopor, coma)_ stratified by biological sex. **(B)** Probability of Occurrence of a New Delirium given the different levels of consciousness comparing females and males, **(C)** Differences in posterior probability of females - males in each level of consciousness")'
-#| cache: TRUE
+#| fig-cap: !expr 'paste0("**(A)** Descriptive analysis of _levels of consciousness (awake, somnolence, sopor, coma)_ stratified by biological sex. **(B)** Probability of occurrence of a new delirium given the different levels of consciousness comparing females and males, **(C)** Differences in posterior probability of females - males in each level of consciousness")'
 p <-       plot_grid(
         res_del_loc$p0 + ylim(0, 3000) + theme(legend.position = c(0.83,0.95), 
                                    axis.text.x = element_text(angle = 45, hjust = 1),
@@ -184,7 +183,7 @@ In the bayesian regression model males were less likely to present with a worse 
 
 ```{r tbl-delirium-loc2}
 #| label: tbl-delirium-loc2
-#| tbl-cap: Relationship between _Levels of Consciousness_ of *_New Delirium_*
+#| tbl-cap: Relationship between _levels of consciousness_ of *new delirium*
 #| tbl-colwidths: "auto"
 #| echo: false
 library(gt)

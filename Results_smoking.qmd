@@ -123,10 +123,10 @@
             
 
 ```
-### Smoking status, Sex and Delirium
+### Smoking status, sex and delirium
 This analysis investigates the frequency and differences in patients who have either stopped smoking or were still smoking at hospital presentation. 
 Frequencies of non-smokers, previous and current smokers are presented. (@tbl-delirium-smoking) 
-Sex difference in ever-smokers can be observed where males were more likely to be smoking (`r round((df %>% filter(risk_factor_smoking!="no") %>% filter(sex=="male") %>% nrow())/nrow(df)*100,1)`%) compares to females (`r round((df %>% filter(risk_factor_smoking!="no") %>% filter(sex=="female") %>% nrow())/nrow(df)*100,1)`). The overall number of patients who had smoked in the past but stopped was rather low.
+Sex difference in ever-smokers can be observed where males were more likely to be smoking (`r round((df %>% filter(risk_factor_smoking!="no") %>% filter(sex=="male") %>% nrow())/nrow(df)*100,1)`%) compared to females (`r round((df %>% filter(risk_factor_smoking!="no") %>% filter(sex=="female") %>% nrow())/nrow(df)*100,1)`). The overall number of patients who had smoked in the past but stopped was rather low.
 ```{r tbl-delirium-smoking}
 #| label: tbl-delirium-smoking
 #| tbl-cap: Relationship between _Smoking_ and occurrence of *_New Delirium_*
@@ -170,7 +170,7 @@ plot_tbl(
 In the regression model to predict delirium, current smokers (compared to non-smokers) showed no clear association (`r getMedCI(summary(bm_delirium_risk_factor_smoking), var="current")`, @tbl-delirium-smoking2). Previous smokers (compared to non-smokers) showed some trend towards a lower probability of developing a delirium (`r getMedCI(summary(bm_delirium_risk_factor_smoking), var="previous")`, probability `r getP(getRsmb(bm_delirium_risk_factor_smoking), var="risk_factor_smoking=previous", text=FALSE)`). A trend for a moderation by sex was observed for previous smokers, but credible intervals were wide and the model after adjustment unstable because of low numbers.
 ```{r tbl-delirium-smoking2}
 #| label: tbl-delirium-smoking2
-#| tbl-cap: Relationship between _Smoking_ and occurrence of _New Delirium_
+#| tbl-cap: Relationship between _smoking_ and occurrence of _new delirium_
 #| tbl-colwidths: "auto"
 #| results: hold
 #| echo: false

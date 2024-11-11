@@ -1,5 +1,5 @@
 {{< include setup.qmd >}}
-
+\normalsize
 # Results
  
 {{< include Results_core.qmd >}}

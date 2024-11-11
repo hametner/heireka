@@ -180,11 +180,11 @@ plot_tbl(
 # res_del_eyedeviation$tbl
 ```
 
-Presence of eye deviation at admission is significantly associated with the occurrence of new delirium. The probability of this differences was \>99.9%. The regression model suggested an independent association of *non-forced eye deviation* with the in-hospital occurence of delirium (odds ratio 1.30, 95% credible interval 1.04--1.64, probability 98.6%, @tbl-delirium-eyedeviation2). The interaction model with sex showed no relevant new aspects, meaning that sex did not mediate the independent association of non-forced eye deviation (probability of interaction 78.1%). Inclusion of potential confounders such as NIHSS or age did not alter these findings. The posterior probability density of the contrast between females and males of developing a delirium at a given level of eye deviation is given. (@fig-delirium-eyedeviation)
+Presence of eye deviation at admission is significantly associated with the occurrence of new delirium. The probability of this differences was \>99.9%. The regression model suggested an independent association of *non-forced eye deviation* with the in-hospital occurence of delirium (odds ratio 1.30, 95% credible interval 1.04--1.64, probability 98.6%, @tbl-delirium-eyedeviation2). The interaction model with sex showed no relevant new aspects, meaning that sex did not markedly influence the independent association of non-forced eye deviation (probability of interaction 78.1%). Inclusion of potential confounders such as NIHSS or age did not alter these findings. The posterior probability density of the contrast between females and males of developing a delirium at a given level of eye deviation is given. (@fig-delirium-eyedeviation)
 
 ```{r tbl-delirium-eyedeviation2}
 #| label: tbl-delirium-eyedeviation2
-#| tbl-cap: Relationship between _Eye deviation_ and occurrence of *_New Delirium_*
+#| tbl-cap: Relationship between _eye deviation_ and occurrence of _new delirium_
 #| tbl-colwidths: "auto"
 #| echo: false
 replace_H_with(res_del_eyedeviation$tbl)
@@ -195,7 +195,7 @@ replace_H_with(res_del_eyedeviation$tbl)
 #| echo: false
 #| warning: false
 #| error: false
-#| fig-cap: !expr 'paste0("**(A)** Descriptive Analysis of _Levels of Eye Deviation (no, non-forced, forced)_ stratified by biological sex. **(B)** Probability of Occurrence of a New Delirium given the different levels of Eye Deviation comparing females and males, **(C)** Differences in posterior probability of females - males in each level of Eye Deviation")'
+#| fig-cap: !expr 'paste0("**(A)** Descriptive analysis of _levels of eye deviation (no, non-forced, forced)_ stratified by biological sex. **(B)** Probability of occurrence of a new delirium given the different levels of eye deviation comparing females and males, **(C)** Differences in posterior probability of females - males in each level of eye deviation")'
 #| cache: TRUE
 p <-       plot_grid(
         res_del_eyedeviation$p0 + ylim(0, 2500) + theme(legend.position = c(0.83,0.95), 

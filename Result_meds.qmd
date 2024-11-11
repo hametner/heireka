@@ -127,13 +127,13 @@ bm_delirium_mdx_ia2 <- getModel(dv, ia2_mdx, file_name = "output/models/bm_delir
 
 ```
 
-### Prior Medications - Groups
+### Prior medications (*groups*)
 
 Descriptive analysis of prior medication usage at admission is presented, comparing the entire cohort and the subgroups of biological sex (male and female, @tbl-delirium-mdx). As notable differences between the sexes with a preponderance in females, *selective beta-blocking agents* (51.6% female versus 40.9% male patients) and *angiotensin II receptor blockers (ARBs)* (18.2% females versus 16.0% males) could be identified. Others showed an opposite trend toward males - among them *platelet aggregation inhibitors*, excluding heparin (38.7% females versus 43.8% males), and for example *HMG-CoA reductase inhibitors* (28.0% females versus 34.4% males).
 
 ```{r tbl-delirium-mdx}
 #| label: tbl-delirium-mdx
-#| tbl-cap: Descriptive analysis of _Prior medication (groups)_ at admission in the whole cohort and subgroups of biological sex
+#| tbl-cap: Descriptive analysis of _prior medication (groups)_ at admission in the whole cohort and subgroups of biological sex
 #| tbl-colwidths: "auto"
 #| tbl-pos: H
 #| echo: false
@@ -209,7 +209,7 @@ Thyroid hormones showed a significant sex difference, with 19.4% of females usin
 #| echo: false
 #| warning: false
 #| error: false
-#| fig-cap: !expr 'paste0("Forest Plot of *pre-stroke Medication (groups)* associated with *Delirium*.")'
+#| fig-cap: !expr 'paste0("Forest plot of *pre-stroke medication (groups)* associated with *delirium*.")'
 #| cache: TRUE
 
 # !expr 'paste0("Forest Plot of *pre-stroke Medication (groups)* associated with *Delirium*. ", getFootnote(bm_delirium_mdx, add_modelstats=TRUE, double_escape=FALSE))'
@@ -220,7 +220,7 @@ plotForest(bm_delirium_mdx)
 
 ```{r tbl-delirium-mdx-regr, eval=FALSE}
 #| label: tbl-delirium-mdx-regr
-#| tbl-cap: Relationship between _Prior medications_ at admission and occurrence of New Delirium
+#| tbl-cap: Relationship between _prior medications_ at admission and occurrence of new delirium
 #| tbl-colwidths: "auto"
 #| echo: false
 replace_H_with(bm_delirium_var_mdx_tbl)
@@ -228,7 +228,7 @@ replace_H_with(bm_delirium_var_mdx_tbl)
 
 ```{r tbl-delirium-mdx-regr2, eval=FALSE}
 #| label: tbl-delirium-mdx-regr2
-#| tbl-cap: Relationship between _Prior medications_ at admission and occurrence of New Delirium
+#| tbl-cap: Relationship between _prior medications_ at admission and occurrence of new delirium
 #| tbl-colwidths: "auto"
 #| echo: false
 #| warning: false
@@ -243,11 +243,11 @@ getLatexTableCH(bm_delirium_mdx, font_size=8.5, output_format="latex", option="l
         column_spec(7, "0.3in")
 ```
 
-#### Relationship of Medications, Sex and Delirium
+#### Relationship of medications, sex and delirium
 
 Presented bayesian regression model describes distinct groups of medications and their relationship to developing new delirium. A specific considerations of biological sex differences is taken by a second model that includes multiplicative interaction terms.
 
-Medications Associated with Increased Delirium Risk
+Medications associated with increased delirium risk
 
 Several medications are associated with an increased risk of developing delirium during hospital stay. Angiotensin II receptor blockers (ARBs, plain) are linked to delirium with high probability of `r getP(getRsmb(bm_delirium_mdx_ia), var="Angiotensin_II_receptor_blockers_ARBs_plain", text=FALSE)`, and an effect size of `r getMedCI(summary(bm_delirium_mdx),var="Angiotensin_II_receptor_blockers_ARBs_plain")`. This means that patients with ARBs prior to stroke have an increased risk of delirium. Pyrazolones with their main representative metamizole `r getMedCI(summary(bm_delirium_mdx),var="Pyrazolones")` and Other antiepileptics ATC code N03AX `r getMedCI(summary(bm_delirium_mdx),var="Other_antiepileptics")` which include, for example, lamotrigine, pregabalin, levetiracetam, and lacosamid, amongst others, had strong associations with elevated risk of delirium.
 
@@ -255,7 +255,7 @@ Heparin group medications show a positive effect, though with some uncertainty (
 
 Adjusting for potential confounders such as age and stroke severity confirmed the relevance of these associations of medications with delirium, with odds ratios for Angiotensin_II_receptor_blockers_ARBs_plain `r getMedCI(summary(bm_delirium_mdx_iv2), var="Angiotensin_II_receptor_blockers_ARBs_plain")`, Pyrazolones `r getMedCI(summary(bm_delirium_mdx_iv2), var="Pyrazolones")`, Other_antiepileptics_ATC_code_N03AX `r getMedCI(summary(bm_delirium_mdx_iv2), var="Other_antiepileptics")`, Heparin_group `r getMedCI(summary(bm_delirium_mdx_iv2), var="Heparin_group")`, and Other_antidepressants `r getMedCI(summary(bm_delirium_mdx_iv2), var="Other_antidepressants")`.
 
-Medications with Potential Protective Effects Against Delirium
+Medications with potential protective effects against delirium
 
 In contrast, when taking glucocorticoids prior to stroke, an association in a protective direction was found (`r getMedCI(summary(bm_delirium_mdx_iv2), var="Glucocorticoids")`).
 
@@ -266,7 +266,7 @@ The second Bayesian logistic regression model, which incorporates interaction te
 #| echo: false
 #| warning: false
 #| error: false
-#| fig-cap: !expr 'paste0("Probability of Interactions of biological sex with preadmission medication (groups)")'
+#| fig-cap: !expr 'paste0("Probability of interactions of biological sex with preadmission medication (groups)")'
 #| cache: TRUE
 plotForest(bm_delirium_mdx_ia, interactions_only = TRUE, sig_color = "black", nonsig_color = "black")
 ```
